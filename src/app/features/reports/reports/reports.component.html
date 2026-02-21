@@ -1,0 +1,15 @@
+<div class="reports-container">
+  <app-page-header title="التقارير" subtitle="عرض وتحليل التقارير" icon="assessment">
+  </app-page-header>
+
+  <mat-grid-list cols="2" rowHeight="200px" gutterSize="24px">
+    <mat-grid-tile *ngFor="let card of reportCards">
+      <mat-card class="report-card" [routerLink]="card.route">
+        <mat-card-content>
+          <mat-icon [style.color]="card.color">{{card.icon}}</mat-icon>
+          <h3>{{card.title}}</h3>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

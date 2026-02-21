@@ -1,0 +1,49 @@
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: 'auth/login',  // ✅ التحويل لـ login أولاً
+    pathMatch: 'full'
+  },
+  {
+    path: 'auth',
+    loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
+  },
+  {
+    path: '',
+    loadComponent: () => import('./layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/dashboard/dashboard/dashboard.component').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'products',
+        loadChildren: () => import('./features/products/products.routes').then(m => m.PRODUCTS_ROUTES)
+      },
+      {
+        path: 'stock',
+        loadComponent: () => import('./features/stock/stock-management/stock-management.component').then(m => m.StockManagementComponent)
+      },
+      {
+        path: 'sales',
+        loadChildren: () => import('./features/sales/sales.routes').then(m => m.SALES_ROUTES)
+      },
+      {
+        path: 'reports',
+        loadComponent: () => import('./features/reports/reports/reports.component').then(m => m.ReportsComponent)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/settings/settings/settings.component').then(m => m.SettingsComponent)
+      }
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: 'auth/login'  // ✅ أي route مش معروف يحول لـ login
+  }
+];

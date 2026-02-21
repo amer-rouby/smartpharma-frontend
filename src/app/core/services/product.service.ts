@@ -1,0 +1,226 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { AuthService } from './auth.service';
+import { ApiResponse, PaginatedResponse} from '../models';
+import { Product, ProductRequest, ProductsCountResponse } from '../models/product.model';
+
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ProductService {
+  private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
+  private readonly apiUrl = 'http://localhost:8080/api/products';
+
+  private getPharmacyId(): number {
+    return this.authService.getPharmacyId() || 1;
+  }
+
+  /**
+   * ✅ ✅ ✅ Get products count for dashboard ✅ ✅ ✅
+   */
+  getProductsCount(): Observable<number> {
+    const pharmacyId = this.getPharmacyId();
+
+    return this.http.get<ApiResponse<ProductsCountResponse>>(`${this.apiUrl}/count`, {
+      params: new HttpParams().set('pharmacyId', pharmacyId.toString())
+    }).pipe(
+      map(response => response.data?.count || 0),
+      catchError(error => {
+        console.error('Error loading products count:', error);
+        return of(0);
+      })
+    );
+  }
+
+  /**
+   * Get products with pagination
+   */
+  getProducts(page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return of(this.getEmptyPaginatedResponse<Product>());
+    }
+
+    return this.http.get<PaginatedResponse<Product>>(this.apiUrl, {
+      params: new HttpParams()
+        .set('pharmacyId', pharmacyId)
+        .set('page', page)
+        .set('size', size)
+    }).pipe(
+      catchError(this.handleError<PaginatedResponse<Product>>('getProducts', this.getEmptyPaginatedResponse()))
+    );
+  }
+
+  /**
+   * Get products as simple list (no pagination)
+   */
+  getProductsList(): Observable<Product[]> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return of([]);
+    }
+
+    return this.http.get<Product[]>(this.apiUrl, {
+      params: new HttpParams().set('pharmacyId', pharmacyId)
+    }).pipe(
+      catchError(this.handleError<Product[]>('getProductsList', []))
+    );
+  }
+
+  /**
+   * Get single product by ID
+   */
+  getProduct(id: number): Observable<Product> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return throwError(() => new Error('Pharmacy ID is required'));
+    }
+
+    return this.http.get<Product>(`${this.apiUrl}/${id}`, {
+      params: new HttpParams().set('pharmacyId', pharmacyId)
+    }).pipe(
+      catchError(this.handleError<Product>(`getProduct id=${id}`))
+    );
+  }
+
+  /**
+   * Create new product
+   */
+  createProduct(product: ProductRequest): Observable<Product> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return throwError(() => new Error('Pharmacy ID is required'));
+    }
+
+    return this.http.post<Product>(this.apiUrl, product, {
+      params: new HttpParams().set('pharmacyId', pharmacyId)
+    }).pipe(
+      catchError(this.handleError<Product>('createProduct'))
+    );
+  }
+
+  /**
+   * Update existing product
+   */
+  updateProduct(id: number, product: ProductRequest): Observable<Product> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return throwError(() => new Error('Pharmacy ID is required'));
+    }
+
+    return this.http.put<Product>(`${this.apiUrl}/${id}`, product, {
+      params: new HttpParams().set('pharmacyId', pharmacyId)
+    }).pipe(
+      catchError(this.handleError<Product>(`updateProduct id=${id}`))
+    );
+  }
+
+  /**
+   * Soft delete product
+   */
+  deleteProduct(id: number): Observable<void> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return throwError(() => new Error('Pharmacy ID is required'));
+    }
+
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
+      params: new HttpParams().set('pharmacyId', pharmacyId)
+    }).pipe(
+      catchError(this.handleError<void>(`deleteProduct id=${id}`))
+    );
+  }
+
+  /**
+   * Search products by name or barcode
+   */
+  searchProducts(query: string, page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId || !query?.trim()) {
+      return of(this.getEmptyPaginatedResponse<Product>());
+    }
+
+    return this.http.get<PaginatedResponse<Product>>(`${this.apiUrl}/search`, {
+      params: new HttpParams()
+        .set('pharmacyId', pharmacyId)
+        .set('query', query.trim())
+        .set('page', page)
+        .set('size', size)
+    }).pipe(
+      catchError(this.handleError<PaginatedResponse<Product>>('searchProducts', this.getEmptyPaginatedResponse()))
+    );
+  }
+
+  /**
+   * Get low stock products
+   */
+  getLowStockProducts(): Observable<Product[]> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return of([]);
+    }
+
+    return this.http.get<Product[]>(`${this.apiUrl}/low-stock`, {
+      params: new HttpParams().set('pharmacyId', pharmacyId)
+    }).pipe(
+      catchError(this.handleError<Product[]>('getLowStockProducts', []))
+    );
+  }
+  // ✅ أضف هذه method في ProductService:
+
+  /**
+   * Search product by barcode (exact match)
+   */
+  searchByBarcode(barcode: string): Observable<Product | null> {
+    const pharmacyId = this.getPharmacyId();
+
+    return this.http.get<ApiResponse<Product[]>>(`${this.apiUrl}/search`, {
+      params: new HttpParams()
+        .set('pharmacyId', pharmacyId)
+        .set('query', barcode)
+    }).pipe(
+      map(response => {
+        const products = response.data || response;
+        // Exact match by barcode
+        return products.find(p => p.barcode === barcode) || null;
+      }),
+      catchError(() => of(null))
+    );
+  }
+  // ==========================================
+  // 🔧 Private Helper Methods
+  // ==========================================
+
+  private getEmptyPaginatedResponse<T>(): PaginatedResponse<T> {
+    return {
+      content: [],
+      totalPages: 0,
+      totalElements: 0,
+      size: 0,
+      number: 0,
+      first: true,
+      last: true,
+      empty: true
+    };
+  }
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed:`, error);
+      return of(result as T);
+    };
+  }
+}

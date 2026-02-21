@@ -1,0 +1,42 @@
+<div class="login-container">
+  <div class="login-wrapper">
+    <mat-card class="login-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>local_pharmacy</mat-icon>
+          صيدليتي الذكية
+        </mat-card-title>
+        <mat-card-subtitle>تسجيل الدخول</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>اسم المستخدم</mat-label>
+            <input matInput type="text" [(ngModel)]="credentials.username" name="username" required>
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>كلمة المرور</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="credentials.password"
+              name="password" required>
+            <mat-icon matPrefix>lock</mat-icon>
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="loading">
+            <mat-icon *ngIf="loading">spinner</mat-icon>
+            {{loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}}
+          </button>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions align="end" class="center-actions">
+        <p>ليس لديك حساب؟ <a routerLink="/auth/register">إنشاء حساب جديد</a></p>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

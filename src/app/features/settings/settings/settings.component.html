@@ -1,0 +1,14 @@
+<div class="settings-container">
+  <app-page-header title="الإعدادات" subtitle="إعدادات النظام" icon="settings">
+  </app-page-header>
+
+  <mat-card>
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let item of settingsItems" [routerLink]="item.route">
+        <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
+        <span matListItemTitle>{{item.label}}</span>
+        <mat-icon matListItemMeta>chevron_left</mat-icon>
+      </a>
+    </mat-nav-list>
+  </mat-card>
+</div>

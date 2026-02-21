@@ -1,0 +1,45 @@
+<div class="sidebar" [class.collapsed]="isCollapsed">
+  <!-- Logo Section -->
+  <div class="sidebar-logo">
+    <mat-icon>local_pharmacy</mat-icon>
+    <span class="logo-text" *ngIf="!isCollapsed">صيدليتي الذكية</span>
+  </div>
+
+  <!-- Menu Items -->
+  <mat-nav-list class="sidebar-menu">
+    <ng-container *ngFor="let item of menuItems; trackBy: trackByFn">
+
+      <!-- Single Menu Item -->
+      <a *ngIf="!item.children && hasAccess(item.roles)" mat-list-item [routerLink]="item.route"
+        routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
+        <span matListItemTitle *ngIf="!isCollapsed">{{item.label}}</span>
+      </a>
+
+      <!-- Expandable Menu Item -->
+      <mat-expansion-panel *ngIf="item.children && hasAccess(item.roles)" class="sidebar-expansion" hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
+            <span *ngIf="!isCollapsed">{{item.label}}</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-nav-list class="submenu">
+          <a *ngFor="let child of item.children" mat-list-item [routerLink]="child.route" routerLinkActive="active">
+            <mat-icon matListItemIcon>{{child.icon}}</mat-icon>
+            <span matListItemTitle *ngIf="!isCollapsed">{{child.label}}</span>
+          </a>
+        </mat-nav-list>
+      </mat-expansion-panel>
+    </ng-container>
+  </mat-nav-list>
+
+  <!-- Footer -->
+  <div class="sidebar-footer" *ngIf="!isCollapsed">
+    <div class="version-info">
+      <mat-icon>info</mat-icon>
+      <span>الإصدار 1.0.0</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,133 @@
+<mat-toolbar color="primary" class="header-toolbar">
+  <!-- Right Side: Toggle & Logo -->
+  <div class="header-right">
+    <button mat-icon-button (click)="toggleSidebar.emit()" class="toggle-sidebar-btn" matTooltip="القائمة">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <div class="logo-section" routerLink="/dashboard">
+      <div class="logo-icon">
+        <mat-icon>local_pharmacy</mat-icon>
+      </div>
+      <div class="logo-text-container">
+        <span class="logo-text">صيدليتي الذكية</span>
+        <span class="logo-subtitle">نظام إدارة الصيدليات</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Center: Search Bar -->
+  <div class="header-center">
+    <div class="search-wrapper">
+      <mat-form-field appearance="outline" class="search-field">
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
+          placeholder="ابحث عن منتج، دواء، أو تقرير...">
+        <mat-icon matPrefix>search</mat-icon>
+        <button mat-icon-button matSuffix *ngIf="searchQuery" (click)="clearSearch()" type="button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Left Side: Actions -->
+  <div class="header-left">
+    <!-- Quick Add Button -->
+    <button mat-stroked-button class="quick-add-btn" [matMenuTriggerFor]="quickActionsMenu" matTooltip="إجراء سريع">
+      <mat-icon>add</mat-icon>
+      <span>جديد</span>
+    </button>
+    <mat-menu #quickActionsMenu="matMenu" class="quick-actions-menu">
+      <button mat-menu-item routerLink="/products/new">
+        <mat-icon color="primary">inventory_2</mat-icon>
+        <span>منتج جديد</span>
+      </button>
+      <button mat-menu-item routerLink="/sales/pos">
+        <mat-icon color="accent">point_of_sale</mat-icon>
+        <span>عملية بيع</span>
+      </button>
+      <button mat-menu-item routerLink="/stock/adjustment">
+        <mat-icon color="warn">adjust</mat-icon>
+        <span>تعديل مخزون</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item routerLink="/reports">
+        <mat-icon>assessment</mat-icon>
+        <span>تقرير جديد</span>
+      </button>
+    </mat-menu>
+
+    <!-- Notifications -->
+    <button mat-icon-button [matMenuTriggerFor]="notificationMenu" [matBadge]="notificationCount" matBadgeColor="warn"
+      class="notification-btn" matTooltip="الإشعارات">
+      <mat-icon>notifications</mat-icon>
+    </button>
+    <mat-menu #notificationMenu="matMenu" class="notification-menu">
+      <div class="menu-header">
+        <h3>الإشعارات</h3>
+        <button mat-button color="primary" (click)="markAllAsRead()" *ngIf="notificationCount > 0">
+          تحديد الكل كمقروء
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="notification-list" *ngIf="notifications.length > 0; else noNotifications">
+        <button mat-menu-item *ngFor="let notification of notifications" (click)="markAsRead(notification.id)">
+          <mat-icon [class]="'notification-icon-' + notification.type">{{notification.icon}}</mat-icon>
+          <div class="notification-content">
+            <span class="notification-message">{{notification.message}}</span>
+            <small class="notification-time">{{notification.time}}</small>
+          </div>
+        </button>
+      </div>
+      <ng-template #noNotifications>
+        <div class="no-notifications">
+          <mat-icon>notifications_none</mat-icon>
+          <p>لا توجد إشعارات جديدة</p>
+        </div>
+      </ng-template>
+    </mat-menu>
+
+    <!-- User Profile -->
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile-btn">
+      <div class="user-info-mini">
+        <div class="user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{currentUser?.fullName || 'مستخدم'}}</span>
+          <span class="user-role">{{currentUser?.role || 'دور'}}</span>
+        </div>
+        <mat-icon>expand_more</mat-icon>
+      </div>
+    </button>
+    <mat-menu #userMenu="matMenu" class="user-menu">
+      <div class="user-menu-header">
+        <div class="user-avatar-large">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div>
+          <p class="user-menu-name">{{currentUser?.fullName || 'مستخدم'}}</p>
+          <p class="user-menu-email">{{currentUser?.email || 'user@smartpharma.com'}}</p>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item routerLink="/settings/profile">
+        <mat-icon>person</mat-icon>
+        <span>الملف الشخصي</span>
+      </button>
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon>
+        <span>الإعدادات</span>
+      </button>
+      <button mat-menu-item routerLink="/help">
+        <mat-icon>help</mat-icon>
+        <span>المساعدة</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()" class="logout-item">
+        <mat-icon>logout</mat-icon>
+        <span>تسجيل الخروج</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

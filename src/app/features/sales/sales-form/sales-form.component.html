@@ -1,0 +1,183 @@
+<div class="sales-form-container">
+  <app-page-header title="نقطة البيع" subtitle="إتمام عملية بيع جديدة" icon="point_of_sale">
+  </app-page-header>
+
+  <div class="sales-content">
+    <mat-card class="products-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>inventory_2</mat-icon>
+          المنتجات
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="add-product-section">
+          <mat-form-field appearance="outline" class="product-select">
+            <mat-label>ابحث عن منتج</mat-label>
+            <input matInput [formControl]="productControl" [matAutocomplete]="auto"
+              placeholder="اكتب اسم المنتج أو الباركود">
+            <mat-icon matPrefix>search</mat-icon>
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProduct"
+              (optionSelected)="onProductSelected($event.option.value)">
+              @for (product of filteredProducts | async; track product.id) {
+              <mat-option [value]="product">
+                <div class="product-option">
+                  <span class="product-name">{{product.name}}</span>
+                  @if (product.sellPrice) {
+                  <span class="product-price">{{product.sellPrice | number:'1.2-2'}} ج.م</span>
+                  }
+                  @if (product.totalStock !== undefined) {
+                  <span class="product-stock">({{product.totalStock}} متاح)</span>
+                  }
+                </div>
+              </mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" (click)="onAddFirstProduct()" [disabled]="isAddButtonDisabled()"
+            class="add-to-cart-btn">
+            <mat-icon>add</mat-icon>
+            <span>إضافة</span>
+          </button>
+        </div>
+
+        <div class="cart-table-container">
+          <table mat-table [dataSource]="cartItems()" class="mat-elevation-z8">
+
+            <ng-container matColumnDef="product">
+              <th mat-header-cell *matHeaderCellDef> المنتج </th>
+              <td mat-cell *matCellDef="let item">
+                <div class="cart-product-info">
+                  <strong>{{item.product.name}}</strong>
+                  <small>{{item.product.category}}</small>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef> الكمية </th>
+              <td mat-cell *matCellDef="let item">
+                <div class="quantity-controls">
+                  <button mat-icon-button (click)="updateQuantity(item, item.quantity - 1)">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <input matInput type="number" min="1" [value]="item.quantity"
+                    (change)="updateQuantity(item, $any($event.target).value)" class="quantity-input">
+                  <button mat-icon-button (click)="updateQuantity(item, item.quantity + 1)">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+                <small class="stock-available">متاح: {{item.product.totalStock}}</small>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef> السعر </th>
+              <td mat-cell *matCellDef="let item">
+                <span class="price-text">{{item.unitPrice | number:'1.2-2'}} ج.م</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="total">
+              <th mat-header-cell *matHeaderCellDef> الإجمالي </th>
+              <td mat-cell *matCellDef="let item">
+                <strong class="item-total">{{item.totalPrice | number:'1.2-2'}} ج.م</strong>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef> </th>
+              <td mat-cell *matCellDef="let item; let i = index">
+                <button mat-icon-button color="warn" (click)="removeFromCart(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          @if (cartItems().length === 0) {
+          <div class="empty-cart">
+            <mat-icon>shopping_cart</mat-icon>
+            <p>السلة فارغة</p>
+            <small>أضف منتجات من القائمة أعلاه</small>
+          </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>receipt</mat-icon>
+          ملخص الفاتورة
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="summary-row">
+          <span>عدد الأصناف:</span>
+          <span class="badge">{{cartItems().length}}</span>
+        </div>
+
+        <div class="summary-row">
+          <span>المجموع:</span>
+          <span class="amount">{{getSubtotal() | number:'1.2-2'}} ج.م</span>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>خصم</mat-label>
+          <input matInput type="number" min="0" [max]="getSubtotal()" [(ngModel)]="discount">
+          <span matTextSuffix>ج.م</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>طريقة الدفع</mat-label>
+          <mat-select [(ngModel)]="paymentMethod">
+            <mat-option value="CASH">نقدي</mat-option>
+            <mat-option value="VISA">بطاقة ائتمان</mat-option>
+            <mat-option value="INSTAPAY">إنستا باي</mat-option>
+            <mat-option value="WALLET">محفظة إلكترونية</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>هاتف العميل (اختياري)</mat-label>
+          <input matInput [(ngModel)]="customerPhone" placeholder="01xxxxxxxxx">
+        </mat-form-field>
+
+        <div class="total-row">
+          <span>الإجمالي النهائي:</span>
+          <span class="total-amount">{{getTotalAmount() | number:'1.2-2'}} ج.م</span>
+        </div>
+
+        <div class="action-buttons">
+          <button mat-button color="warn" (click)="onCancel()" [disabled]="loading()" class="action-btn">
+            <mat-icon>cancel</mat-icon>
+            <span>إلغاء</span>
+          </button>
+          <button mat-button color="accent" (click)="clearCart()" [disabled]="loading() || cartItems().length === 0"
+            class="action-btn">
+            <mat-icon>clear_all</mat-icon>
+            <span>مسح الكل</span>
+          </button>
+        </div>
+
+        <button mat-raised-button color="primary" (click)="onSubmit()"
+          [disabled]="loading() || cartItems().length === 0" class="submit-btn">
+          @if (!loading()) {
+          <mat-icon>check_circle</mat-icon>
+          } @else {
+          <mat-spinner diameter="20"></mat-spinner>
+          }
+          <span>{{loading() ? 'جاري...' : 'إتمام البيع'}}</span>
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

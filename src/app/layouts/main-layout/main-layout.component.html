@@ -1,0 +1,25 @@
+<div class="main-layout" dir="rtl">
+  <!-- Header -->
+  <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+
+  <div class="main-content-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar-wrapper" [class.collapsed]="isSidebarCollapsed" [class.mobile-open]="isSidebarOpen"
+      (clickOutside)="closeSidebar()">
+      <app-sidebar [isCollapsed]="isSidebarCollapsed"></app-sidebar>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="content-container">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+
+  <!-- Loading Spinner -->
+  <app-loading-spinner></app-loading-spinner>
+</div>

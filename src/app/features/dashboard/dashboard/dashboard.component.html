@@ -1,0 +1,291 @@
+<!-- src/app/features/dashboard/dashboard.component.html -->
+
+<div class="dashboard-container">
+  <app-page-header title="لوحة التحكم" subtitle="نظرة عامة على أداء الصيدلية" icon="dashboard">
+  </app-page-header>
+
+  <!-- ✅ Loading State -->
+  @if (loading()) {
+  <div class="loading-state">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <p>جاري تحميل البيانات...</p>
+  </div>
+  }
+
+  <!-- ✅ Error State -->
+  @if (hasError()) {
+  <div class="error-state">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>{{ error() }}</p>
+    <button mat-raised-button color="primary" (click)="refreshData()">
+      <mat-icon>refresh</mat-icon>
+      <span>إعادة المحاولة</span>
+    </button>
+  </div>
+  }
+
+  <!-- ✅ Main Content -->
+  @if (showStats() && stats()) {
+  <div class="dashboard-content">
+
+    <!-- ✅ Statistics Cards Grid -->
+    <div class="stats-grid">
+
+      <!-- Today Revenue Card -->
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" [style.background]="getStatColor(0)">
+            <mat-icon class="icon-white">attach_money</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ formatCurrency(stats()!.todayRevenue) }}</h3>
+            <p>مبيعات اليوم</p>
+            <small>{{ stats()!.todayOrders }} عملية بيع</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Total Products Card -->
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" [style.background]="getStatColor(1)">
+            <mat-icon class="icon-white">inventory_2</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats()!.totalProducts }}</h3>
+            <p>إجمالي المنتجات</p>
+            <small>منتج مسجل</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Low Stock Alerts Card -->
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" [style.background]="getStatColor(2)">
+            <mat-icon class="icon-white">warning</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats()!.lowStockProducts }}</h3>
+            <p>تنبيهات المخزون</p>
+            <small>منتج منخفض المخزون</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Inventory Value Card -->
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" [style.background]="getStatColor(3)">
+            <mat-icon class="icon-white">account_balance_wallet</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ formatCurrency(stats()!.inventoryValue) }}</h3>
+            <p>قيمة المخزون</p>
+            <small>إجمالي القيمة</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- ✅ Quick Actions Card -->
+    <mat-card class="quick-actions-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bolt</mat-icon>
+          إجراءات سريعة
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="actions-grid">
+          <button mat-raised-button color="primary" routerLink="/sales/pos" class="action-btn">
+            <mat-icon>point_of_sale</mat-icon>
+            <span>بيع جديد</span>
+          </button>
+
+          <button mat-raised-button color="accent" routerLink="/products/new" class="action-btn">
+            <mat-icon>add</mat-icon>
+            <span>إضافة منتج</span>
+          </button>
+
+          <button mat-raised-button color="warn" (click)="viewLowStockProducts()" class="action-btn">
+            <mat-icon>warning</mat-icon>
+            <span>تنبيهات المخزون</span>
+          </button>
+
+          <button mat-raised-button routerLink="/sales/history" class="action-btn">
+            <mat-icon>receipt_long</mat-icon>
+            <span>سجل المبيعات</span>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- ✅ Tables Grid: Top Products & Recent Sales (بدون Pagination) -->
+    <div class="tables-grid">
+
+      <!-- Top Products Table -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>trending_up</mat-icon>
+            الأكثر مبيعاً
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (hasTopProducts()) {
+          <table mat-table [dataSource]="stats()!.topProducts" class="data-table">
+
+            <!-- Rank Column -->
+            <ng-container matColumnDef="rank">
+              <th mat-header-cell *matHeaderCellDef> # </th>
+              <td mat-cell *matCellDef="let element; let i = index">
+                <span class="rank-badge">{{ i + 1 }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Product Name Column -->
+            <ng-container matColumnDef="productName">
+              <th mat-header-cell *matHeaderCellDef> المنتج </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="product-name">{{ element.productName }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Quantity Sold Column -->
+            <ng-container matColumnDef="quantitySold">
+              <th mat-header-cell *matHeaderCellDef> الكمية </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="quantity">{{ element.quantitySold }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Total Revenue Column -->
+            <ng-container matColumnDef="totalRevenue">
+              <th mat-header-cell *matHeaderCellDef> الإيرادات </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="revenue">{{ formatCurrency(element.totalRevenue) }}</span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="topProductsColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: topProductsColumns;"></tr>
+          </table>
+          } @else {
+          <div class="empty-state">
+            <mat-icon>show_chart</mat-icon>
+            <p>لا توجد بيانات مبيعات كافية</p>
+            <small>ابدأ بإتمام عمليات بيع لعرض الإحصائيات</small>
+          </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Recent Sales Table -->
+      <mat-card class="table-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>receipt_long</mat-icon>
+            آخر المبيعات
+          </mat-card-title>
+          <button mat-button color="primary" (click)="viewAllSales()">عرض الكل</button>
+        </mat-card-header>
+        <mat-card-content>
+          @if (hasRecentSales()) {
+          <table mat-table [dataSource]="stats()!.recentSales" class="data-table">
+
+            <!-- Invoice Number Column -->
+            <ng-container matColumnDef="invoiceNumber">
+              <th mat-header-cell *matHeaderCellDef> رقم الفاتورة </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="invoice">{{ element.invoiceNumber }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Total Amount Column -->
+            <ng-container matColumnDef="totalAmount">
+              <th mat-header-cell *matHeaderCellDef> المبلغ </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="amount">{{ formatCurrency(element.totalAmount) }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Transaction Date Column -->
+            <ng-container matColumnDef="transactionDate">
+              <th mat-header-cell *matHeaderCellDef> التاريخ </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="date">{{ formatDate(element.transactionDate) }}</span>
+              </td>
+            </ng-container>
+
+            <!-- Payment Method Column -->
+            <ng-container matColumnDef="paymentMethod">
+              <th mat-header-cell *matHeaderCellDef> الدفع </th>
+              <td mat-cell *matCellDef="let element">
+                <mat-chip class="payment-chip" [color]="getPaymentChipColor(element.paymentMethod)">
+                  {{ getPaymentMethodArabic(element.paymentMethod) }}
+                </mat-chip>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="recentSalesColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: recentSalesColumns;"></tr>
+          </table>
+          } @else {
+          <div class="empty-state">
+            <mat-icon>receipt_long</mat-icon>
+            <p>لا توجد مبيعات حديثة</p>
+            <small>ابدأ بعملية بيع لعرض السجل</small>
+          </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- ✅ Alerts Section -->
+    <mat-card class="alerts-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>notifications_active</mat-icon>
+          التنبيهات
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="alerts-grid">
+
+          <!-- Expiring Batches Alert -->
+          <div class="alert-item warning">
+            <mat-icon>warning</mat-icon>
+            <div class="alert-info">
+              <strong>منتجات منتهية الصلاحية قريباً</strong>
+              <p>{{ stats()!.expiringBatches }} دفعة ستنتهي خلال 30 يوم</p>
+            </div>
+            <button mat-button color="warn" size="small">عرض</button>
+          </div>
+
+          <!-- Expired Batches Alert -->
+          <div class="alert-item danger">
+            <mat-icon>error</mat-icon>
+            <div class="alert-info">
+              <strong>منتجات منتهية الصلاحية</strong>
+              <p>{{ stats()!.expiredBatches }} دفعة منتهية الصلاحية</p>
+            </div>
+            <button mat-button color="warn" size="small">عرض</button>
+          </div>
+
+          <!-- Out of Stock Alert -->
+          <div class="alert-item info">
+            <mat-icon>inventory</mat-icon>
+            <div class="alert-info">
+              <strong>منتجات نفذت من المخزون</strong>
+              <p>{{ stats()!.outOfStockProducts }} منتج غير متاح</p>
+            </div>
+            <button mat-button color="primary" size="small">عرض</button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+  }
+</div>
