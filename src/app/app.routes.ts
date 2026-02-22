@@ -4,7 +4,7 @@ import { authGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth/login',  // ✅ التحويل لـ login أولاً
+    redirectTo: 'auth/login',
     pathMatch: 'full'
   },
   {
@@ -39,11 +39,15 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./features/settings/settings/settings.component').then(m => m.SettingsComponent)
+      },
+      {
+        path: '**',
+        redirectTo: 'dashboard'
       }
     ]
   },
   {
     path: '**',
-    redirectTo: 'auth/login'  // ✅ أي route مش معروف يحول لـ login
+    redirectTo: 'auth/login'
   }
 ];
