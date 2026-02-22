@@ -3,17 +3,18 @@
   <!-- Right Side -->
   <div class="header-right">
 
-    <button mat-icon-button (click)="toggleSidebar.emit()" class="toggle-sidebar-btn" matTooltip="القائمة الرئيسية">
+    <button mat-icon-button (click)="toggleSidebar.emit()" class="toggle-sidebar-btn"
+      [matTooltip]="'HEADER.MENU' | translate">
       <mat-icon>menu</mat-icon>
     </button>
 
-    <div class="logo-section" routerLink="/dashboard">
+    <div class="logo-section" routerLink="/dashboard" [matTooltip]="'HEADER.BACK_TO_HOME' | translate">
       <div class="logo-icon">
         <mat-icon>local_pharmacy</mat-icon>
       </div>
       <div class="logo-text-container">
-        <span class="logo-text">صيدليتي الذكية</span>
-        <span class="logo-subtitle">نظام إدارة الصيدليات</span>
+        <span class="logo-text">{{'APP.NAME' | translate}}</span>
+        <span class="logo-subtitle">{{'APP.SUBTITLE' | translate}}</span>
       </div>
     </div>
   </div>
@@ -23,11 +24,13 @@
     <div class="search-wrapper">
       <mat-form-field appearance="outline" class="search-field">
         <input matInput [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)"
-          (keyup.enter)="onSearch()" (keydown)="onSearchKeydown($event)" placeholder="ابحث عن منتج، دواء، أو تقرير...">
+          (keyup.enter)="onSearch()" (keydown)="onSearchKeydown($event)"
+          [placeholder]="'HEADER.SEARCH_PLACEHOLDER' | translate">
         <mat-icon matPrefix>search</mat-icon>
 
         @if (searchQuery()) {
-        <button mat-icon-button matSuffix (click)="clearSearch()" type="button">
+        <button mat-icon-button matSuffix (click)="clearSearch()" type="button"
+          [matTooltip]="'COMMON.CLEAR' | translate">
           <mat-icon>close</mat-icon>
         </button>
         }
@@ -39,37 +42,38 @@
   <div class="header-left">
 
     <!-- Quick Add -->
-    <button mat-stroked-button class="quick-add-btn" [matMenuTriggerFor]="quickActionsMenu">
+    <button mat-stroked-button class="quick-add-btn" [matMenuTriggerFor]="quickActionsMenu"
+      [matTooltip]="'HEADER.NEW' | translate">
       <mat-icon>add</mat-icon>
-      <span>جديد</span>
+      <span>{{'HEADER.NEW' | translate}}</span>
     </button>
 
     <mat-menu #quickActionsMenu="matMenu" class="quick-actions-menu" xPosition="before">
       @for (action of quickActions; track action.route) {
       <button mat-menu-item [routerLink]="action.route">
         <mat-icon [color]="action.color">{{action.icon}}</mat-icon>
-        <span>{{action.label}}</span>
+        <span>{{action.label | translate}}</span>
       </button>
       }
       <mat-divider></mat-divider>
       <button mat-menu-item routerLink="/reports">
         <mat-icon>assessment</mat-icon>
-        <span>تقرير جديد</span>
+        <span>{{'NAV.REPORTS' | translate}}</span>
       </button>
     </mat-menu>
 
     <!-- Notifications -->
     <button mat-icon-button [matMenuTriggerFor]="notificationMenu" [matBadge]="notificationCount()" matBadgeColor="warn"
-      class="notification-btn">
+      class="notification-btn" [matTooltip]="'HEADER.NOTIFICATIONS' | translate">
       <mat-icon>notifications</mat-icon>
     </button>
 
     <mat-menu #notificationMenu="matMenu" class="notification-menu" xPosition="before">
       <div class="menu-header">
-        <h3>الإشعارات</h3>
+        <h3>{{'HEADER.NOTIFICATIONS' | translate}}</h3>
         @if (notificationCount() > 0) {
         <button mat-button color="primary" (click)="markAllAsRead()">
-          تحديد الكل كمقروء
+          {{'HEADER.MARK_ALL_READ' | translate}}
         </button>
         }
       </div>
@@ -92,13 +96,17 @@
       } @else {
       <div class="no-notifications">
         <mat-icon>notifications_none</mat-icon>
-        <p>لا توجد إشعارات جديدة</p>
+        <p>{{'HEADER.NO_NOTIFICATIONS' | translate}}</p>
       </div>
       }
     </mat-menu>
 
+    <!-- ✅ احذف الـ Language Switcher من هنا -->
+    <!-- <app-language-switcher></app-language-switcher> -->
+
     <!-- User Profile -->
-    <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile-btn">
+    <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile-btn"
+      [matTooltip]="'HEADER.PROFILE' | translate">
       <div class="user-info-mini">
         <div class="user-avatar">
           <mat-icon>account_circle</mat-icon>
@@ -114,15 +122,11 @@
     <mat-menu #userMenu="matMenu" class="user-menu user-menu-wide" xPosition="before" yPosition="below">
 
       <div class="user-menu-header">
-        <!-- <div class="user-avatar-large">
-          <mat-icon>account_circle</mat-icon>
-        </div> -->
         <div class="user-menu-info">
-          <p mat-menu-item class="user-menu-name">
+          <p class="user-menu-name">
             <mat-icon>account_circle</mat-icon>
             <span>{{userDisplayName()}}</span>
           </p>
-          <!-- <p class="user-menu-email">{{userDisplayEmail()}}</p> -->
         </div>
       </div>
 
@@ -130,24 +134,50 @@
 
       <button mat-menu-item routerLink="/settings/profile">
         <mat-icon>person_outline</mat-icon>
-        <span>الملف الشخصي</span>
+        <span>{{'HEADER.PROFILE' | translate}}</span>
       </button>
 
       <button mat-menu-item routerLink="/settings">
         <mat-icon>settings</mat-icon>
-        <span>الإعدادات</span>
+        <span>{{'NAV.SETTINGS' | translate}}</span>
+      </button>
+
+      <!-- ✅ أضف Language Switcher هنا -->
+      <button mat-menu-item [matMenuTriggerFor]="languageMenu">
+        <mat-icon>language</mat-icon>
+        <span>{{'HEADER.LANGUAGE' | translate}}</span>
+        <!-- <mat-icon matMenuIcon>chevron_left</mat-icon> -->
       </button>
 
       <button mat-menu-item routerLink="/help">
         <mat-icon>help_outline</mat-icon>
-        <span>المساعدة</span>
+        <span>{{'HEADER.HELP' | translate}}</span>
       </button>
 
       <mat-divider></mat-divider>
 
       <button mat-menu-item (click)="logout()" class="logout-item">
         <mat-icon>exit_to_app</mat-icon>
-        <span>تسجيل الخروج</span>
+        <span>{{'HEADER.LOGOUT' | translate}}</span>
+      </button>
+    </mat-menu>
+
+    <!-- ✅ Language Submenu -->
+    <mat-menu #languageMenu="matMenu" xPosition="before">
+      <button mat-menu-item (click)="changeLanguage('ar')" [class.active]="currentLang() === 'ar'">
+        <mat-icon>translate</mat-icon>
+        <span>العربية</span>
+        @if (currentLang() === 'ar') {
+        <mat-icon color="accent">check</mat-icon>
+        }
+      </button>
+
+      <button mat-menu-item (click)="changeLanguage('en')" [class.active]="currentLang() === 'en'">
+        <mat-icon>translate</mat-icon>
+        <span>English</span>
+        @if (currentLang() === 'en') {
+        <mat-icon color="accent">check</mat-icon>
+        }
       </button>
     </mat-menu>
 

@@ -1,4 +1,7 @@
 .categories-container {
+  padding: 24px;
+  direction: rtl;
+
   .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -9,6 +12,7 @@
   .category-card {
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
+    border-radius: 16px;
 
     &:hover {
       transform: translateY(-5px);
@@ -57,28 +61,68 @@
     mat-card-actions {
       border-top: 1px solid #e0e0e0;
       padding: 8px 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
     }
   }
 
   .table-card {
     margin-top: 24px;
+    border-radius: 16px;
 
-    table {
-      width: 100%;
+    mat-card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e9ecef;
     }
 
-    mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
+    mat-card-content {
+      padding: 0;
+    }
+
+    .data-table {
+      width: 100%;
+
+      th,
+      td {
+        padding: 16px 24px;
+      }
+
+      th {
+        font-weight: 600;
+        color: #666;
+        font-size: 13px;
+        background: #f8f9fa;
+      }
+
+      td {
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      mat-chip {
+        font-size: 12px;
+        height: 24px;
+      }
     }
   }
 }
 
 @media (max-width: 768px) {
   .categories-container {
+    padding: 16px;
+
     .categories-grid {
       grid-template-columns: 1fr;
+    }
+
+    .table-card .data-table {
+      overflow-x: auto;
     }
   }
 }

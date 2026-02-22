@@ -1,4 +1,7 @@
 .product-form-container {
+  padding: 24px;
+  direction: rtl;
+
   mat-card {
     margin-top: 24px;
     border-radius: 16px;
@@ -25,10 +28,6 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     margin-bottom: 24px;
-
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
   }
 
   mat-form-field {
@@ -76,14 +75,6 @@
     padding-top: 24px;
     border-top: 1px solid #e2e8f0;
 
-    @media (max-width: 768px) {
-      flex-direction: column;
-
-      button {
-        width: 100%;
-      }
-    }
-
     button {
       min-width: 120px;
       height: 48px;
@@ -91,5 +82,36 @@
       border-radius: 12px;
       gap: 8px;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .product-form-container {
+    padding: 16px;
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// Snackbar custom styles
+::ng-deep {
+  .success-snackbar {
+    background: #10b981 !important;
+    color: white !important;
+  }
+
+  .error-snackbar {
+    background: #ef4444 !important;
+    color: white !important;
   }
 }

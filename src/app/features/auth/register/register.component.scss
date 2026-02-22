@@ -14,62 +14,176 @@
 
 .register-card {
   padding: 24px;
-  border-radius: 15px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 
   mat-card-header {
     text-align: center;
     margin-bottom: 24px;
+    flex-direction: column;
+    gap: 8px;
 
     mat-card-title {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      font-size: 28px;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 700;
       color: #667eea;
+
+      mat-icon {
+        font-size: 36px;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+      }
+
+      span {
+        white-space: nowrap;
+      }
     }
 
     mat-card-subtitle {
-      font-size: 16px;
+      font-size: 14px;
       color: #666;
-      margin-top: 10px;
     }
   }
 
-  .form-row {
-    margin-bottom: 16px;
+  mat-card-content {
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .form-row {
+        margin: 0;
+      }
+
+      .full-width {
+        width: 100%;
+      }
+
+      mat-form-field {
+        width: 100%;
+
+        .mat-mdc-form-field-prefix,
+        .mat-mdc-form-field-suffix {
+          display: flex;
+          align-items: center;
+        }
+
+        .mat-mdc-form-field-prefix {
+          margin-inline-end: 8px;
+        }
+
+        .mat-mdc-form-field-suffix {
+          margin-inline-start: 8px;
+        }
+      }
+
+      .password-toggle {
+        order: -1;
+      }
+
+      button[type="submit"] {
+        margin-top: 16px;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        min-height: 48px;
+
+        .spin-icon {
+          animation: spin 1s linear infinite;
+          margin-inline-end: 8px;
+        }
+
+        span {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
   }
 
-  .full-width {
-    width: 100%;
-  }
-
-  button {
-    height: 50px;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 8px;
-  }
-
-  mat-card-actions {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
+  .center-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    margin-bottom: 0;
 
     p {
       margin: 0;
+      font-size: 14px;
       color: #666;
+      text-align: center;
 
       a {
         color: #667eea;
+        font-weight: 600;
         text-decoration: none;
-        font-weight: bold;
 
         &:hover {
           text-decoration: underline;
         }
       }
     }
+  }
+
+  mat-divider {
+    margin: 20px 0;
+  }
+
+  .language-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    button {
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 80px;
+      padding: 8px 16px;
+
+      &.active {
+        color: #667eea;
+        font-weight: 700;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 8px;
+      }
+
+      &:hover:not(.active) {
+        background: rgba(0, 0, 0, 0.04);
+      }
+    }
+
+    .divider {
+      color: #ccc;
+      font-size: 16px;
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 20px;
+  }
+
+  .language-actions {
+    flex-direction: row;
   }
 }

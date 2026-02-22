@@ -33,6 +33,8 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatRippleModule } from '@angular/material/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   exports: [
@@ -76,7 +78,9 @@ import { MatRippleModule } from '@angular/material/core';
     // ✅ Feedback & Dialogs
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatDialogModule
+    MatDialogModule,
+    TranslateModule,
+    CommonModule
   ]
 })
 export class MaterialModule { }

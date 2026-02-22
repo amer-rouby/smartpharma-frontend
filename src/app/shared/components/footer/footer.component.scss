@@ -17,3 +17,13 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 12px 16px;
+
+    .footer-content p {
+      font-size: 12px;
+    }
+  }
+}

@@ -1,34 +1,39 @@
 <div class="sales-form-container">
-  <app-page-header title="نقطة البيع" subtitle="إتمام عملية بيع جديدة" icon="point_of_sale">
+  <app-page-header [title]="'SALES.POS_TITLE' | translate" [subtitle]="'SALES.NEW_SALE' | translate"
+    icon="point_of_sale">
   </app-page-header>
 
   <div class="sales-content">
+
+    <!-- Products Card -->
     <mat-card class="products-card">
       <mat-card-header>
         <mat-card-title>
           <mat-icon>inventory_2</mat-icon>
-          المنتجات
+          {{'PRODUCTS.TITLE' | translate}}
         </mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
+
+        <!-- Add Product Section -->
         <div class="add-product-section">
           <mat-form-field appearance="outline" class="product-select">
-            <mat-label>ابحث عن منتج</mat-label>
+            <mat-label>{{'PRODUCTS.SEARCH_PLACEHOLDER' | translate}}</mat-label>
             <input matInput [formControl]="productControl" [matAutocomplete]="auto"
-              placeholder="اكتب اسم المنتج أو الباركود">
+              [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate">
             <mat-icon matPrefix>search</mat-icon>
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayProduct"
               (optionSelected)="onProductSelected($event.option.value)">
-              @for (product of filteredProducts | async; track product.id) {
+              @for (product of currentFilteredProducts$ | async; track product.id) {
               <mat-option [value]="product">
                 <div class="product-option">
                   <span class="product-name">{{product.name}}</span>
                   @if (product.sellPrice) {
-                  <span class="product-price">{{product.sellPrice | number:'1.2-2'}} ج.م</span>
+                  <span class="product-price">{{formatCurrency(product.sellPrice)}}</span>
                   }
                   @if (product.totalStock !== undefined) {
-                  <span class="product-stock">({{product.totalStock}} متاح)</span>
+                  <span class="product-stock">({{getStockLabel(product.totalStock)}})</span>
                   }
                 </div>
               </mat-option>
@@ -36,18 +41,20 @@
             </mat-autocomplete>
           </mat-form-field>
 
-          <button mat-raised-button color="primary" (click)="onAddFirstProduct()" [disabled]="isAddButtonDisabled()"
+          <!-- <button mat-raised-button color="primary" (click)="onAddFirstProduct()" [disabled]="isAddButtonDisabled()"
             class="add-to-cart-btn">
             <mat-icon>add</mat-icon>
-            <span>إضافة</span>
-          </button>
+            <span>{{'COMMON.ADD' | translate}}</span>
+          </button> -->
         </div>
 
+        <!-- Cart Table -->
         <div class="cart-table-container">
-          <table mat-table [dataSource]="cartItems()" class="mat-elevation-z8">
+          <table mat-table [dataSource]="cartItems()" class="data-table">
 
+            <!-- Product Column -->
             <ng-container matColumnDef="product">
-              <th mat-header-cell *matHeaderCellDef> المنتج </th>
+              <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
               <td mat-cell *matCellDef="let item">
                 <div class="cart-product-info">
                   <strong>{{item.product.name}}</strong>
@@ -56,8 +63,9 @@
               </td>
             </ng-container>
 
+            <!-- Quantity Column -->
             <ng-container matColumnDef="quantity">
-              <th mat-header-cell *matHeaderCellDef> الكمية </th>
+              <th mat-header-cell *matHeaderCellDef>{{'SALES.QUANTITY' | translate}}</th>
               <td mat-cell *matCellDef="let item">
                 <div class="quantity-controls">
                   <button mat-icon-button (click)="updateQuantity(item, item.quantity - 1)">
@@ -69,28 +77,32 @@
                     <mat-icon>add</mat-icon>
                   </button>
                 </div>
-                <small class="stock-available">متاح: {{item.product.totalStock}}</small>
+                <small class="stock-available">{{getStockLabel(item.product.totalStock)}}</small>
               </td>
             </ng-container>
 
+            <!-- Price Column -->
             <ng-container matColumnDef="price">
-              <th mat-header-cell *matHeaderCellDef> السعر </th>
+              <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.SELL_PRICE' | translate}}</th>
               <td mat-cell *matCellDef="let item">
-                <span class="price-text">{{item.unitPrice | number:'1.2-2'}} ج.م</span>
+                <span class="price-text">{{formatCurrency(item.unitPrice)}}</span>
               </td>
             </ng-container>
 
+            <!-- Total Column -->
             <ng-container matColumnDef="total">
-              <th mat-header-cell *matHeaderCellDef> الإجمالي </th>
+              <th mat-header-cell *matHeaderCellDef>{{'SALES.TOTAL_PRICE' | translate}}</th>
               <td mat-cell *matCellDef="let item">
-                <strong class="item-total">{{item.totalPrice | number:'1.2-2'}} ج.م</strong>
+                <strong class="item-total">{{formatCurrency(item.totalPrice)}}</strong>
               </td>
             </ng-container>
 
+            <!-- Actions Column -->
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef> </th>
+              <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
               <td mat-cell *matCellDef="let item; let i = index">
-                <button mat-icon-button color="warn" (click)="removeFromCart(i)">
+                <button mat-icon-button color="warn" (click)="removeFromCart(i)"
+                  [matTooltip]="'COMMON.DELETE' | translate">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -100,84 +112,96 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
 
-          @if (cartItems().length === 0) {
+          <!-- Empty Cart State -->
+          @if (isCartEmpty()) {
           <div class="empty-cart">
             <mat-icon>shopping_cart</mat-icon>
-            <p>السلة فارغة</p>
-            <small>أضف منتجات من القائمة أعلاه</small>
+            <p>{{'SALES.EMPTY_CART' | translate}}</p>
+            <small>{{'SALES.ADD_PRODUCTS' | translate}}</small>
           </div>
           }
         </div>
       </mat-card-content>
     </mat-card>
 
+    <!-- Summary Card -->
     <mat-card class="summary-card">
       <mat-card-header>
         <mat-card-title>
           <mat-icon>receipt</mat-icon>
-          ملخص الفاتورة
+          {{'SALES.INVOICE_SUMMARY' | translate}}
         </mat-card-title>
       </mat-card-header>
 
       <mat-card-content>
+
+        <!-- Items Count -->
         <div class="summary-row">
-          <span>عدد الأصناف:</span>
+          <span>{{'SALES.ITEMS_COUNT' | translate}}</span>
           <span class="badge">{{cartItems().length}}</span>
         </div>
 
+        <!-- Subtotal -->
         <div class="summary-row">
-          <span>المجموع:</span>
-          <span class="amount">{{getSubtotal() | number:'1.2-2'}} ج.م</span>
+          <span>{{'SALES.SUBTOTAL' | translate}}</span>
+          <span class="amount">{{formatCurrency(subtotal())}}</span>
         </div>
 
+        <!-- Discount -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>خصم</mat-label>
-          <input matInput type="number" min="0" [max]="getSubtotal()" [(ngModel)]="discount">
-          <span matTextSuffix>ج.م</span>
+          <mat-label>{{'SALES.DISCOUNT' | translate}}</mat-label>
+          <input matInput type="number" min="0" [max]="subtotal()" [(ngModel)]="discount">
+          <span matTextSuffix>{{getCurrencySuffix()}}</span>
         </mat-form-field>
 
+        <!-- Payment Method -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>طريقة الدفع</mat-label>
+          <mat-label>{{'SALES.PAYMENT_METHOD' | translate}}</mat-label>
           <mat-select [(ngModel)]="paymentMethod">
-            <mat-option value="CASH">نقدي</mat-option>
-            <mat-option value="VISA">بطاقة ائتمان</mat-option>
-            <mat-option value="INSTAPAY">إنستا باي</mat-option>
-            <mat-option value="WALLET">محفظة إلكترونية</mat-option>
+            <mat-option value="CASH">{{getPaymentMethodLabel('CASH')}}</mat-option>
+            <mat-option value="VISA">{{getPaymentMethodLabel('VISA')}}</mat-option>
+            <mat-option value="INSTAPAY">{{getPaymentMethodLabel('INSTAPAY')}}</mat-option>
+            <mat-option value="WALLET">{{getPaymentMethodLabel('WALLET')}}</mat-option>
           </mat-select>
         </mat-form-field>
 
+        <!-- Customer Phone -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>هاتف العميل (اختياري)</mat-label>
+          <mat-label>{{'SALES.CUSTOMER_PHONE' | translate}}</mat-label>
           <input matInput [(ngModel)]="customerPhone" placeholder="01xxxxxxxxx">
         </mat-form-field>
 
+        <!-- Total Amount -->
         <div class="total-row">
-          <span>الإجمالي النهائي:</span>
-          <span class="total-amount">{{getTotalAmount() | number:'1.2-2'}} ج.م</span>
+          <span>{{'SALES.GRAND_TOTAL' | translate}}</span>
+          <span class="total-amount">{{formatCurrency(totalAmount())}}</span>
         </div>
 
+        <!-- Action Buttons -->
         <div class="action-buttons">
           <button mat-button color="warn" (click)="onCancel()" [disabled]="loading()" class="action-btn">
             <mat-icon>cancel</mat-icon>
-            <span>إلغاء</span>
+            <span>{{'COMMON.CANCEL' | translate}}</span>
           </button>
-          <button mat-button color="accent" (click)="clearCart()" [disabled]="loading() || cartItems().length === 0"
+          <button mat-button color="accent" (click)="clearCart()" [disabled]="loading() || isCartEmpty()"
             class="action-btn">
             <mat-icon>clear_all</mat-icon>
-            <span>مسح الكل</span>
+            <span>{{'COMMON.CLEAR' | translate}}</span>
           </button>
         </div>
 
-        <button mat-raised-button color="primary" (click)="onSubmit()"
-          [disabled]="loading() || cartItems().length === 0" class="submit-btn">
+        <!-- Submit Button -->
+        <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isSubmitDisabled()"
+          class="submit-btn">
           @if (!loading()) {
           <mat-icon>check_circle</mat-icon>
           } @else {
           <mat-spinner diameter="20"></mat-spinner>
           }
-          <span>{{loading() ? 'جاري...' : 'إتمام البيع'}}</span>
+          <span>{{loading() ? ('COMMON.PROCESSING' | translate) : ('SALES.PROCESS_SALE' | translate)}}</span>
         </button>
       </mat-card-content>
     </mat-card>
+
   </div>
 </div>

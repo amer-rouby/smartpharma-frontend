@@ -923,3 +923,12 @@
   white-space: nowrap;
   border: 0;
 }
+button.active {
+  background: rgba(102, 126, 234, 0.1);
+  font-weight: 600;
+
+  mat-icon:last-child {
+    margin-right: auto;
+    color: #667eea;
+  }
+}
