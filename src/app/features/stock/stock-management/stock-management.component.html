@@ -1,47 +1,119 @@
 <div class="stock-container">
-  <app-page-header title="إدارة المخزون" subtitle="متابعة المخزون والدفعات" icon="storage">
+  <app-page-header [title]="'STOCK.MANAGE' | translate" [subtitle]="'STOCK.MANAGE_SUBTITLE' | translate" icon="storage">
+    <button mat-raised-button color="primary" routerLink="/stock/add-batch">
+      <mat-icon>add</mat-icon>
+      {{'STOCK.ADD_BATCH' | translate}}
+    </button>
   </app-page-header>
 
   <mat-card>
     <mat-card-content>
-      <table mat-table [dataSource]="stockBatches">
-        <ng-container matColumnDef="product">
-          <th mat-header-cell *matHeaderCellDef> المنتج </th>
-          <td mat-cell *matCellDef="let item"> {{item.productName}} </td>
-        </ng-container>
 
-        <ng-container matColumnDef="batch">
-          <th mat-header-cell *matHeaderCellDef> رقم الدفعة </th>
-          <td mat-cell *matCellDef="let item"> {{item.batchNumber}} </td>
-        </ng-container>
+      <!-- Search Field -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>{{'STOCK.SEARCH_PLACEHOLDER' | translate}}</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
+          [placeholder]="'STOCK.SEARCH_PLACEHOLDER' | translate">
+        <mat-icon matPrefix>search</mat-icon>
+        @if (searchQuery()) {
+        <button mat-icon-button matSuffix (click)="clearSearch()" type="button">
+          <mat-icon>close</mat-icon>
+        </button>
+        }
+      </mat-form-field>
 
-        <ng-container matColumnDef="quantity">
-          <th mat-header-cell *matHeaderCellDef> الكمية </th>
-          <td mat-cell *matCellDef="let item"> {{item.quantityCurrent}} </td>
-        </ng-container>
+      <!-- Loading State -->
+      @if (loading()) {
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+      }
 
-        <ng-container matColumnDef="expiry">
-          <th mat-header-cell *matHeaderCellDef> تاريخ الصلاحية </th>
-          <td mat-cell *matCellDef="let item"> {{item.expiryDate | date:'yyyy-MM-dd'}} </td>
-        </ng-container>
+      <!-- Stock Table -->
+      @if (!loading()) {
+      <div class="table-container">
+        <table mat-table [dataSource]="stockBatches()" class="data-table">
 
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef> الحالة </th>
-          <td mat-cell *matCellDef="let item"> {{item.status}} </td>
-        </ng-container>
+          <!-- Product Column -->
+          <ng-container matColumnDef="product">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
+            <td mat-cell *matCellDef="let item">
+              <strong>{{item.productName}}</strong>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef> الإجراءات </th>
-          <td mat-cell *matCellDef="let item">
-            <button mat-icon-button color="primary">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+          <!-- Batch Column -->
+          <ng-container matColumnDef="batch">
+            <th mat-header-cell *matHeaderCellDef>{{'STOCK.BATCH_NUMBER' | translate}}</th>
+            <td mat-cell *matCellDef="let item">
+              <code>{{item.batchNumber}}</code>
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+          <!-- Quantity Column -->
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>{{'SALES.QUANTITY' | translate}}</th>
+            <td mat-cell *matCellDef="let item">
+              <mat-chip [color]="getStockChipColor(item.quantityCurrent)">
+                {{item.quantityCurrent}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Expiry Column -->
+          <ng-container matColumnDef="expiry">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.EXPIRY_DATE' | translate}}</th>
+            <td mat-cell *matCellDef="let item">
+              <span [class.expired]="item.status === 'EXPIRED'">
+                {{formatDate(item.expiryDate)}}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.STATUS' | translate}}</th>
+            <td mat-cell *matCellDef="let item">
+              <mat-chip [color]="getStatusColor(item.status)">
+                {{getStatusLabel(item.status)}}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="action-buttons">
+                <button mat-icon-button color="primary" (click)="onEdit(item)" [matTooltip]="'COMMON.EDIT' | translate">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="onAdjust(item)"
+                  [matTooltip]="'STOCK.ADJUST' | translate">
+                  <mat-icon>adjust</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Empty State -->
+        @if (isEmpty()) {
+        <div class="empty-state">
+          <mat-icon>storage</mat-icon>
+          <p>{{'STOCK.NO_STOCK' | translate}}</p>
+          <button mat-raised-button color="primary" routerLink="/stock/add-batch">
+            <mat-icon>add</mat-icon>
+            {{'STOCK.ADD_FIRST_BATCH' | translate}}
+          </button>
+        </div>
+        }
+      </div>
+      }
     </mat-card-content>
   </mat-card>
 </div>

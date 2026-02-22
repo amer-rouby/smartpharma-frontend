@@ -1,5 +1,3 @@
-// src/app/features/dashboard/dashboard.component.scss
-
 /* =========================================
    📊 Dashboard Component Styles
    ========================================= */
@@ -7,8 +5,6 @@
 .dashboard-container {
   padding: 24px;
   direction: rtl;
-  // ✅ مهم: متستخدمش min-height: calc(100vh - 64px) هنا
-  // لأن الـ main-content هو اللي عنده الـ height
   min-height: auto;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
 }
@@ -19,9 +15,6 @@
   gap: 24px;
 }
 
-// =========================================
-// ✅ Loading & Error States
-// =========================================
 .loading-state,
 .error-state {
   display: flex;
@@ -51,9 +44,6 @@
   }
 }
 
-// =========================================
-// ✅ Statistics Cards Grid
-// =========================================
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -126,9 +116,6 @@
   fill: white !important;
 }
 
-// =========================================
-// ✅ Quick Actions Card
-// =========================================
 .quick-actions-card {
   border-radius: 16px;
   background: white;
@@ -185,9 +172,6 @@
   }
 }
 
-// =========================================
-// ✅ Tables Grid
-// =========================================
 .tables-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -243,7 +227,6 @@
     border-bottom: 1px solid #e9ecef;
   }
 
-  // Column styles
   .rank-badge {
     display: inline-flex;
     align-items: center;
@@ -292,9 +275,6 @@
   }
 }
 
-// =========================================
-// ✅ Empty State
-// =========================================
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -323,9 +303,6 @@
   }
 }
 
-// =========================================
-// ✅ Alerts Section
-// =========================================
 .alerts-card {
   border-radius: 16px;
   background: white;
@@ -423,9 +400,6 @@
   }
 }
 
-// =========================================
-// ✅ Responsive Design
-// =========================================
 @media (max-width: 1024px) {
   .tables-grid {
     grid-template-columns: 1fr;
@@ -469,9 +443,6 @@
   }
 }
 
-// =========================================
-// ✅ Snackbar Custom Styles
-// =========================================
 ::ng-deep {
   .info-snackbar {
     background: #3b82f6 !important;

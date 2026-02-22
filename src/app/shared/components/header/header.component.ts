@@ -1,18 +1,9 @@
-import {
-  Component,
-  EventEmitter,
-  Output,
-  inject,
-  signal,
-  computed,
-  OnInit,
-  DestroyRef
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Output, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MaterialModule } from '../../material.module';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationModel, NotificationService } from '../../../core/services/notification.service';
 import { User } from '../../../core/models';
@@ -21,10 +12,10 @@ import { User } from '../../../core/models';
   selector: 'app-header',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     RouterLink,
-    MaterialModule
+    MaterialModule,
+    TranslateModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -34,14 +25,14 @@ export class HeaderComponent implements OnInit {
 
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
+  private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
-  // ✅ Signals
   readonly currentUser = signal<User | null>(null);
   readonly notifications = signal<any[]>([]);
   readonly searchQuery = signal<string>('');
+  readonly currentLang = signal<string>('ar');
 
-  // ✅ Computed Signals (استخدم دول في الـ HTML)
   readonly notificationCount = computed(() =>
     this.notifications().filter(n => !n.read).length
   );
@@ -62,11 +53,10 @@ export class HeaderComponent implements OnInit {
     this.currentUser()?.email ?? 'user@smartpharma.com'
   );
 
-  // ✅ Quick Actions
   readonly quickActions = [
-    { route: '/products/new', icon: 'inventory_2', label: 'منتج جديد', color: 'primary' },
-    { route: '/sales/pos', icon: 'point_of_sale', label: 'عملية بيع', color: 'accent' },
-    { route: '/stock/adjustment', icon: 'adjust', label: 'تعديل مخزون', color: 'warn' }
+    { route: '/products/new', icon: 'inventory_2', label: 'NAV.PRODUCTS_ADD', color: 'primary' },
+    { route: '/sales/pos', icon: 'point_of_sale', label: 'NAV.SALES_POS', color: 'accent' },
+    { route: '/stock/adjustment', icon: 'adjust', label: 'NAV.STOCK_ALERTS', color: 'warn' }
   ];
 
   ngOnInit(): void {
@@ -75,6 +65,12 @@ export class HeaderComponent implements OnInit {
       .subscribe(user => this.currentUser.set(user));
 
     this.loadNotifications();
+
+    // ✅ Load saved language
+    const saved = localStorage.getItem('language');
+    if (saved === 'ar' || saved === 'en') {
+      this.currentLang.set(saved);
+    }
   }
 
   private loadNotifications(): void {
@@ -82,10 +78,7 @@ export class HeaderComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data: NotificationModel[]) => {
-          this.notifications.set(data.map(n => ({
-            ...n,
-            read: false // ✅ مهم عشان متحصلش خطأ
-          })));
+          this.notifications.set(data.map(n => ({ ...n, read: false })));
         },
         error: (error) => console.error('Error loading notifications:', error)
       });
@@ -97,11 +90,8 @@ export class HeaderComponent implements OnInit {
 
   markAsRead(notificationId: number): void {
     this.notifications.update(notifications =>
-      notifications.map(n =>
-        n.id === notificationId ? { ...n, read: true } : n
-      )
+      notifications.map(n => n.id === notificationId ? { ...n, read: true } : n)
     );
-
     this.notificationService.markAsRead(notificationId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe();
@@ -111,7 +101,6 @@ export class HeaderComponent implements OnInit {
     this.notifications.update(notifications =>
       notifications.map(n => ({ ...n, read: true }))
     );
-
     this.notificationService.markAllAsRead()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe();
@@ -133,5 +122,14 @@ export class HeaderComponent implements OnInit {
       this.clearSearch();
       event.preventDefault();
     }
+  }
+
+  // ✅ Change Language Method
+  changeLanguage(lang: 'ar' | 'en'): void {
+    this.currentLang.set(lang);
+    this.translate.use(lang);
+    localStorage.setItem('language', lang);
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
   }
 }

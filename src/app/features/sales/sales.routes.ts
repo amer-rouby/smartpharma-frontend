@@ -1,7 +1,4 @@
-
 import { Routes } from '@angular/router';
-import { SalesFormComponent } from './sales-form/sales-form.component';
-import { SalesHistoryComponent } from './sales-history/sales-history.component';
 
 export const SALES_ROUTES: Routes = [
   {
@@ -10,13 +7,13 @@ export const SALES_ROUTES: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'pos',  // ✅ استخدم SalesFormComponent بس
-    component: SalesFormComponent,
-    title: 'نقطة البيع | صيدليتي الذكية'
+    path: 'pos',
+    loadComponent: () => import('./sales-form/sales-form.component')
+      .then(m => m.SalesFormComponent)
   },
   {
     path: 'history',
-    component: SalesHistoryComponent,
-    title: 'سجل المبيعات | صيدليتي الذكية'
+    loadComponent: () => import('./sales-history/sales-history.component')
+      .then(m => m.SalesHistoryComponent)
   }
 ];

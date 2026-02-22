@@ -1,23 +1,24 @@
 import { Routes } from '@angular/router';
-import { ProductListComponent } from './product-list/product-list.component';  // ✅ الصحيح
-import { ProductFormComponent } from './product-form/product-form.component';  // ✅ الصحيح
-import { ProductCategoriesComponent } from './product-categories/product-categories.component';
 
 export const PRODUCTS_ROUTES: Routes = [
   {
     path: '',
-    component: ProductListComponent
+    loadComponent: () => import('./product-list/product-list.component')
+      .then(m => m.ProductListComponent)
   },
   {
     path: 'new',
-    component: ProductFormComponent
+    loadComponent: () => import('./product-form/product-form.component')
+      .then(m => m.ProductFormComponent)
   },
   {
     path: 'edit/:id',
-    component: ProductFormComponent
+    loadComponent: () => import('./product-form/product-form.component')
+      .then(m => m.ProductFormComponent)
   },
   {
     path: 'categories',
-    component: ProductCategoriesComponent
+    loadComponent: () => import('./product-categories/product-categories.component')
+      .then(m => m.ProductCategoriesComponent)
   }
 ];

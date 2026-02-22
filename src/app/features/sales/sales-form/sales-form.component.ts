@@ -1,29 +1,17 @@
-// ✅ تأكد إن الـ imports صحيحة
-import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { Observable, startWith, map, BehaviorSubject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, BehaviorSubject, startWith, map } from 'rxjs';
+import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
 import { SalesService } from '../../../core/services/sales.service';
-import Swal from 'sweetalert2';
 import { Product } from '../../../core/models/product.model';
 import { MaterialModule } from '../../../shared/material.module';
+import { LanguageService } from '../../../core/services/language.service';
 
-
-// ✅ عرف الـ interface دي
 interface CartItem {
   product: Product;
   quantity: number;
@@ -31,82 +19,98 @@ interface CartItem {
   totalPrice: number;
 }
 
+interface SaleRequest {
+  items: Array<{
+    productId: number;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+  }>;
+  discountAmount: number;
+  paymentMethod: string;
+  customerPhone: string;
+  totalAmount: number;
+}
+
 @Component({
   selector: 'app-sales-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MaterialModule,
-    PageHeaderComponent
-  ],
+  imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent],
   templateUrl: './sales-form.component.html',
-  styleUrls: ['./sales-form.component.scss']
+  styleUrl: './sales-form.component.scss'
 })
 export class SalesFormComponent implements OnInit {
-  displayedColumns: string[] = ['product', 'quantity', 'price', 'total', 'actions'];
-  cartItems = signal<CartItem[]>([]);
-  productControl = new FormControl();
-  filteredProducts!: Observable<Product[]>;
-  products = signal<Product[]>([]);
-  customerPhone = signal('');
-  paymentMethod = signal('CASH');
-  discount = signal(0);
-  loading = signal(false);
-  allProducts: Product[] = [];
-  private filteredProductsSubject = new BehaviorSubject<Product[]>([]);
-  public currentFilteredProducts$ = this.filteredProductsSubject.asObservable();
+  private readonly productService = inject(ProductService);
+  private readonly salesService = inject(SalesService);
+  private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
+  private readonly languageService = inject(LanguageService);
 
-  constructor(
-    private productService: ProductService,
-    private salesService: SalesService,
-    private router: Router,
-    private snackBar: MatSnackBar
-  ) { }
+  readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
+  readonly cartItems = signal<CartItem[]>([]);
+  readonly productControl = new FormControl();
+  readonly products = signal<Product[]>([]);
+  readonly customerPhone = signal('');
+  readonly paymentMethod = signal('CASH');
+  readonly discount = signal(0);
+  readonly loading = signal(false);
+
+  private readonly allProducts = signal<Product[]>([]);
+  private readonly filteredProductsSubject = new BehaviorSubject<Product[]>([]);
+  readonly currentFilteredProducts$ = this.filteredProductsSubject.asObservable();
+
+  readonly filteredProducts: Observable<Product[]> = this.productControl.valueChanges.pipe(
+    startWith(''),
+    map(value => {
+      const searchValue = typeof value === 'string' ? value : value?.name || '';
+      const filtered = this._filterProducts(searchValue);
+      this.filteredProductsSubject.next(filtered);
+      return filtered;
+    })
+  );
+
+  readonly subtotal = computed(() =>
+    this.cartItems().reduce((sum, item) => sum + item.totalPrice, 0)
+  );
+
+  readonly totalAmount = computed(() =>
+    Math.max(0, this.subtotal() - this.discount())
+  );
+
+  readonly isCartEmpty = computed(() => this.cartItems().length === 0);
+  readonly isSubmitDisabled = computed(() =>
+    this.loading() || this.isCartEmpty() || this.totalAmount() <= 0
+  );
 
   ngOnInit(): void {
     this.loadProducts();
-    this.filteredProducts = this.productControl.valueChanges.pipe(
-      startWith(''),
-      map(value => {
-        const searchValue = typeof value === 'string' ? value : value?.name || '';
-        const filtered = this._filterProducts(searchValue);
-        this.filteredProductsSubject.next(filtered);
-        return filtered;
-      })
-    );
-    this.filteredProductsSubject.next(this.allProducts.slice(0, 10));
+    this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
   }
 
   private _filterProducts(value: string): Product[] {
-    if (!value) {
-      return this.allProducts.slice(0, 10);
-    }
+    if (!value) return this.allProducts().slice(0, 10);
     const filterValue = value.toLowerCase();
-    return this.allProducts.filter(product =>
-      product.name.toLowerCase().includes(filterValue) ||
-      product.barcode?.toLowerCase().includes(filterValue)
-    ).slice(0, 10);
+    return this.allProducts()
+      .filter(p =>
+        p.name.toLowerCase().includes(filterValue) ||
+        p.barcode?.toLowerCase().includes(filterValue)
+      )
+      .slice(0, 10);
   }
 
   loadProducts(): void {
     this.productService.getProducts().subscribe({
       next: (response: any) => {
-        console.log('Products Response:', response);
-        this.allProducts = response.data || [];
-        this.allProducts = this.allProducts.map(p => ({
+        const data = (response.data || []).map((p: Product) => ({
           ...p,
           sellPrice: p.sellPrice || 0
         }));
-        this.products.set(this.allProducts);
-        this.filteredProductsSubject.next(this.allProducts.slice(0, 10));
-        console.log('Products with prices:', this.allProducts);
+        this.allProducts.set(data);
+        this.products.set(data);
+        this.filteredProductsSubject.next(data.slice(0, 10));
       },
-      error: (error) => {
-        console.error('Error loading products:', error);
-        this.snackBar.open('حدث خطأ أثناء تحميل المنتجات', 'إغلاق', { duration: 3000 });
-      }
+      error: () => this.showError('PRODUCTS.LOAD_ERROR')
     });
   }
 
@@ -116,35 +120,28 @@ export class SalesFormComponent implements OnInit {
 
   onProductSelected(product: Product): void {
     if (!product) return;
-    console.log('Selected product:', product);
-    console.log('Product sellPrice:', product.sellPrice);
     this.addProductToCart(product);
-    setTimeout(() => {
-      this.productControl.setValue('');
-    }, 100);
+    setTimeout(() => this.productControl.setValue(''), 100);
   }
 
   onAddFirstProduct(): void {
     const filtered = this.filteredProductsSubject.getValue();
-    if (filtered && filtered.length > 0) {
-      this.onProductSelected(filtered[0]);
-    }
+    if (filtered?.length > 0) this.onProductSelected(filtered[0]);
   }
 
   isAddButtonDisabled(): boolean {
-    const filtered = this.filteredProductsSubject.getValue();
-    return !filtered || filtered.length === 0;
+    return !this.filteredProductsSubject.getValue()?.length;
   }
 
   addProductToCart(product: Product): void {
     if (product.totalStock <= 0) {
-      this.snackBar.open('المنتج غير متوفر في المخزون', 'إغلاق', { duration: 3000 });
+      this.showError('SALES.INSUFFICIENT_STOCK');
       return;
     }
 
     const unitPrice = product.sellPrice || 0;
     if (unitPrice === 0) {
-      this.snackBar.open(`المنتج "${product.name}" ليس له سعر!`, 'إغلاق', { duration: 3000 });
+      this.showError('SALES.NO_PRICE', { name: product.name });
       return;
     }
 
@@ -153,35 +150,26 @@ export class SalesFormComponent implements OnInit {
 
     if (existingItem) {
       if (existingItem.quantity >= product.totalStock) {
-        this.snackBar.open('الكمية المطلوبة تتجاوز المخزون المتاح', 'إغلاق', { duration: 3000 });
+        this.showError('SALES.QUANTITY_EXCEEDED');
         return;
       }
-      const updatedItems = currentItems.map(item =>
+      this.cartItems.set(currentItems.map(item =>
         item.product.id === product.id
-          ? {
-            ...item,
-            quantity: item.quantity + 1,
-            totalPrice: (item.quantity + 1) * item.unitPrice
-          }
+          ? { ...item, quantity: item.quantity + 1, totalPrice: (item.quantity + 1) * item.unitPrice }
           : item
-      );
-      this.cartItems.set(updatedItems);
+      ));
     } else {
-      const newItem: CartItem = {
-        product: product,
+      this.cartItems.set([...currentItems, {
+        product,
         quantity: 1,
-        unitPrice: unitPrice,
+        unitPrice,
         totalPrice: unitPrice
-      };
-      this.cartItems.set([...currentItems, newItem]);
+      }]);
     }
-    console.log('Cart after adding:', this.cartItems());
   }
 
   removeFromCart(index: number): void {
-    const currentItems = this.cartItems();
-    const updatedItems = currentItems.filter((_, i) => i !== index);
-    this.cartItems.set(updatedItems);
+    this.cartItems.set(this.cartItems().filter((_, i) => i !== index));
   }
 
   updateQuantity(item: CartItem, quantity: number): void {
@@ -190,41 +178,36 @@ export class SalesFormComponent implements OnInit {
       return;
     }
     if (quantity > item.product.totalStock) {
-      this.snackBar.open('الكمية المطلوبة تتجاوز المخزون المتاح', 'إغلاق', { duration: 3000 });
+      this.showError('SALES.QUANTITY_EXCEEDED');
       return;
     }
-    const currentItems = this.cartItems();
-    const updatedItems = currentItems.map(cartItem =>
+    this.cartItems.set(this.cartItems().map(cartItem =>
       cartItem.product.id === item.product.id
         ? { ...cartItem, quantity, totalPrice: quantity * cartItem.unitPrice }
         : cartItem
-    );
-    this.cartItems.set(updatedItems);
+    ));
   }
 
-  getSubtotal(): number {
-    const total = this.cartItems().reduce((sum, item) => sum + item.totalPrice, 0);
-    console.log('Subtotal:', total);
-    return total;
-  }
-
-  getTotalAmount(): number {
-    return Math.max(0, this.getSubtotal() - this.discount());
+  clearCart(): void {
+    this.cartItems.set([]);
+    this.discount.set(0);
+    this.customerPhone.set('');
+    this.productControl.setValue('');
   }
 
   onSubmit(): void {
-    if (this.cartItems().length === 0) {
-      this.snackBar.open('يرجى إضافة منتجات على الأقل', 'إغلاق', { duration: 3000 });
+    if (this.isCartEmpty()) {
+      this.showError('SALES.EMPTY_CART');
       return;
     }
-    if (this.getTotalAmount() <= 0) {
-      this.snackBar.open('المبلغ الإجمالي يجب أن يكون أكبر من صفر', 'إغلاق', { duration: 3000 });
+    if (this.totalAmount() <= 0) {
+      this.showError('SALES.INVALID_TOTAL');
       return;
     }
 
     this.loading.set(true);
 
-    const saleRequest = {
+    const saleRequest: SaleRequest = {
       items: this.cartItems().map(item => ({
         productId: item.product.id,
         quantity: item.quantity,
@@ -234,61 +217,71 @@ export class SalesFormComponent implements OnInit {
       discountAmount: this.discount(),
       paymentMethod: this.paymentMethod(),
       customerPhone: this.customerPhone(),
-      totalAmount: this.getTotalAmount() + this.discount()
+      totalAmount: this.subtotal()
     };
-
-    console.log('Sale Request:', saleRequest);
 
     this.salesService.createSale(saleRequest).subscribe({
       next: (response: any) => {
         this.loading.set(false);
         Swal.fire({
           icon: 'success',
-          title: 'تمت عملية البيع بنجاح',
-          text: `رقم الفاتورة: ${response.data?.invoiceNumber || 'N/A'}`,
+          title: this.translate.instant('SALES.SUCCESS_TITLE'),
+          text: `${this.translate.instant('SALES.INVOICE_NUMBER')}: ${response.data?.invoiceNumber || 'N/A'}`,
           timer: 3000,
           showConfirmButton: false
         });
-        this.cartItems.set([]);
-        this.productControl.setValue('');
-        this.discount.set(0);
-        this.customerPhone.set('');
+        this.clearCart();
         this.router.navigate(['/sales/history']);
       },
       error: (error: any) => {
         this.loading.set(false);
-        console.error('Sale error:', error);
-        this.snackBar.open(error.error?.message || 'حدث خطأ أثناء عملية البيع', 'إغلاق', { duration: 3000 });
+        this.showError(error.error?.message || 'SALES.ERROR');
       }
     });
   }
 
   onCancel(): void {
-    if (this.cartItems().length > 0) {
+    if (!this.isCartEmpty()) {
       Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: 'سيتم إلغاء الفاتورة الحالية',
+        title: this.translate.instant('COMMON.CONFIRM'),
+        text: this.translate.instant('SALES.CANCEL_CONFIRM'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'نعم، إلغاء',
-        cancelButtonText: 'لا'
+        confirmButtonText: this.translate.instant('COMMON.YES'),
+        cancelButtonText: this.translate.instant('COMMON.CANCEL')
       }).then((result) => {
-        if (result.isConfirmed) {
-          this.cartItems.set([]);
-          this.discount.set(0);
-          this.customerPhone.set('');
-          this.productControl.setValue('');
-        }
+        if (result.isConfirmed) this.clearCart();
       });
     }
   }
 
-  clearCart(): void {
-    this.cartItems.set([]);
-    this.discount.set(0);
-    this.customerPhone.set('');
-    this.productControl.setValue('');
+  formatCurrency(amount: number): string {
+    const lang = this.languageService.getCurrentLanguage();
+    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
+      style: 'currency',
+      currency: 'EGP',
+      minimumFractionDigits: 2
+    }).format(amount);
+  }
+
+  getCurrencySuffix(): string {
+    return this.languageService.getCurrentLanguage() === 'ar' ? 'ج.م' : 'EGP';
+  }
+
+  getPaymentMethodLabel(method: string): string {
+    return this.translate.instant(`SALES.${method}`);
+  }
+
+  getStockLabel(stock: number): string {
+    return this.translate.instant('SALES.AVAILABLE', { count: stock });
+  }
+
+  private showError(key: string, params?: any): void {
+    this.snackBar.open(this.translate.instant(key, params), this.translate.instant('COMMON.CLOSE'), {
+      duration: 3000,
+      panelClass: ['error-snackbar']
+    });
   }
 }

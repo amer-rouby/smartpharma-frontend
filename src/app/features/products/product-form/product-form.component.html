@@ -1,105 +1,119 @@
 <div class="product-form-container">
-  <app-page-header [title]="isEditMode ? 'تعديل منتج' : 'إضافة منتج جديد'"
-    [subtitle]="isEditMode ? 'تحديث بيانات المنتج' : 'إدخال بيانات المنتج الجديد'" icon="inventory_2">
+  <app-page-header [title]="pageTitle() | translate" [subtitle]="pageSubtitle() | translate" icon="inventory_2">
   </app-page-header>
 
   <mat-card>
     <mat-card-content>
-      @if (loading && isEditMode) {
+      @if (loading() && isEditMode()) {
       <div class="loading-state">
         <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-        <p>جاري تحميل البيانات...</p>
+        <p>{{'COMMON.LOADING' | translate}}</p>
       </div>
       }
 
-      @if (!loading || !isEditMode) {
+      @if (!loading() || !isEditMode()) {
       <form (ngSubmit)="onSubmit()">
         <div class="form-grid">
+
+          <!-- Product Name -->
           <mat-form-field appearance="outline">
-            <mat-label>اسم المنتج *</mat-label>
-            <input matInput [(ngModel)]="product.name" name="name" required placeholder="مثال: بنادول إكسترا">
+            <mat-label>{{'PRODUCTS.NAME' | translate}} *</mat-label>
+            <input matInput [(ngModel)]="product().name" name="name" required
+              [placeholder]="'PRODUCTS.NAME_PLACEHOLDER' | translate">
             <mat-icon matPrefix>inventory_2</mat-icon>
           </mat-form-field>
 
+          <!-- Scientific Name -->
           <mat-form-field appearance="outline">
-            <mat-label>الاسم العلمي</mat-label>
-            <input matInput [(ngModel)]="product.scientificName" name="scientificName" placeholder="مثال: Paracetamol">
+            <mat-label>{{'PRODUCTS.SCIENTIFIC_NAME' | translate}}</mat-label>
+            <input matInput [(ngModel)]="product().scientificName" name="scientificName"
+              [placeholder]="'PRODUCTS.SCIENTIFIC_NAME_PLACEHOLDER' | translate">
             <mat-icon matPrefix>science</mat-icon>
           </mat-form-field>
 
+          <!-- Barcode -->
           <mat-form-field appearance="outline">
-            <mat-label>الباركود</mat-label>
-            <input matInput [(ngModel)]="product.barcode" name="barcode" placeholder="الباركود">
+            <mat-label>{{'PRODUCTS.BARCODE' | translate}}</mat-label>
+            <input matInput [(ngModel)]="product().barcode" name="barcode"
+              [placeholder]="'PRODUCTS.BARCODE_PLACEHOLDER' | translate">
             <mat-icon matPrefix>qr_code_2</mat-icon>
             <button mat-icon-button matSuffix type="button" (click)="regenerateBarcode()"
-              matTooltip="توليد باركود جديد">
+              [matTooltip]="'PRODUCTS.REGENERATE_BARCODE' | translate">
               <mat-icon>refresh</mat-icon>
             </button>
           </mat-form-field>
 
+          <!-- Category -->
           <mat-form-field appearance="outline">
-            <mat-label>التصنيف</mat-label>
-            <mat-select [(ngModel)]="product.category" name="category">
+            <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
+            <mat-select [(ngModel)]="product().category" name="category">
               @for (cat of categories; track cat) {
-              <mat-option [value]="cat">{{cat}}</mat-option>
+              <mat-option [value]="cat">{{translateCategory(cat)}}</mat-option>
               }
             </mat-select>
             <mat-icon matPrefix>category</mat-icon>
           </mat-form-field>
 
+          <!-- Unit Type -->
           <mat-form-field appearance="outline">
-            <mat-label>نوع الوحدة</mat-label>
-            <mat-select [(ngModel)]="product.unitType" name="unitType">
+            <mat-label>{{'PRODUCTS.UNIT_TYPE' | translate}}</mat-label>
+            <mat-select [(ngModel)]="product().unitType" name="unitType">
               @for (unit of unitTypes; track unit.value) {
-              <mat-option [value]="unit.value">{{unit.label}}</mat-option>
+              <mat-option [value]="unit.value">{{translateUnitType(unit.label)}}</mat-option>
               }
             </mat-select>
             <mat-icon matPrefix>package</mat-icon>
           </mat-form-field>
 
+          <!-- Min Stock Level -->
           <mat-form-field appearance="outline">
-            <mat-label>حد المخزون الأدنى</mat-label>
-            <input matInput type="number" min="0" [(ngModel)]="product.minStockLevel" name="minStockLevel">
+            <mat-label>{{'PRODUCTS.MIN_STOCK_LEVEL' | translate}}</mat-label>
+            <input matInput type="number" min="0" [(ngModel)]="product().minStockLevel" name="minStockLevel">
             <mat-icon matPrefix>warning</mat-icon>
           </mat-form-field>
 
+          <!-- Buy Price -->
           <mat-form-field appearance="outline">
-            <mat-label>سعر الشراء</mat-label>
-            <input matInput type="number" min="0" step="0.01" [(ngModel)]="product.buyPrice" name="buyPrice">
-            <span matTextSuffix>ج.م</span>
+            <mat-label>{{'PRODUCTS.BUY_PRICE' | translate}}</mat-label>
+            <input matInput type="number" min="0" step="0.01" [(ngModel)]="product().buyPrice" name="buyPrice">
+            <span matTextSuffix>{{languageService.getCurrentLanguage() === 'ar' ? 'ج.م' : 'EGP'}}</span>
             <mat-icon matPrefix>payments</mat-icon>
           </mat-form-field>
 
+          <!-- Sell Price -->
           <mat-form-field appearance="outline">
-            <mat-label>سعر البيع *</mat-label>
-            <input matInput type="number" min="0.01" step="0.01" [(ngModel)]="product.sellPrice" name="sellPrice"
+            <mat-label>{{'PRODUCTS.SELL_PRICE' | translate}} *</mat-label>
+            <input matInput type="number" min="0.01" step="0.01" [(ngModel)]="product().sellPrice" name="sellPrice"
               required>
-            <span matTextSuffix>ج.م</span>
+            <span matTextSuffix>{{languageService.getCurrentLanguage() === 'ar' ? 'ج.م' : 'EGP'}}</span>
             <mat-icon matPrefix>attach_money</mat-icon>
           </mat-form-field>
         </div>
 
+        <!-- Prescription Required -->
         <div class="checkbox-section">
-          <mat-checkbox [(ngModel)]="product.prescriptionRequired" name="prescriptionRequired" color="primary">
+          <mat-checkbox [(ngModel)]="product().prescriptionRequired" name="prescriptionRequired" color="primary">
             <div class="checkbox-content">
               <mat-icon>medication</mat-icon>
-              <span>يتطلب وصفة طبية</span>
+              <span>{{'PRODUCTS.PRESCRIPTION_REQUIRED' | translate}}</span>
             </div>
           </mat-checkbox>
         </div>
 
+        <!-- Form Actions -->
         <div class="form-actions">
-          <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading">
+          <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading()">
             <mat-icon>close</mat-icon>
-            <span>إلغاء</span>
+            <span>{{'COMMON.CANCEL' | translate}}</span>
           </button>
-          <button mat-raised-button color="primary" type="submit" [disabled]="loading">
-            @if (!loading) {
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+            @if (!loading()) {
             <mat-icon>save</mat-icon>
             } @else {
             <mat-spinner diameter="20"></mat-spinner>
             }
-            <span>{{loading ? 'جاري الحفظ...' : (isEditMode ? 'تحديث' : 'إضافة')}}</span>
+            <span>{{loading() ? ('COMMON.SAVING' | translate) : (isEditMode() ? ('COMMON.UPDATE' | translate) :
+              ('COMMON.ADD' | translate))}}</span>
           </button>
         </div>
       </form>

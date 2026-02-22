@@ -1,6 +1,10 @@
 <footer class="footer">
   <div class="footer-content">
-    <p>&copy; {{currentYear}} صيدليتي الذكية - جميع الحقوق محفوظة</p>
-    <p class="version">الإصدار {{version}}</p>
+    <p>
+      &copy; {{currentYear()}} {{'APP.NAME' | translate}} - {{'FOOTER.ALL_RIGHTS_RESERVED' | translate}}
+    </p>
+    <p class="version">
+      {{'FOOTER.VERSION' | translate}} {{version()}}
+    </p>
   </div>
 </footer>
