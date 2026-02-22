@@ -1,28 +1,45 @@
-/* Global Styles */
+/* =========================================
+   🎨 SmartPharma - Global Styles
+   📁 File: src/styles.scss
+   🔧 Refactored & Fixed
+   ========================================= */
+
+/* =========================================
+   📦 Angular Material Setup (M3 Compatible)
+   ========================================= */
 @use '@angular/material' as mat;
 
+/* =========================================
+   🌐 Global Base Styles
+   ========================================= */
 html,
 body {
   height: 100%;
   margin: 0;
+  padding: 0;
   font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   background: #f5f7fa;
+
+  /* ✅ مهم جداً: overflow-x: hidden بس عشان متحصلش مشاكل في الـ layout */
+  overflow-x: hidden;
 }
 
+/* =========================================
+   🔤 Fonts Import
+   ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
 
 body {
   font-family: 'Cairo', sans-serif;
   background-color: #f5f7fa;
-  margin: 0;
-  padding: 0;
 }
 
-/* Material Theme - Angular 17+ M3 Compatible */
+/* =========================================
+   🎨 Material Theme Configuration (M3)
+   ========================================= */
 @include mat.core();
 
-/* Define theme using M3 API */
 $theme: mat.define-theme((color: (theme-type: light,
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
@@ -33,10 +50,11 @@ $theme: mat.define-theme((color: (theme-type: light,
       density: (scale: 0,
       )));
 
-/* Include theme styles for all components */
 @include mat.all-component-themes($theme);
 
-/* Custom Scrollbar */
+/* =========================================
+   🔄 Custom Scrollbar Styles
+   ========================================= */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -50,13 +68,15 @@ $theme: mat.define-theme((color: (theme-type: light,
 ::-webkit-scrollbar-thumb {
   background: #667eea;
   border-radius: 4px;
+
+  &:hover {
+    background: #764ba2;
+  }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #764ba2;
-}
-
-/* Utility Classes */
+/* =========================================
+   🧰 Utility Classes
+   ========================================= */
 .full-width {
   width: 100%;
 }
@@ -70,7 +90,9 @@ $theme: mat.define-theme((color: (theme-type: light,
   min-height: calc(100vh - 64px);
 }
 
-/* Dashboard Stats Cards */
+/* =========================================
+   📊 Dashboard - Stats Cards
+   ========================================= */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -132,7 +154,42 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* Quick Actions */
+/* ✅ Animation for Stats Cards */
+.stat-card {
+  animation: fadeInUp 0.5s ease-out;
+
+  &:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  &:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   ⚡ Quick Actions Section
+   ========================================= */
 .quick-actions {
   margin-top: 32px;
 
@@ -185,7 +242,9 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* Loading & Empty States */
+/* =========================================
+   ⏳ Loading & Empty States
+   ========================================= */
 .loading-state,
 .empty-state {
   display: flex;
@@ -208,7 +267,9 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* Page Header */
+/* =========================================
+   📑 Page Header Component
+   ========================================= */
 .page-header {
   background: white;
   border-radius: 16px;
@@ -265,7 +326,9 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* Table Container */
+/* =========================================
+   📋 Table Container Styles
+   ========================================= */
 .table-container {
   background: white;
   border-radius: 16px;
@@ -297,7 +360,9 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* Product Name & Price */
+/* =========================================
+   🏷️ Product Name & Price Styles
+   ========================================= */
 .product-name {
   display: flex;
   flex-direction: column;
@@ -320,6 +385,9 @@ $theme: mat.define-theme((color: (theme-type: light,
   font-size: 16px;
 }
 
+/* =========================================
+   💻 Code Block Styles
+   ========================================= */
 code {
   background: #edf2f7;
   padding: 4px 12px;
@@ -330,12 +398,35 @@ code {
   display: inline-block;
 }
 
-/* Search Field */
+/* =========================================
+   🔍 Search Field Styles
+   ========================================= */
 .search-field {
   margin-bottom: 24px;
 }
 
-/* Responsive */
+/* =========================================
+   🔔 Notification Icon Colors
+   ========================================= */
+.notification-icon-warning {
+  color: #ff9800 !important;
+}
+
+.notification-icon-error {
+  color: #f44336 !important;
+}
+
+.notification-icon-info {
+  color: #2196f3 !important;
+}
+
+.notification-icon-success {
+  color: #4caf50 !important;
+}
+
+/* =========================================
+   📱 Responsive Design
+   ========================================= */
 @media (max-width: 768px) {
   .content {
     padding: 16px;
@@ -353,55 +444,48 @@ code {
     flex-direction: column;
     text-align: center;
   }
-}
 
-// في styles.scss
-.stat-card {
-  animation: fadeInUp 0.5s ease-out;
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
 
-  &:nth-child(1) {
-    animation-delay: 0.1s;
-  }
+    .header-actions {
+      width: 100%;
+    }
 
-  &:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-
-  &:nth-child(3) {
-    animation-delay: 0.3s;
-  }
-
-  &:nth-child(4) {
-    animation-delay: 0.4s;
+    .header-actions button {
+      flex: 1;
+    }
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+/* =========================================
+   🎯 Layout Fix - Scroll & Footer
+   ========================================= */
+/* ✅ ده الجزء المهم عشان الـ Scroll والفوتر يشتغلوا صح */
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* منع الـ scroll على الـ body كله */
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  /* ✅ السكرول هيكون على الـ content بس */
 }
 
-/* Notification Icon Colors */
-.notification-icon-warning {
-  color: #ff9800 !important;
+/* الـ main content هو اللي بيسكرول */
+.main-content {
+  overflow-y: auto !important;
+  height: calc(100vh - 64px) !important;
 }
 
-.notification-icon-error {
-  color: #f44336 !important;
+/* الفوتر يفضل في الآخر */
+.main-footer,
+app-footer {
+  margin-top: auto !important;
+  flex-shrink: 0 !important;
 }
 
-.notification-icon-info {
-  color: #2196f3 !important;
-}
-
-.notification-icon-success {
-  color: #4caf50 !important;
-}
-
+/* =========================================
+   ✨ End of File
+   ========================================= */

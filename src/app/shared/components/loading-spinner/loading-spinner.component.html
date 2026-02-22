@@ -1,1 +1,5 @@
-<p>loading-spinner works!</p>
+<div class="loading-overlay" *ngIf="isLoading">
+  <mat-progress-spinner color="primary" mode="indeterminate" diameter="50">
+  </mat-progress-spinner>
+  <p class="loading-text">جاري التحميل...</p>
+</div>

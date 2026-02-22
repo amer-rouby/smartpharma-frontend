@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MaterialModule } from '../../material.module';
 
@@ -8,7 +7,6 @@ interface MenuItem {
   label: string;
   route?: string;
   children?: MenuItem[];
-  expanded?: boolean;
   roles?: string[];
 }
 
@@ -16,18 +14,19 @@ interface MenuItem {
   selector: 'app-sidebar',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     RouterLinkActive,
     MaterialModule
   ],
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent {
-  @Input() isCollapsed = false;
+  // ✅ Angular 21+: Signal Input
+  readonly isCollapsed = input<boolean>(false);
 
-  menuItems: MenuItem[] = [
+  // ✅ Menu Items
+  readonly menuItems: MenuItem[] = [
     {
       icon: 'dashboard',
       label: 'لوحة التحكم',
@@ -88,7 +87,8 @@ export class SidebarComponent {
     }
   ];
 
-  constructor() { }
+  // ✅ Track expanded panels
+  readonly expandedPanels = signal<Set<number>>(new Set());
 
   hasAccess(roles?: string[]): boolean {
     if (!roles) return true;
@@ -96,7 +96,19 @@ export class SidebarComponent {
     return userRole ? roles.includes(userRole) : false;
   }
 
-  trackByFn(index: number, item: MenuItem): string {
-    return item.label;
+  togglePanel(index: number): void {
+    this.expandedPanels.update(panels => {
+      const newPanels = new Set(panels);
+      if (newPanels.has(index)) {
+        newPanels.delete(index);
+      } else {
+        newPanels.add(index);
+      }
+      return newPanels;
+    });
+  }
+
+  isExpanded(index: number): boolean {
+    return this.expandedPanels().has(index);
   }
 }

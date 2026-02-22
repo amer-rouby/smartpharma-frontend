@@ -1,15 +1,31 @@
-.main-layout {
-  min-height: 100vh;
+/* =========================================
+   🏗️ Main Layout Styles
+   ========================================= */
+
+.app-container {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
   background-color: #f5f7fa;
   direction: rtl;
 }
 
-.main-content-wrapper {
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 64px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content-area {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  margin-top: 64px; // نفس ارتفاع الـ header
+  min-height: calc(100vh - 64px);
 }
 
 .sidebar-wrapper {
@@ -18,8 +34,11 @@
   position: fixed;
   right: 0;
   top: 64px;
+  bottom: 0;
   height: calc(100vh - 64px);
   z-index: 999;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   &.collapsed {
     width: 70px;
@@ -29,13 +48,31 @@
     left: 0;
     right: auto;
   }
+
+  /* ✅ Scrollbar للـ sidebar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
 }
 
 .main-content {
   flex: 1;
-  margin-right: 280px;
-  overflow-y: auto;
+  margin-right: 280px; // نفس عرض الـ sidebar
+  margin-left: 0;
   padding: 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  // ✅ مهم: استخدم min-height مش height
+  min-height: calc(100vh - 64px);
   transition: margin-right 0.3s ease;
 
   .content-container {
@@ -46,13 +83,54 @@
   &.expanded {
     margin-right: 70px;
   }
+
+  /* ✅ Scrollbar للـ main content */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+
+    &:hover {
+      background: #764ba2;
+    }
+  }
 }
 
-// Responsive
+.main-footer {
+  // ✅ ده المهم جداً عشان الفوتر يفضل في الآخر
+  margin-top: auto;
+  // ✅ منع الـ footer ينكمش
+  flex-shrink: 0;
+  // ✅ ستايل الفوتر
+  width: 100%;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  // ✅ نفس الـ margin بتاع الـ sidebar
+  margin-right: 280px;
+  transition: margin-right 0.3s ease;
+
+  &.expanded {
+    margin-right: 70px;
+  }
+}
+
+// =========================================
+// ✅ Responsive
+// =========================================
 @media (max-width: 768px) {
   .sidebar-wrapper {
     right: -280px;
     left: auto;
+    top: 64px;
+    height: calc(100vh - 64px);
 
     &.mobile-open {
       right: 0;
@@ -66,5 +144,9 @@
     &.expanded {
       margin-right: 0;
     }
+  }
+
+  .main-footer {
+    margin-right: 0;
   }
 }

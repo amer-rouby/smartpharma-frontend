@@ -1,15 +1,17 @@
-<div class="main-layout" dir="rtl">
-  <!-- Header -->
-  <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+<div class="app-container" dir="rtl">
+  <!-- Header - ثابت في فوق -->
+  <header class="main-header">
+    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+  </header>
 
-  <div class="main-content-wrapper">
-    <!-- Sidebar -->
+  <div class="content-area">
+    <!-- Sidebar - ثابت -->
     <aside class="sidebar-wrapper" [class.collapsed]="isSidebarCollapsed" [class.mobile-open]="isSidebarOpen"
       (clickOutside)="closeSidebar()">
       <app-sidebar [isCollapsed]="isSidebarCollapsed"></app-sidebar>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Content - ده اللي بيسكرول -->
     <main class="main-content">
       <div class="content-container">
         <router-outlet></router-outlet>
@@ -17,8 +19,10 @@
     </main>
   </div>
 
-  <!-- Footer -->
-  <app-footer></app-footer>
+  <!-- Footer - ثابت في الآخر -->
+  <footer class="main-footer">
+    <app-footer></app-footer>
+  </footer>
 
   <!-- Loading Spinner -->
   <app-loading-spinner></app-loading-spinner>
