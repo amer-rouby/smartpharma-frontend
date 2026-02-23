@@ -20,9 +20,9 @@ body {
   font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   background: #f5f7fa;
-
+  // overflow-y: hidden;
   /* ✅ مهم جداً: overflow-x: hidden بس عشان متحصلش مشاكل في الـ layout */
-  overflow-x: hidden;
+  // overflow-x: hidden;
 }
 
 /* =========================================
@@ -466,18 +466,18 @@ code {
 /* ✅ ده الجزء المهم عشان الـ Scroll والفوتر يشتغلوا صح */
 
 /* منع الـ scroll على الـ body كله */
-html,
-body {
-  overflow-x: hidden;
-  overflow-y: hidden;
-  /* ✅ السكرول هيكون على الـ content بس */
-}
+// html,
+// body {
+//   overflow-x: hidden;
+//   overflow-y: hidden;
+//   /* ✅ السكرول هيكون على الـ content بس */
+// }
 
-/* الـ main content هو اللي بيسكرول */
-.main-content {
-  overflow-y: auto !important;
-  height: calc(100vh - 64px) !important;
-}
+// /* الـ main content هو اللي بيسكرول */
+// .main-content {
+//   overflow-y: auto !important;
+//   height: calc(100vh - 64px) !important;
+// }
 
 /* الفوتر يفضل في الآخر */
 .main-footer,

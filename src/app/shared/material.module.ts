@@ -35,7 +35,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatRippleModule } from '@angular/material/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 @NgModule({
   exports: [
     // ✅ Forms & Input
@@ -80,7 +80,8 @@ import { CommonModule } from '@angular/common';
     MatProgressSpinnerModule,
     MatDialogModule,
     TranslateModule,
-    CommonModule
+    CommonModule,
+    MatButtonToggleModule
   ]
 })
 export class MaterialModule { }

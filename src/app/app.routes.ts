@@ -34,7 +34,7 @@ export const routes: Routes = [
       },
       {
         path: 'reports',
-        loadComponent: () => import('./features/reports/reports/reports.component').then(m => m.ReportsComponent)
+        loadChildren: () => import('./features/reports/reports.routes').then(m => m.REPORTS_ROUTES)
       },
       {
         path: 'settings',
