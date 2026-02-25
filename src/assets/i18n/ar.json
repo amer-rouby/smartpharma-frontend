@@ -30,7 +30,8 @@
     "USERS_ROLES": "الأدوار والصلاحيات",
     "SETTINGS": "الإعدادات",
     "SETTINGS_GENERAL": "الإعدادات العامة",
-    "SETTINGS_PHARMACY": "بيانات الصيدلية"
+    "SETTINGS_PHARMACY": "بيانات الصيدلية",
+    "NOTIFICATIONS": "الإشعارات"
   },
   "HEADER": {
     "MENU": "القائمة الرئيسية",
@@ -40,6 +41,8 @@
     "NOTIFICATIONS": "الإشعارات",
     "MARK_ALL_READ": "تحديد الكل كمقروء",
     "NO_NOTIFICATIONS": "لا توجد إشعارات جديدة",
+    "VIEW_ALL_NOTIFICATIONS": "عرض كل الإشعارات ({{count}})",
+    "VIEW_ALL": "عرض الكل",
     "PROFILE": "الملف الشخصي",
     "SETTINGS": "الإعدادات",
     "HELP": "المساعدة",
@@ -81,6 +84,47 @@
     "THIS_MONTH": "هذا الشهر",
     "THIS_YEAR": "هذا العام"
   },
+  "NOTIFICATIONS": {
+    "TITLE": "الإشعارات",
+    "DESCRIPTION": "إدارة وعرض جميع تنبيهات وإشعارات الصيدلية",
+    "ALL": "الكل",
+    "UNREAD": "غير المقروءة",
+    "READ": "المقروءة",
+    "MARK_ALL_READ": "تحديد الكل كمقروء",
+    "MARK_AS_READ": "وضع كمقروء",
+    "VIEW_ALL": "عرض كل الإشعارات",
+    "NO_NOTIFICATIONS": "لا توجد إشعارات",
+    "NO_UNREAD_NOTIFICATIONS": "لا توجد إشعارات غير مقروءة",
+    "NO_NOTIFICATIONS_DESC": "لا توجد إشعارات لعرضها في الوقت الحالي",
+    "LOADING": "جاري تحميل الإشعارات...",
+    "REFRESH": "تحديث",
+    "DELETE_CONFIRM": "هل أنت متأكد من حذف هذا الإشعار؟",
+    "PRIORITY": {
+      "URGENT": "عاجل",
+      "HIGH": "عالي",
+      "MEDIUM": "متوسط",
+      "LOW": "منخفض"
+    },
+    "TYPE": {
+      "LOW_STOCK": "مخزون منخفض",
+      "EXPIRY_WARNING": "تحذير صلاحية",
+      "EXPIRED": "منتهي الصلاحية",
+      "SALE_COMPLETED": "تمت عملية بيع",
+      "EXPENSE_ADDED": "تم إضافة مصروف",
+      "SYSTEM": "نظام",
+      "USER_ACTION": "إجراء مستخدم"
+    },
+    "MESSAGES": {
+      "LOW_STOCK": "تنبيه مخزون منخفض للمنتج: {{name}}",
+      "OUT_OF_STOCK": "نفذ المخزون من المنتج: {{name}}",
+      "EXPIRING_SOON": "المنتج {{name}} سينتهي خلال {{days}} يوم",
+      "EXPIRED": "المنتج {{name}} منتهي الصلاحية",
+      "NEW_SALE": "تمت عملية بيع جديدة بقيمة {{amount}}",
+      "NEW_USER": "تم إضافة مستخدم جديد: {{name}}",
+      "STOCK_ALERT": "تنبيه مخزون: {{message}}",
+      "PRICE_CHANGE": "تغير سعر المنتج: {{name}}"
+    }
+  },
   "PRODUCTS": {
     "TITLE": "المنتجات",
     "MANAGE_SUBTITLE": "عرض وتعديل المنتجات",
@@ -94,7 +138,7 @@
     "SCIENTIFIC_NAME": "الاسم العلمي",
     "SCIENTIFIC_NAME_PLACEHOLDER": "مثال: Paracetamol",
     "BARCODE": "الباركود",
-    "BARCODE_PLACEHOLDER": "الباركود",
+    "BARCODE_PLACEHOLDER": "أدخل الباركود",
     "REGENERATE_BARCODE": "توليد باركود جديد",
     "BARCODE_REGENERATED": "تم توليد باركود جديد",
     "CATEGORY": "التصنيف",
@@ -150,7 +194,8 @@
     "LOADING": "جاري تحميل المنتجات...",
     "STOCK": "المخزون",
     "MANAGE": "إدارة المنتجات",
-    "EXPIRY": "تاريخ الصلاحية"
+    "EXPIRY": "تاريخ الصلاحية",
+    "EXPIRED": "منتجات منتهية الصلاحية"
   },
   "CATEGORIES": {
     "TITLE": "تصنيفات المنتجات",
@@ -249,14 +294,19 @@
     "HISTORY": "سجل الحركات",
     "BATCHES": "الدفعات",
     "BATCH_NUMBER": "رقم الدفعة",
+    "BATCH_NUMBER_PLACEHOLDER": "أدخل رقم الدفعة",
     "ADD_BATCH": "إضافة دفعة",
     "ADD_FIRST_BATCH": "إضافة أول دفعة",
     "EDIT_BATCH": "تعديل الدفعة",
+    "EDIT_SUBTITLE": "تحديث بيانات الدفعة",
+    "ADD_SUBTITLE": "إدخال بيانات الدفعة الجديدة",
     "CURRENT_STOCK": "المخزون الحالي",
     "INITIAL_STOCK": "المخزون الأولي",
     "LOCATION": "الموقع",
+    "LOCATION_PLACEHOLDER": "أدخل الموقع",
     "SHELF": "الرف",
     "WAREHOUSE": "المستودع",
+    "PRODUCTION_DATE": "تاريخ الإنتاج",
     "STOCK_IN": "وارد مخزن",
     "STOCK_OUT": "صادر مخزن",
     "STOCK_ADJUSTMENT": "تعديل مخزن",
@@ -284,6 +334,7 @@
     "STATUS_LOW": "منخفض",
     "STATUS_EXPIRED": "منتهي الصلاحية",
     "STATUS_EXPIRING_SOON": "تنتهي قريباً",
+    "STATUS_DISCARDED": "ملغي",
     "ADJUST": "تعديل المخزون",
     "TOTAL_VALUE": "قيمة المخزون",
     "TOTAL_VALUE_SUBTITLE": "إجمالي قيمة المخزون",
@@ -357,16 +408,16 @@
     "TOP_PRODUCTS": "الأكثر مبيعاً",
     "EXPORTING_EXCEL": "جاري تصدير Excel...",
     "CURRENT": "حالي",
-      "REVENUE_VS_EXPENSES": "الإيرادات مقابل المصروفات",
-      "EXPENSES_BY_CATEGORY": "المصروفات حسب التصنيف",
-      "URGENT_EXPIRY": "منتهي عاجل",
-      "WARNING_EXPIRY": "ينتهي قريباً",
-      "OK_EXPIRY": "صلاحية جيدة",
-      "TOTAL_EXPIRING": "إجمالي المنتهي",
-      "EXPIRY_DISTRIBUTION": "توزيع الصلاحية",
-      "EXPIRING_PRODUCTS": "المنتجات منتهية الصلاحية",
-      "NO_EXPIRING_PRODUCTS": "لا توجد منتجات منتهية الصلاحية",
-      "EXPORTING_PDF": "جاري تصدير PDF..."
+    "REVENUE_VS_EXPENSES": "الإيرادات مقابل المصروفات",
+    "EXPENSES_BY_CATEGORY": "المصروفات حسب التصنيف",
+    "URGENT_EXPIRY": "منتهي عاجل",
+    "WARNING_EXPIRY": "ينتهي قريباً",
+    "OK_EXPIRY": "صلاحية جيدة",
+    "TOTAL_EXPIRING": "إجمالي المنتهي",
+    "EXPIRY_DISTRIBUTION": "توزيع الصلاحية",
+    "EXPIRING_PRODUCTS": "المنتجات منتهية الصلاحية",
+    "NO_EXPIRING_PRODUCTS": "لا توجد منتجات منتهية الصلاحية",
+    "EXPORTING_PDF": "جاري تصدير PDF..."
   },
   "USERS": {
     "TITLE": "المستخدمين",
@@ -553,16 +604,6 @@
     "TIMEOUT": "انتهت مهلة الاتصال",
     "UNKNOWN": "حدث خطأ غير معروف"
   },
-  "NOTIFICATIONS": {
-    "LOW_STOCK": "مخزون منخفض للمنتج: {{name}}",
-    "OUT_OF_STOCK": "نفذ المخزون من المنتج: {{name}}",
-    "EXPIRING_SOON": "المنتج {{name}} سينتهي خلال {{days}} يوم",
-    "EXPIRED": "المنتج {{name}} منتهي الصلاحية",
-    "NEW_SALE": "تمت عملية بيع جديدة بقيمة {{amount}}",
-    "NEW_USER": "تم إضافة مستخدم جديد: {{name}}",
-    "STOCK_ALERT": "تنبيه مخزون: {{message}}",
-    "PRICE_CHANGE": "تغير سعر المنتج: {{name}}"
-  },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
     "ALL_RIGHTS_RESERVED": "جميع الحقوق محفوظة",
@@ -570,10 +611,33 @@
     "POWERED_BY": "تم التطوير بواسطة"
   },
   "EXPENSES": {
-    "PURCHASES": "المشتريات",
-    "SALARIES": "الرواتب",
-    "RENT": "الإيجار",
-    "UTILITIES": "المرافق",
-    "OTHER": "أخرى"
+    "TITLE": "المصروفات",
+    "SUBTITLE": "إدارة مصروفات الصيدلية",
+    "ADD_EXPENSE": "إضافة مصروف",
+    "ALL_EXPENSES": "جميع المصروفات",
+    "TOTAL_EXPENSES": "إجمالي المصروفات",
+    "TOTAL_TRANSACTIONS": "عدد المعاملات",
+    "CATEGORY": "التصنيف",
+    "TITLE_LABEL": "العنوان",
+    "DESCRIPTION": "الوصف",
+    "AMOUNT": "المبلغ",
+    "DATE": "التاريخ",
+    "PAYMENT_METHOD": "طريقة الدفع",
+    "REFERENCE_NUMBER": "الرقم المرجعي",
+    "NO_EXPENSES": "لا توجد مصروفات مسجلة",
+    "ADD_FIRST": "إضافة أول مصروف",
+    "DELETE_CONFIRM": "هل أنت متأكد من حذف هذا المصروف؟",
+    "CATEGORIES": {
+      "PURCHASES": "المشتريات",
+      "SALARIES": "الرواتب",
+      "RENT": "الإيجار",
+      "UTILITIES": "المرافق",
+      "MAINTENANCE": "الصيانة",
+      "MARKETING": "التسويق",
+      "INSURANCE": "التأمين",
+      "LICENSES": "التراخيص",
+      "TRANSPORT": "النقل",
+      "OTHER": "أخرى"
+    }
   }
 }

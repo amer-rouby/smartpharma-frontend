@@ -2,7 +2,6 @@
 
   <!-- Right Side -->
   <div class="header-right">
-
     <button mat-icon-button (click)="toggleSidebar.emit()" class="toggle-sidebar-btn"
       [matTooltip]="'HEADER.MENU' | translate">
       <mat-icon>menu</mat-icon>
@@ -62,47 +61,77 @@
       </button>
     </mat-menu>
 
-    <!-- Notifications -->
-    <button mat-icon-button [matMenuTriggerFor]="notificationMenu" [matBadge]="notificationCount()" matBadgeColor="warn"
+    <!-- ✅ Notifications - Professional Design -->
+    <button mat-icon-button [matMenuTriggerFor]="notificationMenu" [matBadge]="unreadCount()" matBadgeColor="warn"
       class="notification-btn" [matTooltip]="'HEADER.NOTIFICATIONS' | translate">
       <mat-icon>notifications</mat-icon>
     </button>
 
     <mat-menu #notificationMenu="matMenu" class="notification-menu" xPosition="before">
+      <!-- Header -->
       <div class="menu-header">
-        <h3>{{'HEADER.NOTIFICATIONS' | translate}}</h3>
-        @if (notificationCount() > 0) {
-        <button mat-button color="primary" (click)="markAllAsRead()">
-          {{'HEADER.MARK_ALL_READ' | translate}}
+        <div class="header-content">
+          <mat-icon>notifications</mat-icon>
+          <h3>الإشعارات</h3>
+        </div>
+        @if (unreadCount() > 0) {
+        <button mat-button color="primary" (click)="markAllAsRead()" class="mark-all-btn">
+          <mat-icon>done_all</mat-icon>
+          <span>تحديد الكل كمقروء</span>
         </button>
         }
       </div>
       <mat-divider></mat-divider>
 
-      @if (unreadNotifications().length > 0) {
-      <div class="notification-list">
-        @for (notification of unreadNotifications(); track notification.id) {
-        <button mat-menu-item (click)="markAsRead(notification.id)">
-          <div class="notification-icon" [class]="notification.type">
-            <mat-icon>{{notification.icon}}</mat-icon>
+      <!-- Notifications List -->
+      <div class="notifications-list">
+        @for (notification of notifications(); track notification.id; let i = $index) {
+        @if (i < 10) { <button mat-menu-item class="notification-item" [class.unread]="!notification.read"
+          (click)="onNotificationClick(notification)">
+
+          <div class="notification-wrapper">
+            <!-- Icon with gradient -->
+            <div class="notification-icon-wrapper">
+              <div class="notification-icon" [style.background]="getPriorityColor(notification.priority)">
+                <mat-icon>{{getTypeIcon(notification.type)}}</mat-icon>
+              </div>
+              @if (!notification.read) {
+              <span class="unread-indicator"></span>
+              }
+            </div>
+
+            <!-- Content -->
+            <div class="notification-body">
+              <div class="notification-text">
+                <p class="notification-message">{{notification.message}}</p>
+                <span class="notification-time">{{formatDate(notification.createdAt)}}</span>
+              </div>
+            </div>
           </div>
-          <div class="notification-content">
-            <span class="notification-message">{{notification.message}}</span>
-            <small class="notification-time">{{notification.time}}</small>
+          </button>
+          }
+          } @empty {
+          <div class="no-notifications">
+            <div class="empty-icon">
+              <mat-icon>notifications_none</mat-icon>
+            </div>
+            <p class="empty-text">لا توجد إشعارات</p>
+            <span class="empty-subtext">ستظهر الإشعارات الجديدة هنا</span>
           </div>
-        </button>
-        }
+          }
       </div>
-      } @else {
-      <div class="no-notifications">
-        <mat-icon>notifications_none</mat-icon>
-        <p>{{'HEADER.NO_NOTIFICATIONS' | translate}}</p>
+
+      <!-- Footer - View All -->
+      @if (notifications().length > 0) {
+      <mat-divider></mat-divider>
+      <div class="menu-footer">
+        <button mat-button color="primary" class="view-all-btn" (click)="viewAllNotifications()">
+          <span>عرض جميع الإشعارات</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
       </div>
       }
     </mat-menu>
-
-    <!-- ✅ احذف الـ Language Switcher من هنا -->
-    <!-- <app-language-switcher></app-language-switcher> -->
 
     <!-- User Profile -->
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile-btn"
@@ -120,7 +149,6 @@
     </button>
 
     <mat-menu #userMenu="matMenu" class="user-menu user-menu-wide" xPosition="before" yPosition="below">
-
       <div class="user-menu-header">
         <div class="user-menu-info">
           <p class="user-menu-name">
@@ -142,11 +170,9 @@
         <span>{{'NAV.SETTINGS' | translate}}</span>
       </button>
 
-      <!-- ✅ أضف Language Switcher هنا -->
       <button mat-menu-item [matMenuTriggerFor]="languageMenu">
         <mat-icon>language</mat-icon>
         <span>{{'HEADER.LANGUAGE' | translate}}</span>
-        <!-- <mat-icon matMenuIcon>chevron_left</mat-icon> -->
       </button>
 
       <button mat-menu-item routerLink="/help">
@@ -162,7 +188,7 @@
       </button>
     </mat-menu>
 
-    <!-- ✅ Language Submenu -->
+    <!-- Language Submenu -->
     <mat-menu #languageMenu="matMenu" xPosition="before">
       <button mat-menu-item (click)="changeLanguage('ar')" [class.active]="currentLang() === 'ar'">
         <mat-icon>translate</mat-icon>

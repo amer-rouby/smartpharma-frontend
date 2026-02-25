@@ -7,25 +7,9 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
-import { ReportService, ReportRequest } from '../../../core/services/report.service';
+import { ReportService, ReportRequest, FinancialReportData } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
-
-interface FinancialData {
-  totalRevenue: number;
-  totalExpenses: number;
-  netProfit: number;
-  profitMargin: number;
-  monthlyData: Array<{
-    month: string;
-    revenue: number;
-    expenses: number;
-    profit: number;
-  }>;
-  expensesByCategory: Array<{
-    category: string;
-    amount: number;
-  }>;
-}
+import { ExportService } from '../../../core/services/export.service';
 
 @Component({
   selector: 'app-financial-report',
@@ -46,22 +30,26 @@ export class FinancialReportComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly exportService = inject(ExportService);
 
+  // ✅ Date signals (strings for API)
   readonly startDate = signal<string>(this.formatDate(new Date(new Date().setMonth(new Date().getMonth() - 1))));
   readonly endDate = signal<string>(this.formatDate(new Date()));
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('MONTHLY');
 
-  readonly financialData = signal<FinancialData | null>(null);
+  // ✅ Report data signals
+  readonly financialData = signal<FinancialReportData | null>(null);
   readonly reportLoading = signal(false);
   readonly reportError = signal<string>('');
+  readonly exportLoading = signal(false);
 
-  // ✅ FIXED: Clean Chart.js configuration with proper 'data:' property
+  // ✅ Chart data
   readonly lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [],
     datasets: [
       {
         data: [],
-        label: 'الإيرادات',
+        label: this.translate.instant('REPORTS.REVENUE'),
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.2)',
         tension: 0.4,
@@ -69,7 +57,7 @@ export class FinancialReportComponent implements OnInit {
       },
       {
         data: [],
-        label: 'المصروفات',
+        label: this.translate.instant('REPORTS.EXPENSES'),
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239, 68, 68, 0.2)',
         tension: 0.4,
@@ -120,7 +108,7 @@ export class FinancialReportComponent implements OnInit {
     };
 
     this.reportService.getFinancialReport(request).subscribe({
-      next: (data: FinancialData) => {
+      next: (data: FinancialReportData) => {
         this.financialData.set(data);
         this.updateCharts(data);
         this.reportLoading.set(false);
@@ -128,29 +116,61 @@ export class FinancialReportComponent implements OnInit {
       error: (error) => {
         this.reportError.set('REPORTS.LOAD_ERROR');
         this.reportLoading.set(false);
-        this.snackBar.open(this.translate.instant('REPORTS.LOAD_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+        this.snackBar.open(
+          this.translate.instant('REPORTS.LOAD_ERROR'),
+          this.translate.instant('COMMON.CLOSE'),
+          { duration: 3000 }
+        );
         console.error('Financial report error:', error);
       }
     });
   }
 
-  private updateCharts(data: FinancialData): void {
+  // ✅ Export PDF with preview
+  exportPDF(): void {
+    this.exportLoading.set(true);
+
+    this.exportService.exportExpensesPdf(
+      this.getPharmacyId(),
+      0,
+      100,
+      true  // preview = true
+    ).subscribe({
+      next: () => this.exportLoading.set(false),
+      error: () => this.exportLoading.set(false)
+    });
+  }
+
+  // ✅ Export Excel (direct download)
+  exportExcel(): void {
+    this.exportLoading.set(true);
+
+    this.exportService.exportFinancialExcel(
+      this.getPharmacyId(),
+      this.startDate(),
+      this.endDate(),
+      false  // preview = false
+    ).subscribe({
+      next: () => this.exportLoading.set(false),
+      error: () => this.exportLoading.set(false)
+    });
+  }
+
+  private updateCharts(data: FinancialReportData): void {
     if (data.monthlyData?.length) {
-      this.lineChartData.labels = data.monthlyData.map((m: any) => m.month);
-      this.lineChartData.datasets[0].data = data.monthlyData.map((m: any) => m.revenue);
-      this.lineChartData.datasets[1].data = data.monthlyData.map((m: any) => m.expenses);
+      this.lineChartData.labels = data.monthlyData.map(m => m.month);
+      this.lineChartData.datasets[0].data = data.monthlyData.map(m => m.revenue);
+      this.lineChartData.datasets[1].data = data.monthlyData.map(m => m.expenses);
     }
 
     if (data.expensesByCategory?.length) {
-      this.pieChartData.labels = data.expensesByCategory.map((c: any) =>
-        this.translate.instant(`EXPENSES.${c.category.toUpperCase()}`)
-      );
-      this.pieChartData.datasets[0].data = data.expensesByCategory.map((c: any) => c.amount);
+      this.pieChartData.labels = data.expensesByCategory.map(c => {
+        const key = `EXPENSES.${c.category.toUpperCase()}`;
+        const translated = this.translate.instant(key);
+        return translated !== key ? translated : c.category;
+      });
+      this.pieChartData.datasets[0].data = data.expensesByCategory.map(c => c.amount);
     }
-  }
-
-  exportPDF(): void {
-    this.snackBar.open(this.translate.instant('REPORTS.EXPORTING_PDF'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
   }
 
   formatCurrency(amount: number): string {

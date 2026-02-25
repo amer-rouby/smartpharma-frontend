@@ -1,3 +1,4 @@
+// src/app/core/services/report.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -20,6 +21,23 @@ export interface SalesReportData {
     date: string;
     revenue: number;
     orders: number;
+  }>;
+}
+
+export interface FinancialReportData {
+  totalRevenue: number;
+  totalExpenses: number;
+  netProfit: number;
+  profitMargin: number;
+  monthlyData: Array<{
+    month: string;
+    revenue: number;
+    expenses: number;
+    profit: number;
+  }>;
+  expensesByCategory: Array<{
+    category: string;
+    amount: number;
   }>;
 }
 
@@ -52,9 +70,26 @@ export interface StockReportData {
   }>;
 }
 
+export interface ExpiryReportData {
+  totalExpiring: number;
+  urgentExpiring: number;
+  warningExpiring: number;
+  okExpiring: number;
+  expiringProducts: Array<{
+    productId: number;
+    productName: string;
+    batchNumber: string;
+    expiryDate: string;
+    daysUntilExpiry: number;
+    currentStock: number;
+    status: 'URGENT' | 'WARNING' | 'OK';
+    estimatedValue: number;
+  }>;
+}
+
 export interface ReportRequest {
   pharmacyId: number;
-  startDate?: string;
+  startDate?: string;  // ✅ String in YYYY-MM-DD format
   endDate?: string;
   reportType?: 'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM';
 }
@@ -71,14 +106,20 @@ export class ReportService {
     return this.authService.getPharmacyId() || 1;
   }
 
-  getSalesReport(request: ReportRequest): Observable<SalesReportData> {
-    const params = new HttpParams()
-      .set('pharmacyId', this.getPharmacyId())
-      .set('startDate', request.startDate || '')
-      .set('endDate', request.endDate || '')
-      .set('reportType', request.reportType || 'CUSTOM');
+  // ✅ Helper: Format date for API (YYYY-MM-DD)
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
 
+  getSalesReport(request: ReportRequest): Observable<SalesReportData> {
+    // ✅ No need for HttpParams since we're sending JSON body
     return this.http.post<any>(`${this.baseUrl}/sales`, request).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getFinancialReport(request: ReportRequest): Observable<FinancialReportData> {
+    return this.http.post<any>(`${this.baseUrl}/financial`, request).pipe(
       map(response => response.data)
     );
   }
@@ -89,13 +130,7 @@ export class ReportService {
     );
   }
 
-  getFinancialReport(request: ReportRequest): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/financial`, request).pipe(
-      map(response => response.data)
-    );
-  }
-
-  getExpiryReport(request: ReportRequest): Observable<any> {
+  getExpiryReport(request: ReportRequest): Observable<ExpiryReportData> {
     return this.http.post<any>(`${this.baseUrl}/expiry`, request).pipe(
       map(response => response.data)
     );

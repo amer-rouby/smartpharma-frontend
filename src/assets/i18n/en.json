@@ -30,7 +30,8 @@
     "USERS_ROLES": "Roles & Permissions",
     "SETTINGS": "Settings",
     "SETTINGS_GENERAL": "General Settings",
-    "SETTINGS_PHARMACY": "Pharmacy Info"
+    "SETTINGS_PHARMACY": "Pharmacy Info",
+    "NOTIFICATIONS": "Notifications"
   },
   "HEADER": {
     "MENU": "Main Menu",
@@ -40,6 +41,8 @@
     "NOTIFICATIONS": "Notifications",
     "MARK_ALL_READ": "Mark all as read",
     "NO_NOTIFICATIONS": "No new notifications",
+    "VIEW_ALL_NOTIFICATIONS": "View all notifications ({{count}})",
+    "VIEW_ALL": "View All",
     "PROFILE": "Profile",
     "SETTINGS": "Settings",
     "HELP": "Help",
@@ -80,6 +83,47 @@
     "THIS_WEEK": "This Week",
     "THIS_MONTH": "This Month",
     "THIS_YEAR": "This Year"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notifications",
+    "DESCRIPTION": "Manage and view all pharmacy alerts and notifications",
+    "ALL": "All",
+    "UNREAD": "Unread",
+    "READ": "Read",
+    "MARK_ALL_READ": "Mark all as read",
+    "MARK_AS_READ": "Mark as read",
+    "VIEW_ALL": "View all notifications",
+    "NO_NOTIFICATIONS": "No notifications",
+    "NO_UNREAD_NOTIFICATIONS": "No unread notifications",
+    "NO_NOTIFICATIONS_DESC": "There are no notifications to display at the moment",
+    "LOADING": "Loading notifications...",
+    "REFRESH": "Refresh",
+    "DELETE_CONFIRM": "Are you sure you want to delete this notification?",
+    "PRIORITY": {
+      "URGENT": "Urgent",
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "TYPE": {
+      "LOW_STOCK": "Low Stock",
+      "EXPIRY_WARNING": "Expiry Warning",
+      "EXPIRED": "Expired",
+      "SALE_COMPLETED": "Sale Completed",
+      "EXPENSE_ADDED": "Expense Added",
+      "SYSTEM": "System",
+      "USER_ACTION": "User Action"
+    },
+    "MESSAGES": {
+      "LOW_STOCK": "Low stock alert for product: {{name}}",
+      "OUT_OF_STOCK": "Out of stock: {{name}}",
+      "EXPIRING_SOON": "Product {{name}} expires in {{days}} days",
+      "EXPIRED": "Product {{name}} has expired",
+      "NEW_SALE": "New sale completed: {{amount}}",
+      "NEW_USER": "New user added: {{name}}",
+      "STOCK_ALERT": "Stock alert: {{message}}",
+      "PRICE_CHANGE": "Price changed for: {{name}}"
+    }
   },
   "PRODUCTS": {
     "TITLE": "Products",
@@ -150,7 +194,8 @@
     "LOADING": "Loading products...",
     "STOCK": "Stock",
     "MANAGE": "Product Management",
-    "EXPIRY": "Expiry Date"
+    "EXPIRY": "Expiry Date",
+    "EXPIRED": "Expired products"
   },
   "CATEGORIES": {
     "TITLE": "Product Categories",
@@ -249,18 +294,23 @@
     "HISTORY": "Stock History",
     "BATCHES": "Batches",
     "BATCH_NUMBER": "Batch Number",
+    "BATCH_NUMBER_PLACEHOLDER": "Enter batch number",
     "ADD_BATCH": "Add Batch",
-    "ADD_FIRST_BATCH": "Add first batch",
+    "ADD_FIRST_BATCH": "Add First Batch",
     "EDIT_BATCH": "Edit Batch",
+    "EDIT_SUBTITLE": "Update batch details",
+    "ADD_SUBTITLE": "Enter new batch details",
     "CURRENT_STOCK": "Current Stock",
     "INITIAL_STOCK": "Initial Stock",
     "LOCATION": "Location",
+    "LOCATION_PLACEHOLDER": "Enter location",
     "SHELF": "Shelf",
     "WAREHOUSE": "Warehouse",
+    "PRODUCTION_DATE": "Production Date",
     "STOCK_IN": "Stock In",
     "STOCK_OUT": "Stock Out",
     "STOCK_ADJUSTMENT": "Stock Adjustment",
-    "TRANSFER": "Transfer",
+    "TRANSFER": "Transfer Between Branches",
     "MOVEMENT_TYPE": "Movement Type",
     "REFERENCE": "Reference",
     "NOTES": "Notes",
@@ -284,6 +334,7 @@
     "STATUS_LOW": "Low",
     "STATUS_EXPIRED": "Expired",
     "STATUS_EXPIRING_SOON": "Expiring Soon",
+    "STATUS_DISCARDED": "Discarded",
     "ADJUST": "Adjust Stock",
     "TOTAL_VALUE": "Stock Value",
     "TOTAL_VALUE_SUBTITLE": "Total inventory value",
@@ -553,16 +604,6 @@
     "TIMEOUT": "Connection timeout",
     "UNKNOWN": "An unknown error occurred"
   },
-  "NOTIFICATIONS": {
-    "LOW_STOCK": "Low stock for product: {{name}}",
-    "OUT_OF_STOCK": "Out of stock: {{name}}",
-    "EXPIRING_SOON": "Product {{name}} expires in {{days}} days",
-    "EXPIRED": "Product {{name}} is expired",
-    "NEW_SALE": "New sale of {{amount}}",
-    "NEW_USER": "New user added: {{name}}",
-    "STOCK_ALERT": "Stock alert: {{message}}",
-    "PRICE_CHANGE": "Price changed for: {{name}}"
-  },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
     "ALL_RIGHTS_RESERVED": "All Rights Reserved",
@@ -570,10 +611,33 @@
     "POWERED_BY": "Powered by"
   },
   "EXPENSES": {
-    "PURCHASES": "Purchases",
-    "SALARIES": "Salaries",
-    "RENT": "Rent",
-    "UTILITIES": "Utilities",
-    "OTHER": "Other"
+    "TITLE": "Expenses",
+    "SUBTITLE": "Manage pharmacy expenses",
+    "ADD_EXPENSE": "Add Expense",
+    "ALL_EXPENSES": "All Expenses",
+    "TOTAL_EXPENSES": "Total Expenses",
+    "TOTAL_TRANSACTIONS": "Total Transactions",
+    "CATEGORY": "Category",
+    "TITLE_LABEL": "Title",
+    "DESCRIPTION": "Description",
+    "AMOUNT": "Amount",
+    "DATE": "Date",
+    "PAYMENT_METHOD": "Payment Method",
+    "REFERENCE_NUMBER": "Reference Number",
+    "NO_EXPENSES": "No expenses recorded",
+    "ADD_FIRST": "Add first expense",
+    "DELETE_CONFIRM": "Are you sure you want to delete this expense?",
+    "CATEGORIES": {
+      "PURCHASES": "Purchases",
+      "SALARIES": "Salaries",
+      "RENT": "Rent",
+      "UTILITIES": "Utilities",
+      "MAINTENANCE": "Maintenance",
+      "MARKETING": "Marketing",
+      "INSURANCE": "Insurance",
+      "LICENSES": "Licenses",
+      "TRANSPORT": "Transport",
+      "OTHER": "Other"
+    }
   }
 }

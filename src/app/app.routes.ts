@@ -29,8 +29,27 @@ export const routes: Routes = [
         loadComponent: () => import('./features/stock/stock-management/stock-management.component').then(m => m.StockManagementComponent)
       },
       {
+        path: 'stock',
+        loadComponent: () => import('./features/stock/stock-management/stock-management.component')
+          .then(m => m.StockManagementComponent)
+      },
+      {
+        path: 'stock/add-batch',
+        loadComponent: () => import('./features/stock/stock-batch-form/stock-batch-form.component')
+          .then(m => m.StockBatchFormComponent)
+      },
+      {
+        path: 'stock/batches/:id/edit',
+        loadComponent: () => import('./features/stock/stock-batch-form/stock-batch-form.component')
+          .then(m => m.StockBatchFormComponent)
+      },
+      {
         path: 'sales',
         loadChildren: () => import('./features/sales/sales.routes').then(m => m.SALES_ROUTES)
+      },
+      {
+        path: 'expenses',
+        loadChildren: () => import('./features/expenses/expenses.routes').then(m => m.expensesRoutes)
       },
       {
         path: 'reports',
@@ -39,6 +58,11 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./features/settings/settings/settings.component').then(m => m.SettingsComponent)
+      },
+      {
+        path: 'notifications',
+        loadComponent: () => import('./features/notification-bell/notifications.component').then(m => m.NotificationsComponent),
+        title: 'التنبيهات - صيدليتي الذكية'
       },
       {
         path: '**',

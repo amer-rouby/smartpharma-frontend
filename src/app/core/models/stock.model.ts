@@ -1,39 +1,39 @@
+// src/app/core/models/stock.model.ts
+
 export interface StockBatch {
   id: number;
   productId: number;
-  pharmacyId: number;
+  productName?: string;  // ✅ أضف ده عشان العرض في الـ table
   batchNumber: string;
   quantityCurrent: number;
   quantityInitial: number;
   expiryDate: string;
-  buyPrice: number;
-  sellPrice: number;
+  productionDate?: string;
   location?: string;
-  status: BatchStatus;
-  version: number;
-  createdAt: string;
+  shelf?: string;
+  warehouse?: string;
+  notes?: string;
+  status: 'ACTIVE' | 'EXPIRED' | 'DISCARDED' | 'GOOD' | 'LOW' | 'EXPIRING_SOON';
+  createdAt?: string;
+  updatedAt?: string;
+  // ✅ أضف الـ properties دي عشان تتطابق مع الـ Backend response
+  pharmacyId?: number;
+  buyPrice?: number;
+  sellPrice?: number;
+  version?: number;
 }
 
-export type BatchStatus = 'ACTIVE' | 'EXPIRED' | 'SOLD_OUT' | 'RETURNED';
-
-export interface StockAlert {
-  id: number;
-  productId: number;
-  productName: string;
-  currentStock: number;
-  minStockLevel: number;
-  alertType: 'LOW_STOCK' | 'EXPIRING_SOON' | 'EXPIRED';
-  message: string;
-  createdAt: string;
+export interface StockBatchResponse {
+  content: StockBatch[];
+  totalPages: number;
+  totalElements: number;
+  pageNumber: number;
+  pageSize: number;
 }
 
 export interface StockAdjustment {
-  id: number;
-  productId: number;
   batchId: number;
-  adjustmentType: 'ADD' | 'REMOVE' | 'CORRECTION';
   quantity: number;
   reason: string;
-  adjustedBy: number;
-  adjustedAt: string;
+  reference?: string;
 }
