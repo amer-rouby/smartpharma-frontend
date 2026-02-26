@@ -2,6 +2,8 @@ import { Component, input, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MaterialModule } from '../../material.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 interface MenuItem {
   icon: string;
@@ -18,7 +20,9 @@ interface MenuItem {
     RouterLink,
     RouterLinkActive,
     MaterialModule,
-    TranslateModule
+    TranslateModule,
+    MatTooltipModule,
+    MatExpansionModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
@@ -27,7 +31,12 @@ export class SidebarComponent {
   readonly isCollapsed = input<boolean>(false);
 
   readonly menuItems: MenuItem[] = [
-    { icon: 'dashboard', label: 'NAV.DASHBOARD', route: '/dashboard', roles: ['ADMIN', 'PHARMACIST', 'MANAGER', 'VIEWER'] },
+    {
+      icon: 'dashboard',
+      label: 'NAV.DASHBOARD',
+      route: '/dashboard',
+      roles: ['ADMIN', 'PHARMACIST', 'MANAGER', 'VIEWER']
+    },
     {
       icon: 'inventory_2',
       label: 'NAV.PRODUCTS',
@@ -44,7 +53,8 @@ export class SidebarComponent {
       children: [
         { icon: 'inventory', label: 'NAV.STOCK_MANAGE', route: '/stock' },
         { icon: 'warning', label: 'NAV.STOCK_ALERTS', route: '/stock/alerts' },
-        { icon: 'history', label: 'NAV.STOCK_HISTORY', route: '/stock/history' }
+        { icon: 'history', label: 'NAV.STOCK_HISTORY', route: '/stock/history' },
+        { icon: 'event_busy', label: 'NAV.EXPIRY_REPORT', route: '/reports/expiry' }
       ],
       roles: ['ADMIN', 'PHARMACIST', 'MANAGER']
     },
@@ -64,20 +74,66 @@ export class SidebarComponent {
       children: [
         { icon: 'trending_up', label: 'NAV.REPORTS_SALES', route: '/reports/sales' },
         { icon: 'pie_chart', label: 'NAV.REPORTS_STOCK', route: '/reports/stock' },
-        { icon: 'account_balance', label: 'NAV.REPORTS_FINANCIAL', route: '/reports/financial' }
+        { icon: 'account_balance', label: 'NAV.REPORTS_FINANCIAL', route: '/reports/financial' },
+        { icon: 'event_busy', label: 'NAV.REPORTS_EXPIRY', route: '/reports/expiry' }
       ],
       roles: ['ADMIN', 'MANAGER']
     },
-    { icon: 'people', label: 'NAV.USERS', route: '/settings/users', roles: ['ADMIN'] },
-    { icon: 'settings', label: 'NAV.SETTINGS', route: '/settings', roles: ['ADMIN', 'MANAGER'] }
+    {
+      icon: 'payments',
+      label: 'NAV.EXPENSES',
+      route: '/expenses',
+      roles: ['ADMIN', 'MANAGER']
+    },
+    {
+      icon: 'people',
+      label: 'NAV.USERS',
+      route: '/settings/users',
+      roles: ['ADMIN']
+    },
+    {
+      icon: 'settings',
+      label: 'NAV.SETTINGS',
+      route: '/settings',
+      roles: ['ADMIN', 'MANAGER']
+    }
   ];
 
   readonly expandedPanels = signal<Set<number>>(new Set());
 
+  // ✅ الجديد (بيجيب الـ role من currentUser)
   hasAccess(roles?: string[]): boolean {
-    if (!roles) return true;
-    const userRole = localStorage.getItem('userRole');
-    return userRole ? roles.includes(userRole) : false;
+    if (!roles || roles.length === 0) return true;
+
+    // ✅ جيب الـ currentUser من localStorage
+    const currentUserStr = localStorage.getItem('currentUser');
+
+    if (!currentUserStr) {
+      console.warn('No currentUser found in localStorage!');
+      return false;
+    }
+
+    try {
+      const currentUser = JSON.parse(currentUserStr);
+      const userRole = currentUser?.role;  // ✅ الدور موجود جوه الـ currentUser
+
+      console.log('Sidebar - User Role from currentUser:', userRole);
+      console.log('Sidebar - Required Roles:', roles);
+
+      if (!userRole) {
+        console.warn('No role found in currentUser!');
+        return false;
+      }
+
+      const hasAccess = roles.includes(userRole);
+      console.log('Has Access:', hasAccess);
+
+      return hasAccess;
+
+    } catch (error) {
+      console.error('Error parsing currentUser:', error);
+      return false;
+    }
   }
 
   togglePanel(index: number): void {
@@ -91,7 +147,11 @@ export class SidebarComponent {
       return newPanels;
     });
   }
-
+  ngOnInit(): void {
+    console.log('Sidebar initialized');
+    console.log('Menu Items:', this.menuItems);
+    console.log('User Role from localStorage:', localStorage.getItem('userRole'));
+  }
   isExpanded(index: number): boolean {
     return this.expandedPanels().has(index);
   }

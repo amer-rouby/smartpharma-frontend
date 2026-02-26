@@ -1,11 +1,13 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
+import { CategoryService } from '../../../core/services/category.service';
 import { ProductRequest } from '../../../core/models/product.model';
+import { Category } from '../../../core/models/category';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 
@@ -16,13 +18,16 @@ import { LanguageService } from '../../../core/services/language.service';
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss'
 })
-export class ProductFormComponent {
+export class ProductFormComponent implements OnInit {
   private readonly productService = inject(ProductService);
+  private readonly categoryService = inject(CategoryService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
-  readonly languageService = inject(LanguageService); // ✅ بدون private
+
+  // ✅ FIXED: Remove 'private' so template can access it
+  readonly translate = inject(TranslateService);
+  readonly languageService = inject(LanguageService);
 
   readonly product = signal<ProductRequest>({
     name: '',
@@ -37,19 +42,11 @@ export class ProductFormComponent {
   });
 
   readonly loading = signal(false);
+  readonly categoriesLoading = signal(false);
   readonly isEditMode = signal(false);
   readonly productId = signal<number | null>(null);
 
-  readonly categories = [
-    'CATEGORIES.PAINKILLERS',
-    'CATEGORIES.ANTIBIOTICS',
-    'CATEGORIES.CARDIO',
-    'CATEGORIES.DIGESTIVE',
-    'CATEGORIES.ALLERGY',
-    'CATEGORIES.VITAMINS',
-    'PRODUCTS.COSMETICS',
-    'PRODUCTS.OTHER'
-  ];
+  readonly categories = signal<Category[]>([]);
 
   readonly unitTypes = [
     { value: 'BOX', label: 'PRODUCTS.UNIT_BOX' },
@@ -68,7 +65,9 @@ export class ProductFormComponent {
     this.isEditMode() ? 'PRODUCTS.EDIT_SUBTITLE' : 'PRODUCTS.ADD_SUBTITLE'
   );
 
-  constructor() {
+  ngOnInit(): void {
+    this.loadCategories();
+
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode.set(true);
@@ -76,6 +75,26 @@ export class ProductFormComponent {
         this.loadProduct();
       } else {
         this.generateUniqueBarcode();
+      }
+    });
+  }
+
+  loadCategories(): void {
+    this.categoriesLoading.set(true);
+
+    this.categoryService.getActiveCategories().subscribe({
+      next: (data) => {
+        this.categories.set(data);
+        this.categoriesLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.categoriesLoading.set(false);
+        this.snackBar.open(
+          this.translate.instant('CATEGORIES.LOAD_ERROR'),
+          this.translate.instant('COMMON.CLOSE'),
+          { duration: 3000 }
+        );
       }
     });
   }
@@ -157,14 +176,6 @@ export class ProductFormComponent {
     this.snackBar.open(this.translate.instant('PRODUCTS.BARCODE_REGENERATED'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
   }
 
-  translateCategory(key: string): string {
-    return this.translate.instant(key);
-  }
-
-  translateUnitType(key: string): string {
-    return this.translate.instant(key);
-  }
-
   formatCurrency(amount: number): string {
     const lang = this.languageService.getCurrentLanguage();
     return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
@@ -174,13 +185,21 @@ export class ProductFormComponent {
     }).format(amount);
   }
 
-  // ✅ Helper method للـ template
   isArabic(): boolean {
     return this.languageService.getCurrentLanguage() === 'ar';
   }
 
   getCurrencySuffix(): string {
     return this.isArabic() ? 'ج.م' : 'EGP';
+  }
+
+  getCategoryName(category: Category): string {
+    return category.name;
+  }
+
+  // ✅ Helper method for template to translate unit types
+  translateUnitType(key: string): string {
+    return this.translate.instant(key);
   }
 
   private showSuccess(key: string, params?: any): void {

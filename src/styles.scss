@@ -489,3 +489,21 @@ app-footer {
 /* =========================================
    ✨ End of File
    ========================================= */
+// Global override for sidebar
+app-sidebar {
+
+  .mat-list-item,
+  .mat-expansion-panel-header,
+  .mat-expansion-panel-header-title,
+  .mat-expansion-indicator,
+  mat-icon {
+    color: white !important;
+  }
+
+  // Force all text elements
+  span,
+  div,
+  a {
+    color: white !important;
+  }
+}

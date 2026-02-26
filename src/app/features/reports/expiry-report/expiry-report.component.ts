@@ -9,6 +9,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
 import { ReportService, ReportRequest } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ExportService } from '../../../core/services/export.service';
 
 interface ExpiryData {
   totalExpiring: number;
@@ -46,7 +47,7 @@ export class ExpiryReportComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
-
+private readonly exportService = inject(ExportService);
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
 
   readonly expiryData = signal<ExpiryData | null>(null);
@@ -54,7 +55,7 @@ export class ExpiryReportComponent implements OnInit {
   readonly reportError = signal<string>('');
 
   readonly displayedColumns = ['productName', 'batchNumber', 'expiryDate', 'daysUntilExpiry', 'currentStock', 'status'];
-
+  readonly exportLoading = signal(false);
   // ✅ FIXED: Clean Chart.js configuration with proper 'data:' property
   readonly doughnutChartData: ChartConfiguration<'doughnut'>['data'] = {
     labels: ['عاجل (7 أيام)', 'تحذير (30 يوم)', 'جيد (90 يوم)'],
@@ -78,6 +79,19 @@ export class ExpiryReportComponent implements OnInit {
     this.generateReport();
   }
 
+  exportPDF(): void {
+    this.exportLoading.set(true);
+
+    this.exportService.exportExpensesPdf(
+      this.getPharmacyId(),
+      0,
+      100,
+      true  // preview = true
+    ).subscribe({
+      next: () => this.exportLoading.set(false),
+      error: () => this.exportLoading.set(false)
+    });
+  }
   generateReport(): void {
     this.reportLoading.set(true);
     this.reportError.set('');
@@ -110,9 +124,9 @@ export class ExpiryReportComponent implements OnInit {
     ];
   }
 
-  exportPDF(): void {
-    this.snackBar.open(this.translate.instant('REPORTS.EXPORTING_PDF'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
-  }
+  // exportPDF(): void {
+  //   this.snackBar.open(this.translate.instant('REPORTS.EXPORTING_PDF'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
+  // }
 
   getStatusColor(status: string): 'warn' | 'accent' | 'primary' {
     const colors: Record<string, 'warn' | 'accent' | 'primary'> = {
