@@ -11,7 +11,12 @@ export interface User {
   lastLoginAt?: string;
 }
 
-export type UserRole = 'ADMIN' | 'PHARMACIST' | 'VIEWER' | 'MANAGER';
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  PHARMACIST = 'PHARMACIST',
+  VIEWER = 'VIEWER',
+  MANAGER = 'MANAGER'
+}
 
 export interface AuthTokens {
   accessToken: string;
@@ -32,4 +37,33 @@ export interface RegisterData {
   username: string;
   password: string;
   fullName: string;
+}
+export interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  role: UserRole;
+  isActive: boolean;
+  pharmacyId: number;
+  pharmacyName?: string;
+  lastLoginAt?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UserRequest {
+  username: string;
+  password?: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  role: UserRole;
+  pharmacyId: number;
+  isActive?: boolean;
+}
+
+export interface UsersCountResponse {
+  count: number;
 }
