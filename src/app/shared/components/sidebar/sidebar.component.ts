@@ -101,35 +101,22 @@ export class SidebarComponent {
 
   readonly expandedPanels = signal<Set<number>>(new Set());
 
-  // ✅ الجديد (بيجيب الـ role من currentUser)
   hasAccess(roles?: string[]): boolean {
     if (!roles || roles.length === 0) return true;
-
-    // ✅ جيب الـ currentUser من localStorage
     const currentUserStr = localStorage.getItem('currentUser');
-
     if (!currentUserStr) {
       console.warn('No currentUser found in localStorage!');
       return false;
     }
-
     try {
       const currentUser = JSON.parse(currentUserStr);
-      const userRole = currentUser?.role;  // ✅ الدور موجود جوه الـ currentUser
-
-      console.log('Sidebar - User Role from currentUser:', userRole);
-      console.log('Sidebar - Required Roles:', roles);
-
+      const userRole = currentUser?.role;
       if (!userRole) {
         console.warn('No role found in currentUser!');
         return false;
       }
-
       const hasAccess = roles.includes(userRole);
-      console.log('Has Access:', hasAccess);
-
       return hasAccess;
-
     } catch (error) {
       console.error('Error parsing currentUser:', error);
       return false;
@@ -146,11 +133,6 @@ export class SidebarComponent {
       }
       return newPanels;
     });
-  }
-  ngOnInit(): void {
-    console.log('Sidebar initialized');
-    console.log('Menu Items:', this.menuItems);
-    console.log('User Role from localStorage:', localStorage.getItem('userRole'));
   }
   isExpanded(index: number): boolean {
     return this.expandedPanels().has(index);

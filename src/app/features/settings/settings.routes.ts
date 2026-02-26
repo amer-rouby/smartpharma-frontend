@@ -7,12 +7,12 @@ export const SETTINGS_ROUTES: Routes = [
     loadComponent: () => import('./settings/settings.component')
       .then(m => m.SettingsComponent)
   },
-  // {
-  //   path: 'profile',
-  //   loadComponent: () => import('./profile/profile-settings.component')
-  //     .then(m => m.ProfileSettingsComponent),
-  //   canActivate: [authGuard]
-  // },
+  {
+    path: 'profile',
+    loadComponent: () => import('./profile/profile-settings.component')
+      .then(m => m.ProfileSettingsComponent),
+    canActivate: [authGuard]
+  },
   {
     path: 'pharmacy',
     loadComponent: () => import('./pharmacy/pharmacy-settings.component')
@@ -25,12 +25,12 @@ export const SETTINGS_ROUTES: Routes = [
       .then(m => m.USERS_ROUTES),
     canActivate: [authGuard]
   },
-  // {
-  //   path: 'notifications',
-  //   loadComponent: () => import('./notifications/notification-settings.component')
-  //     .then(m => m.NotificationSettingsComponent),
-  //   canActivate: [authGuard]
-  // },
+  {
+    path: 'notifications',
+    loadComponent: () => import('./notifications/notification-settings.component')
+      .then(m => m.NotificationSettingsComponent),
+    canActivate: [authGuard]
+  },
   // {
   //   path: 'security',
   //   loadComponent: () => import('./security/security-settings.component')
