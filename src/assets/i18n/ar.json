@@ -517,7 +517,19 @@
     "TIMEZONE": "المنطقة الزمنية",
     "DATE_FORMAT": "صيغة التاريخ",
     "SAVE": "حفظ الإعدادات",
-    "SUCCESS_UPDATE": "تم تحديث الإعدادات بنجاح"
+    "SUCCESS_UPDATE": "تم تحديث الإعدادات بنجاح",
+    "PHARMACY_SUBTITLE": "تحديث معلومات الصيدلية والتفضيلات",
+    "PHARMACY_INFO": "معلومات الصيدلية",
+    "LEGAL_INFO": "المعلومات القانونية",
+    "PREFERENCES": "التفضيلات",
+    "TIME_FORMAT": "صيغة الوقت",
+    "EMAIL_NOTIFICATIONS": "إشعارات البريد الإلكتروني",
+    "SMS_NOTIFICATIONS": "إشعارات الرسائل القصيرة",
+    "LOW_STOCK_ALERTS": "تنبيهات المخزون المنخفض",
+    "EXPIRY_ALERTS": "تنبيهات الصلاحية",
+    "LOAD_ERROR": "فشل تحميل الإعدادات",
+    "SAVE_SUCCESS": "تم حفظ الإعدادات بنجاح",
+    "SAVE_ERROR": "فشل حفظ الإعدادات"
   },
   "AUTH": {
     "LOGIN": "تسجيل الدخول",

@@ -1,0 +1,155 @@
+<div class="settings-page">
+  <app-page-header [title]="'SETTINGS.PHARMACY' | translate" [subtitle]="'SETTINGS.PHARMACY_SUBTITLE' | translate"
+    icon="store">
+  </app-page-header>
+
+  <mat-card>
+    <mat-card-content>
+      @if (loading()) {
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+      }
+
+      @if (!loading()) {
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="settings-form">
+
+        <!-- Pharmacy Info Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.PHARMACY_INFO' | translate}}</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.PHARMACY_NAME' | translate}} *</mat-label>
+              <input matInput formControlName="pharmacyName">
+              @if (form.get('pharmacyName')?.invalid && form.get('pharmacyName')?.touched) {
+              <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.PHARMACY_PHONE' | translate}}</mat-label>
+              <input matInput formControlName="phone" type="tel">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{'SETTINGS.PHARMACY_ADDRESS' | translate}}</mat-label>
+              <textarea matInput formControlName="address" rows="2"></textarea>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.PHARMACY_EMAIL' | translate}}</mat-label>
+              <input matInput formControlName="email" type="email">
+              @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+              <mat-error>{{'VALIDATION.EMAIL_INVALID' | translate}}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Legal Info Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.LEGAL_INFO' | translate}}</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.PHARMACY_LICENSE' | translate}}</mat-label>
+              <input matInput formControlName="licenseNumber">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.TAX_NUMBER' | translate}}</mat-label>
+              <input matInput formControlName="taxNumber">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.COMMERCIAL_REGISTER' | translate}}</mat-label>
+              <input matInput formControlName="commercialRegister">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Preferences Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.PREFERENCES' | translate}}</h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.CURRENCY' | translate}}</mat-label>
+              <mat-select formControlName="currency">
+                @for (curr of currencies; track curr) {
+                <mat-option [value]="curr">{{curr}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.TIMEZONE' | translate}}</mat-label>
+              <mat-select formControlName="timezone">
+                @for (tz of timezones; track tz.value) {
+                <mat-option [value]="tz.value">{{tz.label}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.DATE_FORMAT' | translate}}</mat-label>
+              <mat-select formControlName="dateFormat">
+                @for (fmt of dateFormats; track fmt.value) {
+                <mat-option [value]="fmt.value">{{fmt.label}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.TIME_FORMAT' | translate}}</mat-label>
+              <mat-select formControlName="timeFormat">
+                @for (fmt of timeFormats; track fmt.value) {
+                <mat-option [value]="fmt.value">{{fmt.label}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.NOTIFICATIONS' | translate}}</h3>
+
+          <div class="checkbox-grid">
+            <mat-checkbox formControlName="emailNotifications" color="primary">
+              {{'SETTINGS.EMAIL_NOTIFICATIONS' | translate}}
+            </mat-checkbox>
+            <mat-checkbox formControlName="smsNotifications" color="primary">
+              {{'SETTINGS.SMS_NOTIFICATIONS' | translate}}
+            </mat-checkbox>
+            <mat-checkbox formControlName="lowStockAlerts" color="primary">
+              {{'SETTINGS.LOW_STOCK_ALERTS' | translate}}
+            </mat-checkbox>
+            <mat-checkbox formControlName="expiryAlerts" color="primary">
+              {{'SETTINGS.EXPIRY_ALERTS' | translate}}
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading()">
+            <mat-icon>close</mat-icon>
+            <span>{{'COMMON.CANCEL' | translate}}</span>
+          </button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading() || form.invalid">
+            @if (loading()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+            <mat-icon>save</mat-icon>
+            }
+            <span>{{loading() ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate)}}</span>
+          </button>
+        </div>
+      </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
