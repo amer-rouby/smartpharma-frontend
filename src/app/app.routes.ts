@@ -31,18 +31,33 @@ export const routes: Routes = [
       },
       {
         path: 'stock',
-        loadComponent: () => import('./features/stock/stock-management/stock-management.component')
-          .then(m => m.StockManagementComponent)
-      },
-      {
-        path: 'stock/add-batch',
-        loadComponent: () => import('./features/stock/stock-batch-form/stock-batch-form.component')
-          .then(m => m.StockBatchFormComponent)
-      },
-      {
-        path: 'stock/batches/:id/edit',
-        loadComponent: () => import('./features/stock/stock-batch-form/stock-batch-form.component')
-          .then(m => m.StockBatchFormComponent)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/stock/stock-management/stock-management.component')
+              .then(m => m.StockManagementComponent)
+          },
+          {
+            path: 'alerts',
+            loadComponent: () => import('./features/stock/stock-alerts/stock-alerts.component')
+              .then(m => m.StockAlertsComponent)
+          },
+          {
+            path: 'add-batch',
+            loadComponent: () => import('./features/stock/stock-batch-form/stock-batch-form.component')
+              .then(m => m.StockBatchFormComponent)
+          },
+          {
+            path: 'batches/:id/edit',
+            loadComponent: () => import('./features/stock/stock-batch-form/stock-batch-form.component')
+              .then(m => m.StockBatchFormComponent)
+          },
+          {
+            path: 'history',
+            loadComponent: () => import('./features/stock/stock-movements/stock-movements.component')
+              .then(m => m.StockMovementsComponent)
+          }
+        ]
       },
       {
         path: 'sales',
@@ -76,6 +91,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/notification-bell/notifications.component')
           .then(m => m.NotificationsComponent),
         title: 'التنبيهات - صيدليتي الذكية'
+      },
+      {
+        path: 'help',
+        loadComponent: () => import('./features/help/help.component')
+          .then(m => m.HelpComponent),
+        canActivate: [authGuard],
+        title: 'HELP.TITLE'
       },
       {
         path: '**',
