@@ -43,10 +43,10 @@ export const SETTINGS_ROUTES: Routes = [
   //     .then(m => m.LanguageSettingsComponent),
   //   canActivate: [authGuard]
   // },
-  // {
-  //   path: 'backup',
-  //   loadComponent: () => import('./backup/backup-settings.component')
-  //     .then(m => m.BackupSettingsComponent),
-  //   canActivate: [authGuard]
-  // }
+  {
+    path: 'backup',
+    loadComponent: () => import('./backup/backup-settings.component')
+      .then(m => m.BackupSettingsComponent),
+    canActivate: [authGuard]
+  }
 ];

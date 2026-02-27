@@ -29,7 +29,7 @@ export class SettingsComponent {
     { icon: 'store', labelKey: 'SETTINGS.PHARMACY', route: '/settings/pharmacy' },
     { icon: 'notifications', labelKey: 'SETTINGS.NOTIFICATIONS', route: '/settings/notifications' },
     { icon: 'security', labelKey: 'SETTINGS.SECURITY', route: '/settings/security' },
-    { icon: 'language', labelKey: 'SETTINGS.LANGUAGE', route: '/settings/language' },
+    // { icon: 'language', labelKey: 'SETTINGS.LANGUAGE', route: '/settings/language' },
     { icon: 'backup', labelKey: 'SETTINGS.BACKUP', route: '/settings/backup' }
   ]);
 
