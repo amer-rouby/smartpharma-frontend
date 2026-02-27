@@ -1,18 +1,48 @@
-interface NotificationCategory {
-  id: string;
-  title: string;
-  icon: string;
-  settings: NotificationSetting[];
+export interface NotificationSettings {
+  id: number;
+  userId: number;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+  soundEnabled: boolean;
+  vibrationEnabled: boolean;
+  quietHoursEnabled: boolean;
+  quietHoursStart: string;
+  quietHoursEnd: string;
+  notifyLowStock: boolean;
+  notifyOutOfStock: boolean;
+  notifyExpiryWarning: boolean;
+  notifyExpiredProducts: boolean;
+  notifyNewSale: boolean;
+  notifyLargeSale: boolean;
+  notifyRefund: boolean;
+  notifyNewExpense: boolean;
+  notifyLargeExpense: boolean;
+  notifySystemUpdates: boolean;
+  notifyBackupReminder: boolean;
+  notifySecurityAlerts: boolean;
+  updatedAt: string;
 }
 
-interface NotificationSetting {
-  key: string;
-  label: string;
-  description: string;
-  enabled: boolean;
-  channels: {
-    email: boolean;
-    sms: boolean;
-    push: boolean;
-  };
+export interface NotificationSettingsRequest {
+  emailNotifications?: boolean;
+  smsNotifications?: boolean;
+  pushNotifications?: boolean;
+  soundEnabled?: boolean;
+  vibrationEnabled?: boolean;
+  quietHoursEnabled?: boolean;
+  quietHoursStart?: string;
+  quietHoursEnd?: string;
+  notifyLowStock?: boolean;
+  notifyOutOfStock?: boolean;
+  notifyExpiryWarning?: boolean;
+  notifyExpiredProducts?: boolean;
+  notifyNewSale?: boolean;
+  notifyLargeSale?: boolean;
+  notifyRefund?: boolean;
+  notifyNewExpense?: boolean;
+  notifyLargeExpense?: boolean;
+  notifySystemUpdates?: boolean;
+  notifyBackupReminder?: boolean;
+  notifySecurityAlerts?: boolean;
 }

@@ -31,12 +31,12 @@ export const SETTINGS_ROUTES: Routes = [
       .then(m => m.NotificationSettingsComponent),
     canActivate: [authGuard]
   },
-  // {
-  //   path: 'security',
-  //   loadComponent: () => import('./security/security-settings.component')
-  //     .then(m => m.SecuritySettingsComponent),
-  //   canActivate: [authGuard]
-  // },
+  {
+    path: 'security',
+    loadComponent: () => import('./security/security-settings.component')
+      .then(m => m.SecuritySettingsComponent),
+    canActivate: [authGuard]
+  },
   // {
   //   path: 'language',
   //   loadComponent: () => import('./language/language-settings.component')
