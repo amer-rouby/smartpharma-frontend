@@ -4,45 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse } from '../models';
-
-export interface StockMovement {
-  id: number;
-  batchId: number;
-  productName: string;
-  batchNumber: string;
-  movementType: 'STOCK_IN' | 'STOCK_OUT' | 'STOCK_ADJUSTMENT' | 'TRANSFER_IN' | 'TRANSFER_OUT' | 'EXPIRED' | 'DISCARDED';
-  quantity: number;
-  quantityBefore: number;
-  quantityAfter: number;
-  unitPrice?: number;
-  totalValue?: number;
-  referenceNumber?: string;
-  reason?: string;
-  notes?: string;
-  movementDate: string;
-  userId: number;
-  userName: string;
-  pharmacyId: number;
-}
-
-export interface StockMovementStats {
-  totalMovements: number;
-  totalStockIn: number;
-  totalStockOut: number;
-  totalAdjustments: number;
-  totalExpired: number;
-  totalTransferred: number;
-}
-
-export interface CreateMovementRequest {
-  batchId: number;
-  movementType: string;
-  quantity: number;
-  unitPrice?: number;
-  referenceNumber?: string;
-  reason?: string;
-  notes?: string;
-}
+import { CreateMovementRequest, StockMovement, StockMovementStats } from '../models/Stock-movement.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +13,7 @@ export interface CreateMovementRequest {
 export class StockMovementService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/stock/movements';
+  private readonly apiUrl = `${environment.apiUrl}/stock/movements`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

@@ -7,8 +7,9 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
-import { ReportService, ReportRequest, SalesReportData } from '../../../core/services/report.service';
+import { ReportService  } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReportRequest, SalesReportData } from '../../../core/models/Report.model';
 
 interface DailySalesRow {
   date: string;

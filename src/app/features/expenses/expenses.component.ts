@@ -6,7 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../shared/material.module';
-import { ExpenseService, Expense, ExpenseCategory } from '../../core/services/expense.service';
+import { ExpenseService } from '../../core/services/expense.service';
 import { AddExpenseDialogComponent } from './add-expense-dialog/add-expense-dialog.component';
 
 interface ExpenseRow {

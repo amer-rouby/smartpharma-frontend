@@ -7,8 +7,9 @@ import { timer, switchMap, tap, catchError, of } from 'rxjs';
 import { MaterialModule } from '../../material.module';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
-import { NotificationService, NotificationModel } from '../../../core/services/notification.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { output } from '@angular/core';
+import { NotificationModel } from '../../../core/models/Notification.model';
 
 @Component({
   selector: 'app-header',

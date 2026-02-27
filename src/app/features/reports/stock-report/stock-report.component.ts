@@ -7,8 +7,9 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
-import { ReportService, ReportRequest, StockReportData } from '../../../core/services/report.service';
+import { ReportService} from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ReportRequest, StockReportData } from '../../../core/models/Report.model';
 
 interface StockCategoryRow {
   categoryName: string;

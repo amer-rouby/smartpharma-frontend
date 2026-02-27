@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { ApiResponse } from '../../models';
 import { PharmacySettings, PharmacySettingsRequest } from '../../models/settings/pharmacy-settings.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { PharmacySettings, PharmacySettingsRequest } from '../../models/settings
 export class PharmacySettingsService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/settings/pharmacy';
+  private readonly apiUrl = `${environment.apiUrl}/settings/pharmacy`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

@@ -4,8 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../../shared/material.module';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { NotificationService, NotificationModel } from '../../core/services/notification.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { Router } from '@angular/router';
+import { NotificationModel } from '../../core/models/Notification.model';
 
 @Component({
   selector: 'app-notifications',

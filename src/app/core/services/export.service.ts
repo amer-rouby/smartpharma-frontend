@@ -4,17 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from './auth.service';
-
-export interface ExportOptions {
-  fileName: string;
-  fileType: 'pdf' | 'excel';
-  endpoint: string;
-  params?: Record<string, any>;
-  preview?: boolean;
-  onSuccess?: (blob: Blob) => void;
-  onError?: (error: any) => void;
-}
-
+import { ExportOptions } from '../models/Export.model';
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
@@ -22,7 +13,7 @@ export class ExportService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly baseUrl = 'http://localhost:8080/api/reports/export';
+  private readonly baseUrl = `${environment.apiUrl}/reports/export`;
 
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();

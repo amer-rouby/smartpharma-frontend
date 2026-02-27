@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { ApiResponse } from '../../models';
 import { NotificationSettings, NotificationSettingsRequest } from '../../models/settings/notification-setting.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { NotificationSettings, NotificationSettingsRequest } from '../../models/
 export class NotificationSettingsService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/settings/notifications';
+  private readonly apiUrl = `${environment.apiUrl}/settings/notifications`;
 
   private getUserId(): number {
     const user = this.authService.getCurrentUser();

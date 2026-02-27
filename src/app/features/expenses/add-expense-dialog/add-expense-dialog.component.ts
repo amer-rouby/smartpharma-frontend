@@ -5,8 +5,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../../shared/material.module';
-import { Expense, ExpenseService } from '../../../core/services/expense.service';
+import {ExpenseService } from '../../../core/services/expense.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { Expense } from '../../../core/models/Expense.model';
 
 @Component({
   selector: 'app-add-expense-dialog',

@@ -4,20 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { SaleRequest } from '../models';
-import { SaleResponse, SaleSearchResult } from '../models/sale.model';
-
-export interface TodaySalesResponse {
-  totalAmount: number;
-  count: number;
-  sales?: any[];
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  statusCode: number;
-}
+import { ApiResponse, SaleResponse, SaleSearchResult, TodaySalesResponse } from '../models/sale.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +13,7 @@ export interface ApiResponse<T> {
 export class SalesService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = `${environment.apiUrl}`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

@@ -5,13 +5,14 @@ import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse, PaginatedResponse} from '../models';
 import { Product, ProductRequest, ProductsCountResponse } from '../models/product.model';
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/products';
+  private readonly apiUrl = `${environment.apiUrl}/products`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

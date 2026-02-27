@@ -3,56 +3,9 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { Expense, ExpenseCategory, ExpenseSummary } from '../models/Expense.model';
+import { environment } from '../../../environments/environment';
 
-export interface Expense {
-  id?: number;
-  pharmacyId: number;
-  category: ExpenseCategory;
-  title: string;
-  description?: string;
-  amount: number;
-  expenseDate: string;
-  paymentMethod?: string;
-  referenceNumber?: string;
-  attachmentUrl?: string;
-  createdBy?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export type ExpenseCategory =
-  | 'PURCHASES'
-  | 'SALARIES'
-  | 'RENT'
-  | 'UTILITIES'
-  | 'MAINTENANCE'
-  | 'MARKETING'
-  | 'INSURANCE'
-  | 'LICENSES'
-  | 'TRANSPORT'
-  | 'OTHER';
-
-export interface ExpenseSummary {
-  totalExpenses: number;
-  totalTransactions: number;
-  averageExpense: number;
-  expensesByCategory: Array<{
-    category: string;
-    amount: number;
-  }>;
-  dailyExpenses: Array<{
-    date: string;
-    amount: number;
-    count: number;
-  }>;
-  recentExpenses: Array<{
-    id: number;
-    title: string;
-    category: ExpenseCategory;
-    amount: number;
-    expenseDate: string;
-  }>;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -60,7 +13,7 @@ export interface ExpenseSummary {
 export class ExpenseService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly baseUrl = 'http://localhost:8080/api/expenses';
+  private readonly baseUrl = `${environment.apiUrl}/expenses`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

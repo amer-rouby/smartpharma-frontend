@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse } from '../models';
 import { User, UserRequest, UsersCountResponse } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { User, UserRequest, UsersCountResponse } from '../models/user.model';
 export class UserService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/users';
+  private readonly apiUrl = `${environment.apiUrl}/users`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

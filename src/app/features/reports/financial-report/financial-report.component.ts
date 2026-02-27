@@ -7,9 +7,10 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
-import { ReportService, ReportRequest, FinancialReportData } from '../../../core/services/report.service';
+import { ReportService } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ExportService } from '../../../core/services/export.service';
+import { FinancialReportData, ReportRequest } from '../../../core/models/Report.model';
 
 @Component({
   selector: 'app-financial-report',

@@ -3,39 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
-export interface DashboardStats {
-  todayRevenue: number;
-  todayOrders: number;
-  todayAverageOrder: number;
-  totalProducts: number;
-  lowStockProducts: number;
-  outOfStockProducts: number;
-  inventoryValue: number;
-  expiringBatches: number;
-  expiredBatches: number;
-  topProducts: TopProduct[];
-  recentSales: RecentSale[];
-}
-
-export interface TopProduct {
-  productId: number;
-  productName: string;
-  quantitySold: number;
-  totalRevenue: number;
-}
-export interface RecentSale {
-  saleId: number;
-  invoiceNumber: string;
-  totalAmount: number;
-  transactionDate: string;
-  paymentMethod: string;
-}
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  statusCode?: number;
-}
+import { environment } from '../../../environments/environment';
+import { DashboardStats } from '../models/dashboard.model';
+import { ApiResponse } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +13,8 @@ export interface ApiResponse<T> {
 export class DashboardService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly baseUrl = 'http://localhost:8080/api/dashboard';
+  private readonly baseUrl = `${environment.apiUrl}/dashboard`;
+
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

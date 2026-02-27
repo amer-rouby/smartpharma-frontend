@@ -1,17 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
-import { ApiResponse } from '../dashboard.service';
 import { PasswordChangeRequest, Profile, ProfileUpdateRequest } from '../../models/settings/profile.model';
+import { ApiResponse } from '../../models/sale.model';
+import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/profile';
+  private readonly apiUrl = `${environment.apiUrl}/profile`;
 
   private getUserId(): number {
     return this.authService.getUserId() || 1;

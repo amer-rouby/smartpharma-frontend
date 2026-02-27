@@ -4,32 +4,15 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { ApiResponse } from '../../models';
-
-export interface Backup {
-  id: number;
-  backupName: string;
-  filePath: string;
-  fileSize: number;
-  backupType: string;
-  status: string;
-  description: string;
-  createdAt: string;
-  restoredAt?: string;
-}
-
-export interface CreateBackupRequest {
-  backupName: string;
-  backupType: string;
-  description?: string;
-}
-
+import { Backup, CreateBackupRequest } from '../../models/settings/Backup.model';
+import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class BackupService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/settings/backup';
+  private readonly apiUrl = `${environment.apiUrl}/settings/backup`;
 
   private getUserId(): number {
     const user = this.authService.getCurrentUser();

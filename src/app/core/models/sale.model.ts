@@ -42,3 +42,16 @@ export interface SaleSearchResult {
   customerPhone?: string;
   itemsCount: number;
 }
+
+export interface TodaySalesResponse {
+  totalAmount: number;
+  count: number;
+  sales?: any[];
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  statusCode: number;
+}

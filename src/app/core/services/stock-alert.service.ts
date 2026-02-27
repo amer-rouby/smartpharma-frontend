@@ -4,39 +4,15 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse } from '../models';
-
-export interface StockAlert {
-  id: number;
-  productId: number;
-  productName: string;
-  batchNumber?: string;
-  alertType: 'LOW_STOCK' | 'OUT_OF_STOCK' | 'EXPIRING_SOON' | 'EXPIRED';
-  message: string;
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  status: 'UNREAD' | 'READ' | 'RESOLVED';
-  currentStock?: number;
-  minStock?: number;
-  expiryDate?: string;
-  daysUntilExpiry?: number;
-  createdAt: string;
-}
-
-export interface AlertStats {
-  totalAlerts: number;
-  unreadAlerts: number;
-  lowStockAlerts: number;
-  expiredAlerts: number;
-  expiringSoonAlerts: number;
-  outOfStockAlerts: number;
-}
-
+import { AlertStats, StockAlert } from '../models/stock-alert.model';
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class StockAlertService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/alerts';
+  private readonly apiUrl = `${environment.apiUrl}/alerts`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

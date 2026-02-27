@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { ApiResponse } from '../../models';
 import { SecuritySettings } from '../../models/settings/security-settings.model';
 import { PasswordChangeRequest } from '../../models/settings/profile.model';
+import { environment } from '../../../../environments/environment';
 
 
 @Injectable({
@@ -14,7 +15,7 @@ import { PasswordChangeRequest } from '../../models/settings/profile.model';
 export class SecuritySettingsService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/settings/security';
+  private readonly apiUrl = `${environment.apiUrl}/settings/security`;
 
   private getUserId(): number {
     const user = this.authService.getCurrentUser();

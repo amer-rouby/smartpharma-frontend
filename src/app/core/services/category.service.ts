@@ -3,8 +3,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
-import { ApiResponse, PaginatedResponse } from '../models';
+import { ApiResponse } from '../models';
 import { Category, CategoryRequest, CategoriesCountResponse } from '../models/category';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ import { Category, CategoryRequest, CategoriesCountResponse } from '../models/ca
 export class CategoryService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/categories';
+  private readonly apiUrl = `${environment.apiUrl}/categories`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;
