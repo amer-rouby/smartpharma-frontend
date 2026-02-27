@@ -61,7 +61,6 @@ export class SalesService {
     );
   }
 
-  // ✅ ✅ ✅ getAllSales مع 3 parameters ✅ ✅ ✅
   getAllSales(pharmacyId: number, page: number, size: number): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.baseUrl}/sales`, {
       params: {
@@ -85,18 +84,15 @@ export class SalesService {
     );
   }
 
-  // ✅ حدّث الـ methods دي في SalesService:
-
-  // ✅ createSale - استخدام SaleRequest DTO
   createSale(request: SaleRequest): Observable<SaleResponse> {
 
     const pharmacyId = this.getPharmacyId();
 
     return this.http.post<ApiResponse<SaleResponse>>(
-      `${this.baseUrl}/sales?pharmacyId=${pharmacyId}`, // ✅ query param
+      `${this.baseUrl}/sales?pharmacyId=${pharmacyId}`,
       {
         ...request,
-        pharmacyId: pharmacyId   // ✅ كمان في البادي
+        pharmacyId: pharmacyId
       }
     ).pipe(
       map(response => response.data),
@@ -109,7 +105,6 @@ export class SalesService {
     );
   }
 
-  // ✅ getRecentSales - method جديدة
   getRecentSales(limit: number = 10): Observable<SaleSearchResult[]> {
     const pharmacyId = this.getPharmacyId();
 
@@ -131,7 +126,6 @@ export class SalesService {
     );
   }
 
-  // ✅ ✅ ✅ searchSales: pharmacyId = number, query = string ✅ ✅ ✅
   searchSales(pharmacyId: number, query: string): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.baseUrl}/sales/search`, {
       params: {

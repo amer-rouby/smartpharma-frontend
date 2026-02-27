@@ -1,5 +1,3 @@
-// src/app/features/stock/stock-management/stock-management.component.ts
-
 import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -49,7 +47,6 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   readonly pageSize = signal(10);
 
   ngOnInit(): void {
-    console.log('🚀 StockManagementComponent initialized');
     this.loadStockBatches();
   }
 
@@ -57,27 +54,21 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       if (this.paginator) {
         this.dataSource.paginator = this.paginator;
-        console.log('✅ Paginator connected');
       }
       if (this.sort) {
         this.dataSource.sort = this.sort;
-        console.log('✅ Sort connected');
       }
     }, 100);
   }
 
   loadStockBatches(): void {
-    console.log('📥 Loading stock batches (page:', this.currentPage(), ', size:', this.pageSize(), ')');
     this.loading.set(true);
 
     this.stockBatchService.getBatches(this.pharmacyId, this.currentPage(), this.pageSize()).subscribe({
       next: (response: any) => {
-        console.log('✅ API Response received');
-
         let batches: StockBatch[] = [];
         let total = 0;
 
-        // ✅ Handle different response structures
         if (response?.content && Array.isArray(response.content)) {
           batches = response.content;
           total = response.totalElements || response.content.length;
@@ -92,37 +83,27 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
           total = response.length;
         }
 
-        console.log('✅ Batches count:', batches.length, 'Total:', total);
-
         this.dataSource.data = batches;
         this.totalElements.set(total);
 
-        // ✅ Update paginator
         if (this.paginator) {
           this.paginator.length = total;
           this.paginator.pageIndex = this.currentPage();
           this.paginator.pageSize = this.pageSize();
-          console.log('✅ Paginator updated: length=', total);
         }
 
         this.loading.set(false);
       },
       error: (error: unknown) => {
-        console.error('❌ Error loading stock batches:', error);
         this.snackBar.open('فشل في تحميل بيانات المخزون', 'إغلاق', { duration: 3000 });
         this.loading.set(false);
       }
     });
   }
 
-  // ✅ Handle Page Change - Backend Pagination
   onPageChange(event: PageEvent): void {
-    console.log('📄 Page changed:', event.pageIndex, 'Page Size:', event.pageSize);
-
     this.currentPage.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
-
-    // ✅ Reload data from backend for new page
     this.loadStockBatches();
   }
 
@@ -171,17 +152,14 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   onEdit(batch: StockBatch): void {
-    console.log('✏️ Edit batch:', batch.id);
     this.router.navigate(['/stock', 'batches', batch.id, 'edit']);
   }
 
   onAdjust(batch: StockBatch): void {
-    console.log('🔧 Adjust batch:', batch.id);
     this.snackBar.open(`تعديل مخزون: ${batch.batchNumber}`, 'إغلاق', { duration: 2000 });
   }
 
   onDelete(batch: StockBatch): void {
-    console.log('🗑️ Delete batch:', batch.id);
     if (confirm('هل أنت متأكد من حذف هذه الدفعة؟')) {
       this.stockBatchService.deleteBatch(batch.id).subscribe({
         next: () => {
@@ -189,7 +167,6 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
           this.loadStockBatches();
         },
         error: (error: unknown) => {
-          console.error('Error deleting batch:', error);
           this.snackBar.open('فشل في حذف الدفعة', 'إغلاق', { duration: 3000 });
         }
       });
@@ -198,8 +175,6 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
   applyFilter(): void {
     const query = this.searchQuery().trim().toLowerCase();
-    console.log('🔍 Filtering with:', query);
-
     if (query) {
       this.dataSource.filter = query;
     } else {

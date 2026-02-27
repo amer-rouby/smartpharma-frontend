@@ -10,42 +10,8 @@ import { MaterialModule } from '../../material.module';
     MatDialogModule,
     MaterialModule
   ],
-  template: `
-    <div mat-dialog-class="confirm-dialog">
-      <div mat-dialog-content>
-        <mat-icon color="warn">warning</mat-icon>
-        <h2 mat-dialog-title>{{data.title}}</h2>
-        <p>{{data.message}}</p>
-      </div>
-      <div mat-dialog-actions align="end">
-        <button mat-button (click)="onCancel()">
-          {{data.cancelText || 'إلغاء'}}
-        </button>
-        <button mat-raised-button color="warn" (click)="onConfirm()">
-          {{data.confirmText || 'تأكيد'}}
-        </button>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .confirm-dialog {
-      mat-icon {
-        font-size: 48px;
-        width: 48px;
-        height: 48px;
-        margin-bottom: 16px;
-      }
-
-      h2 {
-        margin: 8px 0;
-      }
-
-      p {
-        color: #666;
-        margin: 16px 0;
-      }
-    }
-  `]
+  templateUrl: "./confirm-dialog.component.html",
+  styleUrl:"./confirm-dialog.component.scss"
 })
 export class ConfirmDialogComponent {
   constructor(

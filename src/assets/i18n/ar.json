@@ -875,65 +875,77 @@
     "COUNT": "نسخة",
     "LOAD_ERROR": "فشل تحميل النسخ الاحتياطية"
   },
-  "STOCK_ALERTS": {
-    "TITLE": "تنبيهات المخزون",
-    "SUBTITLE": "متابعة ومراقبة تنبيهات المخزون والصلاحية",
-    "STATS": {
-      "OUT_OF_STOCK": "نفاد المخزون",
-      "EXPIRED": "منتهي الصلاحية",
-      "EXPIRING_SOON": "ينتهي قريباً",
-      "LOW_STOCK": "مخزون منخفض",
-      "UNREAD": "غير مقروءة",
-      "TOTAL": "إجمالي التنبيهات"
-    },
-    "FILTERS": {
-      "TYPE": "نوع التنبيه",
-      "STATUS": "الحالة",
-      "ALL_TYPES": "جميع الأنواع",
-      "ALL_STATUS": "جميع الحالات"
-    },
-    "TYPE": {
-      "LOW_STOCK": "مخزون منخفض",
-      "OUT_OF_STOCK": "نفاد المخزون",
-      "EXPIRING_SOON": "ينتهي قريباً",
-      "EXPIRED": "منتهي الصلاحية"
-    },
-    "SEVERITY": {
-      "LOW": "منخفض",
-      "MEDIUM": "متوسط",
-      "HIGH": "عالي",
-      "CRITICAL": "حرج"
-    },
-    "STATUS": {
-      "UNREAD": "غير مقروء",
-      "READ": "مقروء",
-      "RESOLVED": "تم الحل"
-    },
-    "COLUMN": {
-      "TYPE": "النوع",
-      "PRODUCT": "المنتج",
-      "MESSAGE": "الرسالة",
-      "SEVERITY": "الأهمية",
-      "STATUS": "الحالة",
-      "DATE": "التاريخ"
-    },
-    "ALERTS_LIST": "قائمة التنبيهات",
-    "COUNT": "تنبيه",
-    "MARK_ALL_READ": "تحديد الكل كمقروء",
-    "MARK_READ": "تحديد كمقروء",
-    "RESOLVE": "حل",
-    "BATCH": "الدفعة",
-    "STOCK": "المخزون",
-    "NO_ALERTS": "لا توجد تنبيهات",
-    "NO_ALERTS_DESC": "جميع التنبيهات تم حلها أو لا توجد تنبيهات جديدة",
-    "LOAD_ERROR": "فشل تحميل التنبيهات",
-    "MARKED_READ": "تم تحديد التنبيه كمقروء",
-    "ALL_MARKED_READ": "تم تحديد جميع التنبيهات كمقروءة",
-    "RESOLVED": "تم حل التنبيه",
-    "DELETED": "تم حذف التنبيه",
-    "CONFIRM_RESOLVE": "هل أنت متأكد من حل هذا التنبيه؟",
-    "CONFIRM_DELETE": "هل أنت متأكد من حذف هذا التنبيه؟"
+"STOCK_ALERTS": {
+  "TITLE": "تنبيهات المخزون",
+  "SUBTITLE": "متابعة ومراقبة تنبيهات المخزون والصلاحية",
+  "STATS": {
+    "OUT_OF_STOCK": "نفاد المخزون",
+    "EXPIRED": "منتهي الصلاحية",
+    "EXPIRING_SOON": "ينتهي قريباً",
+    "LOW_STOCK": "مخزون منخفض",
+    "UNREAD": "غير مقروءة",
+    "TOTAL": "إجمالي التنبيهات"
   },
+  "FILTERS": {
+    "TYPE": "نوع التنبيه",
+    "STATUS": "الحالة",
+    "ALL_TYPES": "جميع الأنواع",
+    "ALL_STATUS": "جميع الحالات"
+  },
+  "TYPE": {
+    "LOW_STOCK": "مخزون منخفض",
+    "OUT_OF_STOCK": "نفاد المخزون",
+    "EXPIRING_SOON": "ينتهي قريباً",
+    "EXPIRED": "منتهي الصلاحية"
+  },
+  "SEVERITY": {
+    "LOW": "منخفض",
+    "MEDIUM": "متوسط",
+    "HIGH": "عالي",
+    "CRITICAL": "حرج"
+  },
+  "STATUS": {
+    "UNREAD": "غير مقروء",
+    "READ": "مقروء",
+    "RESOLVED": "تم الحل"
+  },
+  "COLUMN": {
+    "TYPE": "النوع",
+    "PRODUCT": "المنتج",
+    "MESSAGE": "الرسالة",
+    "SEVERITY": "الأهمية",
+    "STATUS": "الحالة",
+    "DATE": "التاريخ"
+  },
+  "ALERTS_LIST": "قائمة التنبيهات",
+  "COUNT": "تنبيه",
+  "MARK_ALL_READ": "تحديد الكل كمقروء",
+  "MARK_READ": "تحديد كمقروء",
+  "RESOLVE": "حل",
+  "BATCH": "الدفعة",
+  "STOCK": "المخزون",
+  "NO_ALERTS": "لا توجد تنبيهات",
+  "NO_ALERTS_DESC": "جميع التنبيهات تم حلها أو لا توجد تنبيهات جديدة",
+  "LOAD_ERROR": "فشل تحميل التنبيهات",
+  "MARKED_READ": "تم تحديد التنبيه كمقروء",
+  "ALL_MARKED_READ": "تم تحديد جميع التنبيهات كمقروءة",
+  "RESOLVED": "تم حل التنبيه",
+  "DELETED": "تم حذف التنبيه",
+  "CONFIRM_RESOLVE": "هل أنت متأكد من حل هذا التنبيه؟",
+  "CONFIRM_RESOLVE_TITLE": "تأكيد حل التنبيه",
+  "CONFIRM_RESOLVE_MSG": "هل أنت متأكد من حل هذا التنبيه؟ لن يظهر بعد الآن.",
+  "CONFIRM_DELETE": "هل أنت متأكد من حذف هذا التنبيه؟",
+  "CONFIRM_DELETE_TITLE": "تأكيد حذف التنبيه",
+  "CONFIRM_DELETE_MSG": "هل أنت متأكد من حذف هذا التنبيه؟ لا يمكن التراجع عن هذا الإجراء.",
+  "CONFIRM_DELETE_ALL": "هل أنت متأكد من حذف جميع التنبيهات؟",
+  "CONFIRM_DELETE_ALL_TITLE": "تأكيد حذف الكل",
+  "CONFIRM_DELETE_ALL_MSG": "هل أنت متأكد من حذف جميع التنبيهات؟ لا يمكن التراجع عن هذا الإجراء.",
+  "CONFIRM_MARK_ALL_READ": "هل أنت متأكد من تحديد جميع التنبيهات كمقروءة؟",
+  "CONFIRM_MARK_ALL_READ_TITLE": "تأكيد تحديد الكل كمقروء",
+  "CONFIRM_MARK_ALL_READ_MSG": "هل تريد تحديد جميع التنبيهات كمقروءة؟",
+  "DELETE_ERROR": "فشل حذف التنبيه",
+  "RESOLVE_ERROR": "فشل حل التنبيه"
+},
   "STOCK_MOVEMENTS": {
     "TITLE": "سجل حركات المخزن",
     "SUBTITLE": "متابعة ومراقبة جميع حركات المخزون",

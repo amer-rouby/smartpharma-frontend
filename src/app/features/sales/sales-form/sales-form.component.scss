@@ -251,7 +251,6 @@
   }
 }
 
-// Product Option Styles
 .product-option {
   display: flex;
   flex-direction: column;
@@ -275,7 +274,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 1024px) {
   .sales-form-container {
     .sales-content {
@@ -319,7 +317,6 @@
   }
 }
 
-// Snackbar Styles
 ::ng-deep {
   .error-snackbar {
     background: #ef4444 !important;

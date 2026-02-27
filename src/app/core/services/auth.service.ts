@@ -54,7 +54,6 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  // ✅ أضف الـ method دي:
   getUserId(): number | null {
     const user = this.getCurrentUser();
     return user?.userId || null;

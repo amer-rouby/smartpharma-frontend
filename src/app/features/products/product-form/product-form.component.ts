@@ -25,7 +25,6 @@ export class ProductFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
 
-  // ✅ FIXED: Remove 'private' so template can access it
   readonly translate = inject(TranslateService);
   readonly languageService = inject(LanguageService);
 
@@ -197,7 +196,6 @@ export class ProductFormComponent implements OnInit {
     return category.name;
   }
 
-  // ✅ Helper method for template to translate unit types
   translateUnitType(key: string): string {
     return this.translate.instant(key);
   }

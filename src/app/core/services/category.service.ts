@@ -18,9 +18,6 @@ export class CategoryService {
     return this.authService.getPharmacyId() || 1;
   }
 
-  /**
-   * Get categories count
-   */
   getCategoriesCount(): Observable<number> {
     const pharmacyId = this.getPharmacyId();
 
@@ -32,9 +29,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * Get all categories for pharmacy
-   */
   getCategories(): Observable<Category[]> {
     const pharmacyId = this.getPharmacyId();
 
@@ -50,9 +44,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * Get active categories only
-   */
   getActiveCategories(): Observable<Category[]> {
     const pharmacyId = this.getPharmacyId();
 
@@ -68,9 +59,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * Get single category by ID
-   */
   getCategory(id: number): Observable<Category> {
     const pharmacyId = this.getPharmacyId();
 
@@ -86,9 +74,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * Create new category
-   */
   createCategory(category: CategoryRequest): Observable<Category> {
     const pharmacyId = this.getPharmacyId();
 
@@ -107,9 +92,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * Update existing category
-   */
   updateCategory(id: number, category: CategoryRequest): Observable<Category> {
     const pharmacyId = this.getPharmacyId();
 
@@ -125,9 +107,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * Soft delete category
-   */
   deleteCategory(id: number): Observable<void> {
     const pharmacyId = this.getPharmacyId();
 
@@ -142,9 +121,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * Search categories by name
-   */
   searchCategories(query: string): Observable<Category[]> {
     const pharmacyId = this.getPharmacyId();
 
@@ -161,10 +137,6 @@ export class CategoryService {
       catchError(this.handleError<Category[]>('searchCategories', []))
     );
   }
-
-  // ==========================================
-  // 🔧 Private Helper Methods
-  // ==========================================
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

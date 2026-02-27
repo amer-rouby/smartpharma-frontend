@@ -1,6 +1,4 @@
 import { NgModule } from '@angular/core';
-
-// ✅ Angular Material Imports
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -38,7 +36,6 @@ import { CommonModule } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 @NgModule({
   exports: [
-    // ✅ Forms & Input
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -48,15 +45,11 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatDatepickerModule,
     MatNativeDateModule,
     MatSlideToggleModule,
-
-    // ✅ Buttons & Actions
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
     MatTooltipModule,
     MatRippleModule,
-
-    // ✅ Layout & Navigation
     MatCardModule,
     MatToolbarModule,
     MatSidenavModule,
@@ -66,16 +59,12 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatTabsModule,
     MatStepperModule,
     MatExpansionModule,
-
-    // ✅ Data Display
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
     MatChipsModule,
     MatBadgeModule,
     MatProgressBarModule,
-
-    // ✅ Feedback & Dialogs
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatDialogModule,

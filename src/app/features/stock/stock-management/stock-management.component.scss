@@ -1,5 +1,3 @@
-// src/app/features/stock/stock-management/stock-management.component.scss
-
 .stock-container {
   padding: 24px;
   direction: rtl;
@@ -146,8 +144,6 @@
       }
     }
   }
-
-  // ✅ Simple Paginator - Material default style
   mat-paginator {
     margin-top: 16px;
     border-top: 1px solid #e9ecef;
@@ -188,7 +184,6 @@
   }
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .stock-container {
     padding: 16px;

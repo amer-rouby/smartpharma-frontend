@@ -1,9 +1,7 @@
-// src/app/core/models/stock.model.ts
-
 export interface StockBatch {
   id: number;
   productId: number;
-  productName?: string;  // ✅ أضف ده عشان العرض في الـ table
+  productName?: string;
   batchNumber: string;
   quantityCurrent: number;
   quantityInitial: number;
@@ -16,7 +14,6 @@ export interface StockBatch {
   status: 'ACTIVE' | 'EXPIRED' | 'DISCARDED' | 'GOOD' | 'LOW' | 'EXPIRING_SOON';
   createdAt?: string;
   updatedAt?: string;
-  // ✅ أضف الـ properties دي عشان تتطابق مع الـ Backend response
   pharmacyId?: number;
   buyPrice?: number;
   sellPrice?: number;

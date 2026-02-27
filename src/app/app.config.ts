@@ -27,7 +27,6 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 
-// Custom Translate Loader
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) { }
 
@@ -40,15 +39,11 @@ export function createTranslateLoader(http: HttpClient) {
   return new CustomTranslateLoader(http);
 }
 
-// Initialize Translation Before App Start
-
 export function initializeApp(translate: TranslateService): () => Promise<void> {
   return async () => {
     const savedLang = localStorage.getItem('language') || 'ar';
     translate.setDefaultLang('ar');
     await firstValueFrom(translate.use(savedLang));
-
-    // Apply direction after language is set
     const dir = savedLang === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.dir = dir;
     document.documentElement.lang = savedLang;

@@ -1,4 +1,3 @@
-// ✅ Export interfaces for use in other components
 export interface Product {
   id: number;
   pharmacyId: number;
@@ -41,12 +40,10 @@ export interface PaginatedResponse<T> {
   empty: boolean;
 }
 
-// ✅ ✅ ✅ Interface للـ count response ✅ ✅ ✅
 export interface ProductsCountResponse {
   count: number;
 }
 
-// ✅ ✅ ✅ Interface للـ ApiResponse wrapper ✅ ✅ ✅
 export interface ApiResponse<T> {
   success: boolean;
   message: string;

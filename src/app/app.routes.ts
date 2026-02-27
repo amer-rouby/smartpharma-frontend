@@ -13,7 +13,6 @@ export const routes: Routes = [
       .then(m => m.AUTH_ROUTES)
   },
   {
-    // ✅ Main Layout - كل الـ routes الجاية هتظهر مع Sidebar/Navbar
     path: '',
     loadComponent: () => import('./layouts/main-layout/main-layout.component')
       .then(m => m.MainLayoutComponent),
@@ -75,13 +74,11 @@ export const routes: Routes = [
           .then(m => m.REPORTS_ROUTES)
       },
       {
-        // ✅ Settings داخل الـ Main Layout
         path: 'settings',
         loadChildren: () => import('./features/settings/settings.routes')
           .then(m => m.SETTINGS_ROUTES)
       },
       {
-        // ✅ Users داخل الـ Main Layout
         path: 'users',
         loadChildren: () => import('./features/users/users.routes')
           .then(m => m.USERS_ROUTES)

@@ -26,7 +26,7 @@ interface GuideTopic {
 @Component({
   selector: 'app-help',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, FormsModule], // ✅ أضف FormsModule هنا
+  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './help.component.html',
   styleUrl: './help.component.scss'
 })

@@ -18,23 +18,17 @@ import { output } from '@angular/core';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit {
-  // Services
+
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
-
-  // Component API
   readonly toggleSidebar = output<void>();
-
-  // State Signals
   readonly searchQuery = signal<string>('');
   readonly currentLang = signal<string>(localStorage.getItem('language') || 'ar');
   readonly notifications = signal<NotificationModel[]>([]);
   readonly totalCount = signal(0);
   readonly unreadCount = signal(0);
-
-  // Derived State (Signals)
   readonly currentUser = toSignal(this.authService.currentUser$);
   readonly notificationCount = computed(() => this.unreadCount());
   readonly userDisplayName = computed(() => this.currentUser()?.fullName ?? 'مستخدم');
@@ -57,11 +51,9 @@ export class HeaderComponent implements OnInit {
   }
 
   private setupNotificationPolling(): void {
-    // Polls every 30s. switchMap cancels previous request if still pending.
     timer(0, 30000).pipe(
       switchMap(() => this.notificationService.getNotifications(0, 1000)),
       catchError(err => {
-        console.error('Notification error', err);
         return of({ content: [], totalElements: 0 });
       })
     ).subscribe(response => {
@@ -72,7 +64,6 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  // --- Search Actions ---
   onSearch(): void {
     const query = this.searchQuery().trim();
     if (query) console.log('Searching for:', query);
@@ -86,9 +77,7 @@ export class HeaderComponent implements OnInit {
     if (event.key === 'Escape') this.clearSearch();
   }
 
-  // --- Notification Actions ---
   markAsRead(notificationId: number): void {
-    // Optimistic Update
     this.notifications.update(list =>
       list.map(n => n.id === notificationId ? { ...n, read: true } : n)
     );
@@ -107,7 +96,6 @@ export class HeaderComponent implements OnInit {
     if (!notification.read) this.markAsRead(notification.id);
   }
 
-  // --- Navigation & Utils ---
   changeLanguage(lang: 'ar' | 'en'): void {
     this.currentLang.set(lang);
     this.translate.use(lang);
@@ -134,7 +122,6 @@ export class HeaderComponent implements OnInit {
       minute: '2-digit'
     });
   }
-  // Helper delegates to service
   getTypeIcon = (type: string) => this.notificationService.getTypeIcon(type);
   getPriorityColor = (priority: string) => this.notificationService.getPriorityColor(priority);
 }

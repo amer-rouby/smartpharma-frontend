@@ -26,7 +26,6 @@
     }
   }
 
-  // Custom Scrollbar
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -37,7 +36,6 @@
   }
 }
 
-// Logo Section
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -58,20 +56,15 @@
   }
 }
 
-// Menu Section
 .sidebar-menu {
   flex: 1;
   padding: 16px 12px;
-
-  // Main Menu Items - Parent
   .mat-list-item {
     height: 56px;
     margin: 6px 0;
     border-radius: 14px;
     transition: all 0.3s ease;
     cursor: pointer;
-
-    // ✅ Make all text and icons WHITE
     mat-icon {
       color: white !important;
       margin-left: 16px;
@@ -103,8 +96,6 @@
       }
     }
   }
-
-  // Expansion Panel - Parent Items
   .sidebar-expansion {
     background: transparent !important;
     box-shadow: none !important;
@@ -117,8 +108,6 @@
         padding: 0 16px;
         border-radius: 14px;
         background: transparent !important;
-
-        // ✅ Make header text and icons WHITE
         .mat-expansion-panel-header-title {
           color: white !important;
           font-size: 15px;
@@ -146,8 +135,6 @@
         padding: 8px 0;
       }
     }
-
-    // Child Items (Submenu)
     .submenu {
       background: rgba(0, 0, 0, 0.15);
       border-radius: 12px;
@@ -159,8 +146,6 @@
         padding-right: 56px;
         margin: 4px 8px;
         border-radius: 10px;
-
-        // ✅ Make ALL child items WHITE
         mat-icon {
           color: white !important;
           font-size: 20px;
@@ -197,7 +182,6 @@
   }
 }
 
-// Footer Section
 .sidebar-footer {
   padding: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -217,7 +201,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
@@ -240,11 +223,8 @@
   }
 }
 
-
-// ✅ Force ALL text and icons to be WHITE
 .sidebar {
 
-  // Main menu items
   .mat-list-item {
     color: white !important;
 
@@ -258,7 +238,6 @@
     }
   }
 
-  // Expansion panels
   .sidebar-expansion {
     background: transparent !important;
 
@@ -284,7 +263,6 @@
       }
     }
 
-    // Submenu items
     .submenu {
       .mat-list-item {
         color: white !important;
@@ -314,7 +292,6 @@
     }
   }
 
-  // Footer
   .sidebar-footer {
     color: white !important;
 

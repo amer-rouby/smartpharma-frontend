@@ -56,7 +56,6 @@ private readonly exportService = inject(ExportService);
 
   readonly displayedColumns = ['productName', 'batchNumber', 'expiryDate', 'daysUntilExpiry', 'currentStock', 'status'];
   readonly exportLoading = signal(false);
-  // ✅ FIXED: Clean Chart.js configuration with proper 'data:' property
   readonly doughnutChartData: ChartConfiguration<'doughnut'>['data'] = {
     labels: ['عاجل (7 أيام)', 'تحذير (30 يوم)', 'جيد (90 يوم)'],
     datasets: [
@@ -86,7 +85,7 @@ private readonly exportService = inject(ExportService);
       this.getPharmacyId(),
       0,
       100,
-      true  // preview = true
+      true
     ).subscribe({
       next: () => this.exportLoading.set(false),
       error: () => this.exportLoading.set(false)
@@ -123,10 +122,6 @@ private readonly exportService = inject(ExportService);
       data.okExpiring || 0
     ];
   }
-
-  // exportPDF(): void {
-  //   this.snackBar.open(this.translate.instant('REPORTS.EXPORTING_PDF'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
-  // }
 
   getStatusColor(status: string): 'warn' | 'accent' | 'primary' {
     const colors: Record<string, 'warn' | 'accent' | 'primary'> = {

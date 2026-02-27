@@ -9,7 +9,7 @@ export const STOCK_ROUTES: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'alerts',  // ✅ أضف الروت ده
+    path: 'alerts',
     loadComponent: () => import('./stock-alerts/stock-alerts.component')
       .then(m => m.StockAlertsComponent),
     canActivate: [authGuard]

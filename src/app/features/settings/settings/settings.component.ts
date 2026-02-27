@@ -39,7 +39,6 @@ export class SettingsComponent {
     this.filterItemsByRole();
   }
 
-  // ✅ استخدام localStorage بدلاً من authService.getUserRole()
   filterItemsByRole(): void {
     const userRole = localStorage.getItem('userRole');
     const items = this.settingsItems().filter(item =>

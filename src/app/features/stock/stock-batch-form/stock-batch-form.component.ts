@@ -1,5 +1,3 @@
-// src/app/features/stock/stock-batch-form/stock-batch-form.component.ts
-
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -37,8 +35,6 @@ export class StockBatchFormComponent implements OnInit {
   readonly loading = signal(false);
   readonly isEditMode = signal(false);
   readonly batchId = signal<number | null>(null);
-
-  // ✅ FIXED: Computed signal for safe iteration in template
   readonly productsList = computed(() => {
     const prods = this.products();
     return Array.isArray(prods) ? prods : [];
@@ -71,7 +67,6 @@ export class StockBatchFormComponent implements OnInit {
   private loadProducts(): void {
     this.stockBatchService.getProducts().subscribe({
       next: (response: any) => {
-        // ✅ Handle different API response structures
         let productsList: Product[] = [];
 
         if (Array.isArray(response)) {
@@ -104,27 +99,20 @@ export class StockBatchFormComponent implements OnInit {
   }
 
   private loadBatchData(id: number): void {
-    console.log('📥 Loading batch data for ID:', id);
     this.loading.set(true);
 
     this.stockBatchService.getBatch(id).subscribe({
-      next: (response: any) => {  // ✅ response مش batch مباشر!
-        console.log('✅ API Response received:', response);
-
-        // ✅ FIXED: Extract batch from response.data
+      next: (response: any) => {
         let batch: StockBatch;
 
         if (response?.data) {
-          batch = response.data;  // ← ← ← ده السطر اللي هيحل المشكلة!
+          batch = response.data;
         } else if (response?.content) {
           batch = response.content;
         } else {
           batch = response;
         }
 
-        console.log('✅ Batch data extracted:', batch);
-
-        // ✅ Populate form with batch data
         this.batchForm.patchValue({
           productId: batch.productId,
           batchNumber: batch.batchNumber,
@@ -139,11 +127,9 @@ export class StockBatchFormComponent implements OnInit {
           status: batch.status || 'ACTIVE'
         });
 
-        console.log('✅ Form populated with data');
         this.loading.set(false);
       },
       error: (error: unknown) => {
-        console.error('❌ Error loading batch:', error);
         this.snackBar.open('فشل في تحميل بيانات الدفعة', 'إغلاق', { duration: 3000 });
         this.loading.set(false);
         this.router.navigate(['/stock']);

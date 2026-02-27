@@ -1,5 +1,3 @@
-// src/app/core/models/sale.model.ts
-
 export interface SaleRequest {
   pharmacyId: number;
   items: SaleItemRequest[];

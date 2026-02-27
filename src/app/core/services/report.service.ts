@@ -1,4 +1,3 @@
-// src/app/core/services/report.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -89,7 +88,7 @@ export interface ExpiryReportData {
 
 export interface ReportRequest {
   pharmacyId: number;
-  startDate?: string;  // ✅ String in YYYY-MM-DD format
+  startDate?: string;
   endDate?: string;
   reportType?: 'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM';
 }
@@ -106,13 +105,11 @@ export class ReportService {
     return this.authService.getPharmacyId() || 1;
   }
 
-  // ✅ Helper: Format date for API (YYYY-MM-DD)
   private formatDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }
 
   getSalesReport(request: ReportRequest): Observable<SalesReportData> {
-    // ✅ No need for HttpParams since we're sending JSON body
     return this.http.post<any>(`${this.baseUrl}/sales`, request).pipe(
       map(response => response.data)
     );

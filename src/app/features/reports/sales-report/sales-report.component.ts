@@ -10,14 +10,12 @@ import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
 import { ReportService, ReportRequest, SalesReportData } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
 
-// ✅ Table Row for Daily Sales (matching API response)
 interface DailySalesRow {
   date: string;
   revenue: number;
   orders: number;
 }
 
-// ✅ Table Row for Top Products
 interface TopProductRow {
   rank: number;
   productName: string;
@@ -44,27 +42,17 @@ export class SalesReportComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
 
-  // ✅ Date signals (strings for API)
   readonly startDate = signal<string>(this.formatDate(new Date(new Date().setMonth(new Date().getMonth() - 1))));
   readonly endDate = signal<string>(this.formatDate(new Date()));
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('MONTHLY');
-
-  // ✅ Report data signals
   readonly salesReportData = signal<SalesReportData | null>(null);
   readonly reportLoading = signal(false);
   readonly reportError = signal<string>('');
-
-  // ✅ Table data - NOW MATCHES API RESPONSE
   readonly dailySalesTableData = signal<DailySalesRow[]>([]);
   readonly topProductsTableData = signal<TopProductRow[]>([]);
-
   readonly dailySalesColumns = ['date', 'revenue', 'orders'];
   readonly topProductsColumns = ['rank', 'productName', 'quantitySold', 'totalRevenue'];
-
-  // ✅ Active table tab
   readonly activeTable = signal<'daily' | 'products'>('daily');
-
-  // ✅ Chart data
   readonly lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [],
     datasets: [
@@ -123,7 +111,7 @@ export class SalesReportComponent implements OnInit {
     this.reportService.getSalesReport(request).subscribe({
       next: (data) => {
         this.salesReportData.set(data);
-        this.updateTables(data);  // ✅ Updated method name
+        this.updateTables(data);
         this.updateCharts(data);
         this.reportLoading.set(false);
       },
@@ -136,9 +124,7 @@ export class SalesReportComponent implements OnInit {
     });
   }
 
-  // ✅ UPDATED: Populate tables with REAL API data
   private updateTables(data: SalesReportData): void {
-    // Daily Sales Table
     if (data.dailySales?.length) {
       const dailyRows: DailySalesRow[] = data.dailySales.map(sale => ({
         date: sale.date,
@@ -148,7 +134,6 @@ export class SalesReportComponent implements OnInit {
       this.dailySalesTableData.set(dailyRows);
     }
 
-    // Top Products Table
     if (data.topProducts?.length) {
       const productRows: TopProductRow[] = data.topProducts.map((product, index) => ({
         rank: index + 1,
@@ -160,15 +145,12 @@ export class SalesReportComponent implements OnInit {
     }
   }
 
-  // ✅ Update charts with API data
   private updateCharts(data: SalesReportData): void {
-    // Line chart - daily sales trend
     if (data.dailySales?.length) {
       this.lineChartData.labels = data.dailySales.map(d => d.date);
       this.lineChartData.datasets[0].data = data.dailySales.map(d => d.revenue);
     }
 
-    // Pie chart - payment methods
     if (data.revenueByPaymentMethod && Object.keys(data.revenueByPaymentMethod).length > 0) {
       this.pieChartData.labels = Object.keys(data.revenueByPaymentMethod).map(key =>
         this.getPaymentMethodLabel(key)
@@ -177,7 +159,6 @@ export class SalesReportComponent implements OnInit {
     }
   }
 
-  // ✅ Toggle between tables
   setActiveTable(tab: 'daily' | 'products'): void {
     this.activeTable.set(tab);
   }

@@ -120,7 +120,6 @@ export class AddExpenseDialogComponent {
 
   expenseDate: Date = new Date();
 
-  // ✅ FIXED: Return explicit boolean values
   isValid(): boolean {
     const hasCategory = !!this.expense.category && this.expense.category.length > 0;
     const hasTitle = !!this.expense.title && this.expense.title.length > 0;
@@ -136,7 +135,6 @@ export class AddExpenseDialogComponent {
       return;
     }
 
-    // Format date properly
     this.expense.expenseDate = this.formatDateForApi(this.expenseDate);
 
     this.expenseService.createExpense(this.expense).subscribe({

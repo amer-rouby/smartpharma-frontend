@@ -4,7 +4,6 @@ import { Observable, map, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
-// ✅ Notification Model - متطابق مع الـ Backend DTO
 export interface NotificationModel {
   id: number;
   title: string;
@@ -19,15 +18,13 @@ export interface NotificationModel {
   time?: string;
   link?: string;
 }
-
-// ✅ Response structure من الـ Backend
 export interface NotificationsResponse {
   content: NotificationModel[];
   totalPages: number;
   totalElements: number;
   pageNumber: number;
   pageSize: number;
-  unreadCount?: number;  // ✅ Added for frontend convenience
+  unreadCount?: number;
 }
 
 @Injectable({
@@ -50,7 +47,6 @@ export class NotificationService {
     return new HttpParams().set('pharmacyId', this.authService.getPharmacyId() || 1);
   }
 
-  // ✅ FIXED: Make public so components can use it
   public getTypeIcon(type: string): string {
     const icons: Record<string, string> = {
       'LOW_STOCK': 'inventory_2',
@@ -63,7 +59,6 @@ export class NotificationService {
     return icons[type] || 'notifications';
   }
 
-  // ✅ FIXED: Make public so components can use it
   public getPriorityColor(priority: string): string {
     const colors: Record<string, string> = {
       'URGENT': '#dc2626',
@@ -106,7 +101,6 @@ export class NotificationService {
     };
   }
 
-  // ✅ FIXED: Return type is string | undefined
   private getNotificationLink(entityType?: string, entityId?: number): string | undefined {
     if (!entityType || !entityId) return undefined;
 

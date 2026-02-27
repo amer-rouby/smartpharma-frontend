@@ -55,28 +55,19 @@ export class StockReportComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
 
-  // ✅ Date signals - استخدم الأنواع المتوافقة مع ReportRequest
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
-
-  // ✅ Report data signals
   readonly stockReportData = signal<StockReportData | null>(null);
   readonly reportLoading = signal(false);
   readonly reportError = signal<string>('');
-
-  // ✅ Table data
   readonly categoryTableData = signal<StockCategoryRow[]>([]);
   readonly lowStockTableData = signal<LowStockRow[]>([]);
   readonly expiringTableData = signal<ExpiringRow[]>([]);
-
-  // ✅ Active table tab
   readonly activeTable = signal<'categories' | 'low-stock' | 'expiring'>('categories');
-
-  // ✅ Chart data - FIXED: Added 'data:' property properly
   readonly barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
     datasets: [
       {
-        data: [],  // ✅ FIXED: Added 'data:' property with colon
+        data: [],
         label: 'القيمة',
         backgroundColor: '#667eea',
         borderColor: '#556cd6',
@@ -100,7 +91,7 @@ export class StockReportComponent implements OnInit {
     labels: [],
     datasets: [
       {
-        data: [],  // ✅ FIXED: Added 'data:' property with colon
+        data: [],
         backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#3b82f6']
       }
     ] as ChartDataset<'doughnut'>[]
@@ -143,9 +134,7 @@ export class StockReportComponent implements OnInit {
     });
   }
 
-  // ✅ FIXED: Added proper parameter type annotation
   private updateTables(data: StockReportData): void {
-    // Categories Table
     if (data.stockByCategory?.length) {
       this.categoryTableData.set(data.stockByCategory.map((cat: any) => ({
         categoryName: cat.categoryName,
@@ -153,8 +142,6 @@ export class StockReportComponent implements OnInit {
         totalValue: cat.totalValue
       })));
     }
-
-    // Low Stock Table
     if (data.lowStockProducts?.length) {
       this.lowStockTableData.set(data.lowStockProducts.map((item: any) => ({
         ...item,
@@ -162,7 +149,6 @@ export class StockReportComponent implements OnInit {
       })));
     }
 
-    // Expiring Table
     if (data.expiringProducts?.length) {
       this.expiringTableData.set(data.expiringProducts.map((item: any) => {
         let status: 'urgent' | 'warning' | 'ok' = 'ok';
@@ -174,15 +160,12 @@ export class StockReportComponent implements OnInit {
     }
   }
 
-  // ✅ FIXED: Added proper parameter type annotation
   private updateCharts(data: StockReportData): void {
-    // Bar chart - Stock by category
     if (data.stockByCategory?.length) {
       this.barChartData.labels = data.stockByCategory.map((c: any) => c.categoryName);
       this.barChartData.datasets[0].data = data.stockByCategory.map((c: any) => c.totalValue);
     }
 
-    // Doughnut chart - Stock status distribution
     const totalItems = data.totalItems || 0;
     const lowStockItems = data.lowStockItems || 0;
     const expiredItems = data.expiredItems || 0;

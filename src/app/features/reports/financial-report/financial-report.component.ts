@@ -32,18 +32,13 @@ export class FinancialReportComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly exportService = inject(ExportService);
 
-  // ✅ Date signals (strings for API)
   readonly startDate = signal<string>(this.formatDate(new Date(new Date().setMonth(new Date().getMonth() - 1))));
   readonly endDate = signal<string>(this.formatDate(new Date()));
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('MONTHLY');
-
-  // ✅ Report data signals
   readonly financialData = signal<FinancialReportData | null>(null);
   readonly reportLoading = signal(false);
   readonly reportError = signal<string>('');
   readonly exportLoading = signal(false);
-
-  // ✅ Chart data
   readonly lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [],
     datasets: [
@@ -126,7 +121,6 @@ export class FinancialReportComponent implements OnInit {
     });
   }
 
-  // ✅ Export PDF with preview
   exportPDF(): void {
     this.exportLoading.set(true);
 
@@ -134,14 +128,13 @@ export class FinancialReportComponent implements OnInit {
       this.getPharmacyId(),
       0,
       100,
-      true  // preview = true
+      true
     ).subscribe({
       next: () => this.exportLoading.set(false),
       error: () => this.exportLoading.set(false)
     });
   }
 
-  // ✅ Export Excel (direct download)
   exportExcel(): void {
     this.exportLoading.set(true);
 
@@ -149,7 +142,7 @@ export class FinancialReportComponent implements OnInit {
       this.getPharmacyId(),
       this.startDate(),
       this.endDate(),
-      false  // preview = false
+      false
     ).subscribe({
       next: () => this.exportLoading.set(false),
       error: () => this.exportLoading.set(false)

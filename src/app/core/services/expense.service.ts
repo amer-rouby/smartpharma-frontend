@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';  // ✅ أضف HttpHeaders
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
@@ -66,7 +66,6 @@ export class ExpenseService {
     return this.authService.getPharmacyId() || 1;
   }
 
-  // ✅ FIXED: Helper method to get auth headers
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders({
@@ -75,7 +74,6 @@ export class ExpenseService {
     });
   }
 
-  // ✅ Create Expense - FIXED: Added headers
   createExpense(expense: Expense): Observable<Expense> {
     const headers = this.getAuthHeaders();
     return this.http.post<any>(this.baseUrl, expense, { headers }).pipe(
@@ -83,7 +81,6 @@ export class ExpenseService {
     );
   }
 
-  // ✅ Get All Expenses (Paginated) - FIXED: Added headers
   getExpenses(page: number = 0, size: number = 10): Observable<any> {
     const headers = this.getAuthHeaders();
     const params = new HttpParams()
@@ -96,7 +93,6 @@ export class ExpenseService {
     );
   }
 
-  // ✅ Get Expense by ID - FIXED: Added headers
   getExpenseById(id: number): Observable<Expense> {
     const headers = this.getAuthHeaders();
     const params = new HttpParams().set('pharmacyId', this.getPharmacyId());
@@ -105,7 +101,6 @@ export class ExpenseService {
     );
   }
 
-  // ✅ Update Expense - FIXED: Added headers
   updateExpense(id: number, expense: Expense): Observable<Expense> {
     const headers = this.getAuthHeaders();
     const params = new HttpParams().set('pharmacyId', this.getPharmacyId());
@@ -114,14 +109,12 @@ export class ExpenseService {
     );
   }
 
-  // ✅ Delete Expense - FIXED: Added headers
   deleteExpense(id: number): Observable<void> {
     const headers = this.getAuthHeaders();
     const params = new HttpParams().set('pharmacyId', this.getPharmacyId());
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { headers, params });
   }
 
-  // ✅ Get Expense Summary (for Reports) - FIXED: Added headers
   getExpenseSummary(startDate?: string, endDate?: string): Observable<ExpenseSummary> {
     const headers = this.getAuthHeaders();
     let params = new HttpParams().set('pharmacyId', this.getPharmacyId());
@@ -134,7 +127,6 @@ export class ExpenseService {
     );
   }
 
-  // ✅ Get Expense Categories (for dropdown) - No auth needed
   getExpenseCategories(): { value: ExpenseCategory; label: string; labelAr: string }[] {
     return [
       { value: 'PURCHASES', label: 'Purchases', labelAr: 'المشتريات' },
@@ -150,7 +142,6 @@ export class ExpenseService {
     ];
   }
 
-  // ✅ Get Payment Methods (for dropdown) - No auth needed
   getPaymentMethods(): { value: string; label: string; labelAr: string }[] {
     return [
       { value: 'CASH', label: 'Cash', labelAr: 'نقدي' },

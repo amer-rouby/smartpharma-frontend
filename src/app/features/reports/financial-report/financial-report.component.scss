@@ -2,7 +2,6 @@
   padding: 24px;
   direction: rtl;
 
-  // ✅ Export Buttons Style
   .export-buttons {
     display: flex;
     gap: 8px;
@@ -27,7 +26,6 @@
     }
   }
 
-  // ✅ Filters Card
   .filters-card {
     margin: 24px 0;
     border-radius: 16px;
@@ -44,7 +42,6 @@
     }
   }
 
-  // ✅ Loading/Error/Empty States
   .loading-overlay,
   .error-card,
   .empty-state {
@@ -84,7 +81,6 @@
     }
   }
 
-  // ✅ Stats Cards Grid
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -136,7 +132,6 @@
     }
   }
 
-  // ✅ Charts Grid
   .charts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -163,7 +158,6 @@
   }
 }
 
-// ✅ Responsive
 @media (max-width: 768px) {
   .reports-container {
     padding: 16px;

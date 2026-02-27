@@ -3,7 +3,6 @@
   direction: rtl;
 }
 
-// Stats Grid
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -96,7 +95,6 @@
   }
 }
 
-// Filters Card
 .filters-card {
   margin-bottom: 24px;
   border-radius: 16px;
@@ -118,7 +116,6 @@
   }
 }
 
-// Loading State
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -133,7 +130,6 @@
   }
 }
 
-// Table Card
 .table-card {
   border-radius: 16px;
 
@@ -221,7 +217,6 @@
   }
 }
 
-// Alert Row Styling
 .alert-row {
   transition: background 0.15s ease;
 
@@ -240,7 +235,6 @@
   }
 }
 
-// Empty State
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -271,7 +265,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .stock-alerts-container {
     padding: 16px;

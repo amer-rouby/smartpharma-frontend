@@ -27,7 +27,7 @@ export class NotificationsComponent implements OnInit {
   readonly notifications = signal<NotificationModel[]>([]);
   readonly filteredNotifications = signal<NotificationModel[]>([]);
   readonly loading = signal(false);
-  readonly selectedTab = signal(0); // 0 = all, 1 = unread
+  readonly selectedTab = signal(0);
   readonly totalCount = signal(0);
   readonly unreadCount = signal(0);
   readonly pageIndex = signal(0);
@@ -35,19 +35,14 @@ export class NotificationsComponent implements OnInit {
   readonly totalElements = signal(0);
 
   ngOnInit(): void {
-    console.log('🔔 NotificationsComponent initialized');
     this.loadNotifications();
   }
 
-  // ✅ FIXED: Load notifications properly
   loadNotifications(): void {
-    console.log('📥 Loading notifications...');
     this.loading.set(true);
 
     this.notificationService.getNotifications(this.pageIndex(), this.pageSize()).subscribe({
       next: (response) => {
-        console.log('✅ Notifications response:', response);
-
         const notificationsList = response.content || [];
         this.notifications.set(notificationsList);
         this.totalElements.set(response.totalElements || 0);
@@ -55,10 +50,6 @@ export class NotificationsComponent implements OnInit {
 
         const unread = notificationsList.filter(n => !n.read);
         this.unreadCount.set(unread.length);
-
-        console.log(`📊 Total: ${notificationsList.length}, Unread: ${unread.length}`);
-
-        // ✅ Apply filter based on selected tab
         this.applyFilter();
         this.loading.set(false);
       },
@@ -71,30 +62,20 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  // ✅ FIXED: Apply filter correctly
   applyFilter(): void {
     const allNotifications = this.notifications();
-    console.log('🔍 Applying filter. Tab:', this.selectedTab(), 'Total notifications:', allNotifications.length);
-
     if (this.selectedTab() === 1) {
-      // Show only unread
       const unreadNotifications = allNotifications.filter(n => {
         const isUnread = !n.read;
-        console.log(`  Notification ${n.id}: read=${n.read}, include=${isUnread}`);
         return isUnread;
       });
       this.filteredNotifications.set(unreadNotifications);
-      console.log(`✅ Showing ${unreadNotifications.length} unread notifications`);
     } else {
-      // Show all
       this.filteredNotifications.set(allNotifications);
-      console.log(`✅ Showing all ${allNotifications.length} notifications`);
     }
   }
 
-  // ✅ FIXED: Handle tab change
   onTabChange(index: number): void {
-    console.log('📑 Tab changed to:', index === 0 ? 'All' : 'Unread');
     this.selectedTab.set(index);
     this.pageIndex.set(0);
     this.applyFilter();
@@ -107,8 +88,6 @@ export class NotificationsComponent implements OnInit {
   }
 
   markAsRead(notificationId: number): void {
-    console.log('🔔 Marking notification as read:', notificationId);
-
     this.notifications.update(list =>
       list.map(n => n.id === notificationId ? { ...n, read: true } : n)
     );
@@ -120,8 +99,6 @@ export class NotificationsComponent implements OnInit {
   }
 
   markAllAsRead(): void {
-    console.log('🔔 Marking all as read');
-
     this.notifications.update(list => list.map(n => ({ ...n, read: true })));
     this.unreadCount.set(0);
     this.applyFilter();

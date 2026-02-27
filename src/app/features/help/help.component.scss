@@ -25,7 +25,6 @@
   }
 }
 
-// FAQ Styles
 .faq-card {
   margin-bottom: 12px;
   border-radius: 12px;
@@ -70,7 +69,6 @@
   }
 }
 
-// Guide Styles
 .guide-section {
   margin-bottom: 24px;
   border-radius: 12px;
@@ -147,7 +145,6 @@
   }
 }
 
-// Shortcuts Styles
 .shortcuts-card {
   border-radius: 12px;
 
@@ -184,7 +181,6 @@
   }
 }
 
-// Contact Styles
 .contact-card {
   max-width: 800px;
   margin: 0 auto;
@@ -261,7 +257,6 @@
   }
 }
 
-// Empty State
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -285,7 +280,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .help-container {
     padding: 16px;

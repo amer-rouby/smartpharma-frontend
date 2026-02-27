@@ -171,7 +171,6 @@ export class UserDialogComponent {
       isActive: formValue.isActive
     };
 
-    // Only include password if it's provided
     if (formValue.password && formValue.password.trim()) {
       request.password = formValue.password;
     }

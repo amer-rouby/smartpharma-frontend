@@ -3,7 +3,6 @@
   direction: rtl;
 }
 
-// Filters Card
 .filters-card {
   margin-bottom: 24px;
 
@@ -21,7 +20,6 @@
   }
 }
 
-// Loading State
 .loading-overlay {
   display: flex;
   flex-direction: column;
@@ -36,7 +34,6 @@
   }
 }
 
-// Table Card
 .table-card {
   border-radius: 16px;
 
@@ -83,7 +80,6 @@
     opacity: 0.7;
   }
 
-  // Status Toggle
   mat-slide-toggle {
     ::ng-deep .mat-mdc-slide-toggle-label {
       margin-right: 8px;
@@ -91,13 +87,11 @@
     }
   }
 
-  // Actions Buttons
   button[mat-icon-button] {
     margin: 0 4px;
   }
 }
 
-// Row Styling
 .clickable-row {
   cursor: pointer;
   transition: background 0.15s ease;
@@ -116,7 +110,6 @@
   }
 }
 
-// Empty State
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -141,7 +134,6 @@
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .categories-container {
     padding: 16px;

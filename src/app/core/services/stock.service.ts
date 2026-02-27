@@ -1,5 +1,3 @@
-// src/app/core/services/stock.service.ts
-
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -28,7 +26,6 @@ export class StockBatchService {
     return new HttpParams().set('pharmacyId', pharmacyId);
   }
 
-  // ✅ Get batches with backend pagination
   getBatches(pharmacyId: number, page: number = 0, size: number = 20): Observable<any> {
     const params = this.getCommonParams(pharmacyId)
       .set('page', page)

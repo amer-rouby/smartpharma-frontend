@@ -100,12 +100,11 @@ export class ExportService {
     window.URL.revokeObjectURL(downloadUrl);
   }
 
-  // ✅ FIXED: Add preview parameter with default value
   exportExpensesPdf(
     pharmacyId: number,
     page: number = 0,
     size: number = 100,
-    preview: boolean = true  // ✅ Added preview parameter
+    preview: boolean = true
   ): Observable<Blob> {
     return this.exportReport({
       fileName: `expenses_${new Date().toISOString().split('T')[0]}.pdf`,
@@ -120,7 +119,7 @@ export class ExportService {
     pharmacyId: number,
     page: number = 0,
     size: number = 100,
-    preview: boolean = false  // ✅ Added preview parameter
+    preview: boolean = false
   ): Observable<Blob> {
     return this.exportReport({
       fileName: `expenses_${new Date().toISOString().split('T')[0]}.xlsx`,
@@ -135,7 +134,7 @@ export class ExportService {
     pharmacyId: number,
     startDate?: string,
     endDate?: string,
-    preview: boolean = false  // ✅ Added preview parameter
+    preview: boolean = false
   ): Observable<Blob> {
     const params: Record<string, any> = { pharmacyId };
     if (startDate) params['startDate'] = startDate;
