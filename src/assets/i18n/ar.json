@@ -618,7 +618,13 @@
     "UPDATE_SUCCESS": "تم تحديث الملف الشخصي بنجاح",
     "UPDATE_ERROR": "فشل تحديث الملف الشخصي",
     "PASSWORD_CHANGED": "تم تغيير كلمة المرور بنجاح",
-    "PASSWORD_ERROR": "فشل تغيير كلمة المرور"
+    "PASSWORD_ERROR": "فشل تغيير كلمة المرور",
+      "UPLOAD_PHOTO": "رفع صورة",
+      "REMOVE_PHOTO": "حذف الصورة",
+      "DROP_IMAGE": "أفلت الصورة هنا",
+      "IMAGE_HINT": "PNG, JPG أو WebP حتى 5MB",
+      "INVALID_FILE_TYPE": "نوع الملف غير مدعوم",
+      "FILE_TOO_LARGE": "حجم الملف كبير جداً"
   },
   "AUTH": {
     "LOGIN": "تسجيل الدخول",

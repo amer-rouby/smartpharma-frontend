@@ -15,13 +15,46 @@
       @if (!loading() && profile()) {
       <div class="profile-header">
         <div class="avatar-section">
-          @if (profile()?.profileImageUrl) {
-          <img [src]="profile()?.profileImageUrl" alt="Profile" class="profile-avatar">
-          } @else {
-          <div class="profile-avatar-placeholder">
-            <mat-icon>person</mat-icon>
+          <div class="avatar-wrapper" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)">
+
+            @if (previewImageUrl() || profile()?.profileImageUrl) {
+            <img [src]="getProfileImageUrl()" alt="Profile" class="profile-avatar">
+            } @else {
+            <div class="profile-avatar-placeholder">
+              <mat-icon>person</mat-icon>
+            </div>
+            }
+
+            <div class="avatar-overlay">
+              <button mat-mini-fab color="primary" (click)="fileInput.click()" type="button">
+                <mat-icon>camera_alt</mat-icon>
+              </button>
+              @if (previewImageUrl() || profile()?.profileImageUrl) {
+              <button mat-mini-fab color="warn" (click)="removeImage()" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+              }
+            </div>
+
+            @if (isDragging()) {
+            <div class="drag-indicator">
+              <mat-icon>cloud_upload</mat-icon>
+              <span>{{'PROFILE.DROP_IMAGE' | translate}}</span>
+            </div>
+            }
+          </div>
+
+          <input #fileInput type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
+            (change)="onFileSelected($event)" class="hidden-input">
+
+          @if (uploading()) {
+          <div class="upload-progress">
+            <mat-progress-bar mode="determinate" [value]="uploadProgress()"></mat-progress-bar>
+            <small>{{uploadProgress()}}%</small>
           </div>
           }
+
           <div class="user-info">
             <h2>{{profile()?.fullName}}</h2>
             <p>{{getRoleLabel(profile()?.role || '')}}</p>
@@ -29,14 +62,17 @@
               {{formatDate(profile()?.lastLoginAt)}}</small>
           </div>
         </div>
+
+        <div class="image-hint">
+          <mat-icon>info</mat-icon>
+          <small>{{'PROFILE.IMAGE_HINT' | translate}}</small>
+        </div>
       </div>
 
       <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
 
-        <!-- Personal Information -->
         <div class="form-section">
           <h3 class="section-title">{{'PROFILE.PERSONAL_INFO' | translate}}</h3>
-
           <div class="form-grid">
             <mat-form-field appearance="outline">
               <mat-label>{{'PROFILE.FULL_NAME' | translate}} *</mat-label>
@@ -73,16 +109,13 @@
           </div>
         </div>
 
-        <!-- Professional Information -->
         <div class="form-section">
           <h3 class="section-title">{{'PROFILE.PROFESSIONAL_INFO' | translate}}</h3>
-
           <div class="form-grid">
             <mat-form-field appearance="outline">
               <mat-label>{{'PROFILE.JOB_TITLE' | translate}}</mat-label>
               <input matInput formControlName="jobTitle">
             </mat-form-field>
-
             <mat-form-field appearance="outline">
               <mat-label>{{'PROFILE.DEPARTMENT' | translate}}</mat-label>
               <input matInput formControlName="department">
@@ -90,21 +123,17 @@
           </div>
         </div>
 
-        <!-- Address Information -->
         <div class="form-section">
           <h3 class="section-title">{{'PROFILE.ADDRESS_INFO' | translate}}</h3>
-
           <div class="form-grid">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{'PROFILE.ADDRESS' | translate}}</mat-label>
               <input matInput formControlName="address">
             </mat-form-field>
-
             <mat-form-field appearance="outline">
               <mat-label>{{'PROFILE.CITY' | translate}}</mat-label>
               <input matInput formControlName="city">
             </mat-form-field>
-
             <mat-form-field appearance="outline">
               <mat-label>{{'PROFILE.COUNTRY' | translate}}</mat-label>
               <input matInput formControlName="country">
@@ -112,10 +141,8 @@
           </div>
         </div>
 
-        <!-- Bio -->
         <div class="form-section">
           <h3 class="section-title">{{'PROFILE.BIO' | translate}}</h3>
-
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{'PROFILE.BIO_PLACEHOLDER' | translate}}</mat-label>
             <textarea matInput formControlName="bio" rows="4"></textarea>
@@ -123,7 +150,6 @@
           </mat-form-field>
         </div>
 
-        <!-- Form Actions -->
         <div class="form-actions">
           <button mat-button type="button" (click)="loadProfile()" color="warn" [disabled]="loading()">
             <mat-icon>refresh</mat-icon>
@@ -140,7 +166,6 @@
         </div>
       </form>
 
-      <!-- Change Password Section -->
       <div class="password-section">
         <button mat-button color="primary" (click)="togglePasswordForm()">
           <mat-icon>lock</mat-icon>
