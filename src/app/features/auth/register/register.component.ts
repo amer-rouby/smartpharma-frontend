@@ -36,7 +36,6 @@ export class RegisterComponent {
   readonly confirmPassword = signal('');
   readonly isSubmitted = signal(false);
 
-  // ✅ Type-safe form fields with keyof RegisterData
   readonly formFields: Array<{
     key: keyof RegisterData;
     label: string;
@@ -103,12 +102,10 @@ export class RegisterComponent {
     return true;
   }
 
-  // ✅ Type-safe getter for template access
   getFieldValue(key: keyof RegisterData): string {
     return this.registerData()[key] as string;
   }
 
-  // ✅ Type-safe setter for template access
   setFieldValue(key: keyof RegisterData, value: string): void {
     this.registerData.update(data => ({ ...data, [key]: value }));
   }

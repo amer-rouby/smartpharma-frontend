@@ -5,8 +5,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { DashboardService, DashboardStats, TopProduct, RecentSale } from '../../../core/services/dashboard.service';
+import { DashboardService} from '../../../core/services/dashboard.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { DashboardStats } from '../../../core/models/dashboard.model';
 
 @Component({
   selector: 'app-dashboard',

@@ -1,5 +1,3 @@
-// src/app/core/models/sale.model.ts
-
 export interface SaleRequest {
   pharmacyId: number;
   items: SaleItemRequest[];
@@ -43,4 +41,17 @@ export interface SaleSearchResult {
   transactionDate: string;
   customerPhone?: string;
   itemsCount: number;
+}
+
+export interface TodaySalesResponse {
+  totalAmount: number;
+  count: number;
+  sales?: any[];
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  statusCode: number;
 }

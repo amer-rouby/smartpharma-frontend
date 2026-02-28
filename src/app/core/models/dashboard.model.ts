@@ -1,9 +1,35 @@
 export interface DashboardStats {
   todayRevenue: number;
   todayOrders: number;
+  todayAverageOrder: number;
   totalProducts: number;
   lowStockProducts: number;
+  outOfStockProducts: number;
   inventoryValue: number;
+  expiringBatches: number;
+  expiredBatches: number;
+  topProducts: TopProduct[];
+  recentSales: RecentSale[];
+}
+
+export interface TopProduct {
+  productId: number;
+  productName: string;
+  quantitySold: number;
+  totalRevenue: number;
+}
+export interface RecentSale {
+  saleId: number;
+  invoiceNumber: string;
+  totalAmount: number;
+  transactionDate: string;
+  paymentMethod: string;
+}
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  statusCode?: number;
 }
 
 export interface SaleSummary {

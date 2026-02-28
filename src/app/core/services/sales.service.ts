@@ -4,20 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { SaleRequest } from '../models';
-import { SaleResponse, SaleSearchResult } from '../models/sale.model';
-
-export interface TodaySalesResponse {
-  totalAmount: number;
-  count: number;
-  sales?: any[];
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  statusCode: number;
-}
+import { ApiResponse, SaleResponse, SaleSearchResult, TodaySalesResponse } from '../models/sale.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +13,7 @@ export interface ApiResponse<T> {
 export class SalesService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = `${environment.apiUrl}`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;
@@ -61,7 +49,6 @@ export class SalesService {
     );
   }
 
-  // ✅ ✅ ✅ getAllSales مع 3 parameters ✅ ✅ ✅
   getAllSales(pharmacyId: number, page: number, size: number): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.baseUrl}/sales`, {
       params: {
@@ -85,18 +72,15 @@ export class SalesService {
     );
   }
 
-  // ✅ حدّث الـ methods دي في SalesService:
-
-  // ✅ createSale - استخدام SaleRequest DTO
   createSale(request: SaleRequest): Observable<SaleResponse> {
 
     const pharmacyId = this.getPharmacyId();
 
     return this.http.post<ApiResponse<SaleResponse>>(
-      `${this.baseUrl}/sales?pharmacyId=${pharmacyId}`, // ✅ query param
+      `${this.baseUrl}/sales?pharmacyId=${pharmacyId}`,
       {
         ...request,
-        pharmacyId: pharmacyId   // ✅ كمان في البادي
+        pharmacyId: pharmacyId
       }
     ).pipe(
       map(response => response.data),
@@ -109,7 +93,6 @@ export class SalesService {
     );
   }
 
-  // ✅ getRecentSales - method جديدة
   getRecentSales(limit: number = 10): Observable<SaleSearchResult[]> {
     const pharmacyId = this.getPharmacyId();
 
@@ -131,7 +114,6 @@ export class SalesService {
     );
   }
 
-  // ✅ ✅ ✅ searchSales: pharmacyId = number, query = string ✅ ✅ ✅
   searchSales(pharmacyId: number, query: string): Observable<any> {
     return this.http.get<ApiResponse<any>>(`${this.baseUrl}/sales/search`, {
       params: {

@@ -6,7 +6,7 @@
       <mat-icon>local_pharmacy</mat-icon>
     </div>
     @if (!isCollapsed()) {
-    <span class="logo-text">{{'APP.NAME' | translate}}</span>
+      <span class="logo-text">{{'APP.NAME' | translate}}</span>
     }
   </div>
 
@@ -14,52 +14,63 @@
   <mat-nav-list class="sidebar-menu">
     @for (item of menuItems; track item.label; let i = $index) {
 
-    <!-- Single Menu Item (No Children) -->
-    @if (!item.children && hasAccess(item.roles)) {
-    <a mat-list-item [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-      [matTooltip]="isCollapsed() ? (item.label | translate) : ''" matTooltipPosition="right">
-      <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
-      @if (!isCollapsed()) {
-      <span matListItemTitle>{{item.label | translate}}</span>
-      }
-    </a>
-    }
-
-    <!-- Expandable Menu Item (With Children) -->
-    @if (item.children && hasAccess(item.roles)) {
-    <mat-expansion-panel class="sidebar-expansion" hideToggle [expanded]="isExpanded(i)">
-      <mat-expansion-panel-header (click)="togglePanel(i)">
-        <mat-panel-title>
+      <!-- Single Menu Item (No Children) -->
+      @if (!item.children && hasAccess(item.roles)) {
+        <a mat-list-item
+           [routerLink]="item.route"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: true}"
+           [matTooltip]="isCollapsed() ? (item.label | translate) : ''"
+           matTooltipPosition="right">
           <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
           @if (!isCollapsed()) {
-          <span>{{item.label | translate}}</span>
-          }
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-
-      <mat-nav-list class="submenu">
-        @for (child of item.children; track child.label) {
-        <a mat-list-item [routerLink]="child.route" routerLinkActive="active"
-          [matTooltip]="isCollapsed() ? (child.label | translate) : ''" matTooltipPosition="right">
-          <mat-icon matListItemIcon>{{child.icon}}</mat-icon>
-          @if (!isCollapsed()) {
-          <span matListItemTitle>{{child.label | translate}}</span>
+            <span matListItemTitle>{{item.label | translate}}</span>
           }
         </a>
-        }
-      </mat-nav-list>
-    </mat-expansion-panel>
-    }
+      }
+
+      <!-- Expandable Menu Item (With Children) -->
+      @if (item.children && hasAccess(item.roles)) {
+        <mat-expansion-panel class="sidebar-expansion"
+                             hideToggle
+                             [expanded]="isExpanded(i)">
+          <mat-expansion-panel-header (click)="togglePanel(i)">
+            <mat-panel-title>
+              <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
+              @if (!isCollapsed()) {
+                <span>{{item.label | translate}}</span>
+              }
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-nav-list class="submenu">
+            @for (child of item.children; track child.label) {
+              @if (hasAccess(child.roles)) {
+                <a mat-list-item
+                   [routerLink]="child.route"
+                   routerLinkActive="active"
+                   [matTooltip]="isCollapsed() ? (child.label | translate) : ''"
+                   matTooltipPosition="right">
+                  <mat-icon matListItemIcon>{{child.icon}}</mat-icon>
+                  @if (!isCollapsed()) {
+                    <span matListItemTitle>{{child.label | translate}}</span>
+                  }
+                </a>
+              }
+            }
+          </mat-nav-list>
+        </mat-expansion-panel>
+      }
     }
   </mat-nav-list>
 
   <!-- Footer -->
   @if (!isCollapsed()) {
-  <div class="sidebar-footer">
-    <div class="version-info">
-      <mat-icon>info</mat-icon>
-      <span>{{'APP.VERSION' | translate}}</span>
+    <div class="sidebar-footer">
+      <div class="version-info">
+        <mat-icon>info</mat-icon>
+        <span>{{'APP.VERSION' | translate}}</span>
+      </div>
     </div>
-  </div>
   }
 </div>

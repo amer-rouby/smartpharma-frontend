@@ -7,7 +7,6 @@ import { LoginRequest } from '../models/LoginRequest.model';
 import { RegisterRequest } from '../models/RegisterRequest.model';
 import { AuthResponse } from '../models/AuthResponse.model';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -53,6 +52,11 @@ export class AuthService {
 
   getCurrentUser(): any {
     return this.currentUserSubject.value;
+  }
+
+  getUserId(): number | null {
+    const user = this.getCurrentUser();
+    return user?.userId || null;
   }
 
   getPharmacyId(): number | null {

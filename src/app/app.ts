@@ -17,11 +17,8 @@ export class App implements OnInit {
   readonly currentLang = signal<string>('ar');
 
   ngOnInit(): void {
-    // Set initial direction
     const lang = localStorage.getItem('language') || 'ar';
     this.setDirection(lang);
-
-    // Listen to language changes
     this.translate.onLangChange.subscribe((event) => {
       this.setDirection(event.lang);
     });

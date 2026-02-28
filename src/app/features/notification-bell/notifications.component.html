@@ -1,0 +1,123 @@
+<div class="notifications-page">
+  <app-page-header [title]="'NOTIFICATIONS.TITLE' | translate" [subtitle]="'NOTIFICATIONS.DESCRIPTION' | translate"
+    icon="notifications">
+
+    <div class="header-actions">
+      @if (unreadCount() > 0) {
+      <button mat-stroked-button color="primary" (click)="markAllAsRead()">
+        <mat-icon>done_all</mat-icon>
+        <span>{{'NOTIFICATIONS.MARK_ALL_READ' | translate}}</span>
+      </button>
+      }
+      <button mat-stroked-button (click)="loadNotifications()">
+        <mat-icon>refresh</mat-icon>
+        <span>{{'COMMON.REFRESH' | translate}}</span>
+      </button>
+    </div>
+  </app-page-header>
+
+  <!-- Tabs -->
+  <mat-tab-group [(selectedIndex)]="selectedTab" (selectedIndexChange)="onTabChange($event)">
+    <!-- All Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>notifications</mat-icon>
+        <span>{{'NOTIFICATIONS.ALL' | translate}}</span>
+        @if (totalCount() > 0) {
+        <span class="badge">{{totalCount()}}</span>
+        }
+      </ng-template>
+    </mat-tab>
+
+    <!-- Unread Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>notifications_none</mat-icon>
+        <span>{{'NOTIFICATIONS.UNREAD' | translate}}</span>
+        @if (unreadCount() > 0) {
+        <span class="badge unread">{{unreadCount()}}</span>
+        }
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Loading -->
+  @if (loading()) {
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+    <p>{{'COMMON.LOADING' | translate}}</p>
+  </div>
+  }
+
+  <!-- Notifications List -->
+  @if (!loading() && filteredNotifications().length > 0) {
+  <div class="notifications-list">
+    @for (notification of filteredNotifications(); track notification.id) {
+    <mat-card class="notification-card" [class.unread]="!notification.read">
+      <mat-card-content>
+        <div class="notification-header">
+          <div class="notification-icon" [style.background]="getPriorityColor(notification.priority)">
+            <mat-icon>{{getTypeIcon(notification.type)}}</mat-icon>
+          </div>
+          <div class="notification-body">
+            <div class="notification-title-row">
+              <h3 class="notification-title">{{notification.title}}</h3>
+              <span class="notification-time">{{formatDate(notification.createdAt)}}</span>
+            </div>
+            <p class="notification-message">{{notification.message}}</p>
+            <div class="notification-meta">
+              <mat-chip-set>
+                <mat-chip [color]="getPriorityColor(notification.priority)" selected>
+                  {{getPriorityLabel(notification.priority)}}
+                </mat-chip>
+                <mat-chip>
+                  {{getTypeLabel(notification.type)}}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+          <div class="notification-actions">
+            @if (!notification.read) {
+            <button mat-icon-button (click)="markAsRead(notification.id)"
+              [matTooltip]="'NOTIFICATIONS.MARK_AS_READ' | translate">
+              <mat-icon color="primary">mark_chat_read</mat-icon>
+            </button>
+            }
+            <button mat-icon-button (click)="deleteNotification(notification.id)"
+              [matTooltip]="'COMMON.DELETE' | translate" color="warn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container">
+    <mat-paginator [length]="totalElements()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[10, 20, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+    </mat-paginator>
+  </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && filteredNotifications().length === 0) {
+  <div class="empty-state">
+    <mat-icon>notifications_none</mat-icon>
+    <h3>{{'NOTIFICATIONS.NO_NOTIFICATIONS' | translate}}</h3>
+    <p>
+      @if (selectedTab() === 1) {
+      {{'NOTIFICATIONS.NO_UNREAD_NOTIFICATIONS' | translate}}
+      } @else {
+      {{'NOTIFICATIONS.NO_NOTIFICATIONS_DESC' | translate}}
+      }
+    </p>
+    <button mat-raised-button color="primary" (click)="loadNotifications()">
+      <mat-icon>refresh</mat-icon>
+      <span>{{'COMMON.REFRESH' | translate}}</span>
+    </button>
+  </div>
+  }
+</div>

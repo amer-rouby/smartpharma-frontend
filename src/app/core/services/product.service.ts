@@ -5,24 +5,19 @@ import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse, PaginatedResponse} from '../models';
 import { Product, ProductRequest, ProductsCountResponse } from '../models/product.model';
-
-
-
+import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/products';
+  private readonly apiUrl = `${environment.apiUrl}/products`;
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;
   }
 
-  /**
-   * ✅ ✅ ✅ Get products count for dashboard ✅ ✅ ✅
-   */
   getProductsCount(): Observable<number> {
     const pharmacyId = this.getPharmacyId();
 
@@ -37,9 +32,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Get products with pagination
-   */
   getProducts(page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
     const pharmacyId = this.getPharmacyId();
 
@@ -57,9 +49,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Get products as simple list (no pagination)
-   */
   getProductsList(): Observable<Product[]> {
     const pharmacyId = this.getPharmacyId();
 
@@ -74,9 +63,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Get single product by ID
-   */
   getProduct(id: number): Observable<Product> {
     const pharmacyId = this.getPharmacyId();
 
@@ -91,9 +77,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Create new product
-   */
   createProduct(product: ProductRequest): Observable<Product> {
     const pharmacyId = this.getPharmacyId();
 
@@ -108,9 +91,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Update existing product
-   */
   updateProduct(id: number, product: ProductRequest): Observable<Product> {
     const pharmacyId = this.getPharmacyId();
 
@@ -125,9 +105,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Soft delete product
-   */
   deleteProduct(id: number): Observable<void> {
     const pharmacyId = this.getPharmacyId();
 
@@ -142,9 +119,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Search products by name or barcode
-   */
   searchProducts(query: string, page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
     const pharmacyId = this.getPharmacyId();
 
@@ -163,9 +137,6 @@ export class ProductService {
     );
   }
 
-  /**
-   * Get low stock products
-   */
   getLowStockProducts(): Observable<Product[]> {
     const pharmacyId = this.getPharmacyId();
 
@@ -179,11 +150,7 @@ export class ProductService {
       catchError(this.handleError<Product[]>('getLowStockProducts', []))
     );
   }
-  // ✅ أضف هذه method في ProductService:
 
-  /**
-   * Search product by barcode (exact match)
-   */
   searchByBarcode(barcode: string): Observable<Product | null> {
     const pharmacyId = this.getPharmacyId();
 
@@ -194,15 +161,11 @@ export class ProductService {
     }).pipe(
       map(response => {
         const products = response.data || response;
-        // Exact match by barcode
         return products.find(p => p.barcode === barcode) || null;
       }),
       catchError(() => of(null))
     );
   }
-  // ==========================================
-  // 🔧 Private Helper Methods
-  // ==========================================
 
   private getEmptyPaginatedResponse<T>(): PaginatedResponse<T> {
     return {

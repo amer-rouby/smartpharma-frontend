@@ -1,0 +1,247 @@
+.reports-container {
+  padding: 24px;
+  direction: rtl;
+
+  .filters-card {
+    margin: 24px 0;
+    border-radius: 16px;
+
+    mat-card-content {
+      padding: 20px;
+
+      .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        align-items: end;
+      }
+    }
+  }
+
+  .loading-overlay,
+  .error-card,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 16px;
+    text-align: center;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #cbd5e0;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
+      color: #666;
+    }
+  }
+
+  .error-card {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+
+    mat-icon {
+      color: #ef4444;
+    }
+
+    p {
+      color: #dc2626;
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+
+    .stat-card {
+      border-radius: 16px;
+
+      mat-card-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+
+        .stat-icon {
+          width: 64px;
+          height: 64px;
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          mat-icon {
+            font-size: 32px;
+            width: 32px;
+            height: 32px;
+            color: white;
+          }
+        }
+
+        .stat-info {
+          flex: 1;
+
+          h3 {
+            margin: 0 0 4px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+          }
+
+          p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+
+    .chart-card {
+      border-radius: 16px;
+
+      mat-card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      mat-card-content {
+        padding: 24px;
+
+        .chart-container {
+          height: 300px;
+          position: relative;
+        }
+      }
+    }
+  }
+
+  .table-card {
+    border-radius: 16px;
+    margin-top: 24px;
+
+    mat-card-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e9ecef;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .table-tabs {
+        display: flex;
+        gap: 8px;
+
+        button {
+          padding: 8px 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          background: white;
+          color: #666;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-size: 13px;
+
+          &.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+          }
+
+          &:hover:not(.active) {
+            background: #f7fafc;
+          }
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: 0;
+
+      .data-table {
+        width: 100%;
+
+        th {
+          background: #f7fafc;
+          font-weight: 600;
+          color: #2d3748;
+          padding: 12px 16px;
+          font-size: 13px;
+          white-space: nowrap;
+        }
+
+        td {
+          padding: 12px 16px;
+          font-size: 13px;
+          color: #4a5568;
+        }
+
+        code {
+          background: #edf2f7;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 12px;
+          direction: ltr;
+          display: inline-block;
+        }
+
+        .small-chip {
+          height: 24px !important;
+          font-size: 10px !important;
+          padding: 0 8px !important;
+        }
+
+        .stock-progress {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          mat-progress-bar {
+            width: 100px;
+            height: 6px !important;
+          }
+
+          .progress-text {
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .reports-container {
+    padding: 16px;
+
+    .stats-grid,
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .table-card mat-card-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+}

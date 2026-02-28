@@ -72,7 +72,6 @@ export class LanguageSwitcherComponent {
   readonly currentLang = signal<string>('ar');
 
   constructor() {
-    // ✅ Load saved language
     const saved = localStorage.getItem('language');
     if (saved === 'ar' || saved === 'en') {
       this.currentLang.set(saved);
@@ -83,8 +82,6 @@ export class LanguageSwitcherComponent {
     this.currentLang.set(lang);
     this.translate.use(lang);
     localStorage.setItem('language', lang);
-
-    // ✅ Update document direction
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = lang;
   }

@@ -1,114 +1,162 @@
+<!-- src/app/features/stock/stock-management/stock-management.component.html -->
+
 <div class="stock-container">
+
+  <!-- ✅ Page Header -->
   <app-page-header [title]="'STOCK.MANAGE' | translate" [subtitle]="'STOCK.MANAGE_SUBTITLE' | translate" icon="storage">
+
     <button mat-raised-button color="primary" routerLink="/stock/add-batch">
       <mat-icon>add</mat-icon>
-      {{'STOCK.ADD_BATCH' | translate}}
+      <span>{{'STOCK.ADD_BATCH' | translate}}</span>
     </button>
   </app-page-header>
 
-  <mat-card>
+  <mat-card class="stock-card">
     <mat-card-content>
 
-      <!-- Search Field -->
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>{{'STOCK.SEARCH_PLACEHOLDER' | translate}}</mat-label>
-        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
-          [placeholder]="'STOCK.SEARCH_PLACEHOLDER' | translate">
-        <mat-icon matPrefix>search</mat-icon>
-        @if (searchQuery()) {
-        <button mat-icon-button matSuffix (click)="clearSearch()" type="button">
-          <mat-icon>close</mat-icon>
-        </button>
-        }
-      </mat-form-field>
+      <!-- ✅ Search Bar -->
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{'STOCK.SEARCH_PLACEHOLDER' | translate}}</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" (input)="applyFilter()"
+            [placeholder]="'STOCK.SEARCH_PLACEHOLDER' | translate">
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchQuery()) {
+          <button mat-icon-button matSuffix (click)="clearSearch()" type="button"
+            [matTooltip]="'COMMON.CLEAR' | translate">
+            <mat-icon>close</mat-icon>
+          </button>
+          }
+        </mat-form-field>
+      </div>
 
-      <!-- Loading State -->
+      <!-- ✅ Loading State -->
       @if (loading()) {
       <div class="loading-state">
-        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
         <p>{{'COMMON.LOADING' | translate}}</p>
       </div>
       }
 
-      <!-- Stock Table -->
+      <!-- ✅ Stock Table -->
       @if (!loading()) {
       <div class="table-container">
-        <table mat-table [dataSource]="stockBatches()" class="data-table">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 stock-table">
 
-          <!-- Product Column -->
+          <!-- Product Name Column -->
           <ng-container matColumnDef="product">
-            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
-            <td mat-cell *matCellDef="let item">
-              <strong>{{item.productName}}</strong>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>inventory_2</mat-icon>
+              {{'PRODUCTS.NAME' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <div class="product-cell">
+                <strong>{{element.productName}}</strong>
+              </div>
             </td>
           </ng-container>
 
-          <!-- Batch Column -->
+          <!-- Batch Number Column -->
           <ng-container matColumnDef="batch">
-            <th mat-header-cell *matHeaderCellDef>{{'STOCK.BATCH_NUMBER' | translate}}</th>
-            <td mat-cell *matCellDef="let item">
-              <code>{{item.batchNumber}}</code>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>label</mat-icon>
+              {{'STOCK.BATCH_NUMBER' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <code class="batch-code">{{element.batchNumber}}</code>
             </td>
           </ng-container>
 
           <!-- Quantity Column -->
           <ng-container matColumnDef="quantity">
-            <th mat-header-cell *matHeaderCellDef>{{'SALES.QUANTITY' | translate}}</th>
-            <td mat-cell *matCellDef="let item">
-              <mat-chip [color]="getStockChipColor(item.quantityCurrent)">
-                {{item.quantityCurrent}}
-              </mat-chip>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>shopping_cart</mat-icon>
+              {{'SALES.QUANTITY' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-set>
+                <mat-chip [color]="getQuantityChipColor(element.quantityCurrent)">
+                  {{element.quantityCurrent}}
+                </mat-chip>
+              </mat-chip-set>
             </td>
           </ng-container>
 
-          <!-- Expiry Column -->
+          <!-- Expiry Date Column -->
           <ng-container matColumnDef="expiry">
-            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.EXPIRY_DATE' | translate}}</th>
-            <td mat-cell *matCellDef="let item">
-              <span [class.expired]="item.status === 'EXPIRED'">
-                {{formatDate(item.expiryDate)}}
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>event</mat-icon>
+              {{'PRODUCTS.EXPIRY_DATE' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <span class="expiry-date" [class.expired]="element.status === 'EXPIRED'">
+                {{formatDate(element.expiryDate)}}
               </span>
             </td>
           </ng-container>
 
           <!-- Status Column -->
           <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.STATUS' | translate}}</th>
-            <td mat-cell *matCellDef="let item">
-              <mat-chip [color]="getStatusColor(item.status)">
-                {{getStatusLabel(item.status)}}
-              </mat-chip>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              <mat-icon>info</mat-icon>
+              {{'PRODUCTS.STATUS' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-chip-set>
+                <mat-chip [color]="getStatusChipColor(element.status)">
+                  {{getStatusLabel(element.status)}}
+                </mat-chip>
+              </mat-chip-set>
             </td>
           </ng-container>
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
-            <td mat-cell *matCellDef="let item">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-icon>settings</mat-icon>
+              {{'COMMON.ACTIONS' | translate}}
+            </th>
+            <td mat-cell *matCellDef="let element">
               <div class="action-buttons">
-                <button mat-icon-button color="primary" (click)="onEdit(item)" [matTooltip]="'COMMON.EDIT' | translate">
+                <button mat-icon-button color="primary" (click)="onEdit(element)"
+                  [matTooltip]="'COMMON.EDIT' | translate">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="accent" (click)="onAdjust(item)"
+                <button mat-icon-button color="accent" (click)="onAdjust(element)"
                   [matTooltip]="'STOCK.ADJUST' | translate">
                   <mat-icon>adjust</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onDelete(element)"
+                  [matTooltip]="'COMMON.DELETE' | translate">
+                  <mat-icon>delete</mat-icon>
                 </button>
               </div>
             </td>
           </ng-container>
 
+          <!-- Header & Row Declarations -->
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="stock-row"
+            [class.expiring-soon]="row.isExpiringSoon">
+          </tr>
+
         </table>
 
-        <!-- Empty State -->
-        @if (isEmpty()) {
+        <!-- ✅ Simple Material Paginator -->
+        <mat-paginator [length]="dataSource.data.length" [pageIndex]="0" [pageSize]="10"
+          [pageSizeOptions]="[5,10, 20, 50, 100]" [showFirstLastButtons]="true" (page)="onPageChange($event)"
+          aria-label="Select page">
+        </mat-paginator>
+
+        <!-- ✅ Empty State -->
+        @if (dataSource.data.length === 0 && !loading()) {
         <div class="empty-state">
-          <mat-icon>storage</mat-icon>
-          <p>{{'STOCK.NO_STOCK' | translate}}</p>
+          <mat-icon>inventory_2</mat-icon>
+          <h3>{{'STOCK.NO_STOCK' | translate}}</h3>
+          <p>لا توجد دفعات مسجلة في المخزون</p>
           <button mat-raised-button color="primary" routerLink="/stock/add-batch">
             <mat-icon>add</mat-icon>
-            {{'STOCK.ADD_FIRST_BATCH' | translate}}
+            <span>{{'STOCK.ADD_FIRST_BATCH' | translate}}</span>
           </button>
         </div>
         }
