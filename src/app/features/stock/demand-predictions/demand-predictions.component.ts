@@ -5,13 +5,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { DemandPredictionService, DemandPrediction, PredictionStats } from '../../../core/services/demand-prediction.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatMenuModule } from '@angular/material/menu';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { DemandPredictionService, DemandPrediction, PredictionStats } from '../../../core/services/demand-prediction.service';
 
 @Component({
   selector: 'app-demand-predictions',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, MatPaginatorModule],
+  imports: [MaterialModule, PageHeaderComponent, MatPaginatorModule, MatMenuModule],
   templateUrl: './demand-predictions.component.html',
   styleUrl: './demand-predictions.component.scss'
 })
@@ -20,7 +22,7 @@ export class DemandPredictionsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly predictionService = inject(DemandPredictionService);
   private readonly dialog = inject(MatDialog);
-  private readonly router = inject(Router);
+  readonly router = inject(Router);
 
   readonly loading = signal(false);
   readonly predictions = signal<DemandPrediction[]>([]);
@@ -31,7 +33,10 @@ export class DemandPredictionsComponent implements OnInit {
   readonly totalElements = signal(0);
   readonly pageSizeOptions = [5, 10, 20, 50];
 
-  readonly displayedColumns = ['productName', 'predictionDate', 'predictedQuantity', 'currentStock', 'recommendedOrder', 'trend', 'confidence', 'actions'];
+  readonly displayedColumns = [
+    'productName', 'predictionDate', 'predictedQuantity',
+    'currentStock', 'recommendedOrder', 'trend', 'confidence', 'actions'
+  ];
 
   ngOnInit(): void {
     this.loadPredictions();
@@ -42,18 +47,12 @@ export class DemandPredictionsComponent implements OnInit {
     this.loading.set(true);
     this.predictionService.getPredictionsWithPagination(this.pageIndex(), this.pageSize()).subscribe({
       next: (data) => {
-        console.log('✅ Predictions loaded:', data);  // ✅ Debug log
         this.predictions.set(data.content || []);
         this.totalElements.set(data.totalElements || 0);
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('❌ Error loading predictions:', error);
-        this.snackBar.open(
-          this.translate.instant('PREDICTIONS.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: () => {
+        this.showError('PREDICTIONS.LOAD_ERROR');
         this.loading.set(false);
       }
     });
@@ -61,13 +60,8 @@ export class DemandPredictionsComponent implements OnInit {
 
   loadStats(): void {
     this.predictionService.getAccuracyStats().subscribe({
-      next: (data) => {
-        console.log('✅ Stats loaded:', data);  // ✅ Debug log
-        this.stats.set(data);
-      },
-      error: (error) => {
-        console.error('❌ Error loading stats:', error);
-      }
+      next: (data) => this.stats.set(data),
+      error: () => { }
     });
   }
 
@@ -84,64 +78,90 @@ export class DemandPredictionsComponent implements OnInit {
         this.loading.set(false);
         this.loadPredictions();
         this.loadStats();
-        this.snackBar.open(
-          this.translate.instant('PREDICTIONS.GENERATED'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
+        this.showSuccess('PREDICTIONS.GENERATED');
       },
-      error: (error) => {
+      error: () => {
         this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant('PREDICTIONS.GENERATE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        this.showError('PREDICTIONS.GENERATE_ERROR');
       }
     });
   }
 
   onViewPrediction(prediction: DemandPrediction): void {
-    this.router.navigate(['/predictions', prediction.predictionId, 'details']);
+    if (!prediction?.predictionId) {
+      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      return;
+    }
+    this.router.navigate(['/stock/predictions', prediction.predictionId]);
   }
 
   onCreatePurchaseOrder(prediction: DemandPrediction): void {
-    const message = this.translate.instant('PREDICTIONS.CONFIRM_PURCHASE', {
-      product: prediction.productName,
-      quantity: prediction.recommendedOrder
+    if (!prediction?.productId || prediction.recommendedOrder <= 0) {
+      this.showError('PREDICTIONS.INVALID_PRODUCT');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('PREDICTIONS.CONFIRM_PURCHASE_TITLE'),
+        message: this.translate.instant('PREDICTIONS.CONFIRM_PURCHASE', {
+          product: prediction.productName,
+          quantity: prediction.recommendedOrder
+        }),
+        confirmText: this.translate.instant('COMMON.CONFIRM'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'primary'
+      }
     });
 
-    if (confirm(message)) {
-      this.router.navigate(['/purchases/new'], {
-        queryParams: {
-          productId: prediction.productId,
-          quantity: prediction.recommendedOrder,
-          predictionId: prediction.predictionId,
-          source: 'prediction'
-        }
-      });
-    }
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.router.navigate(['/purchases/new'], {
+          queryParams: {
+            productId: prediction.productId,
+            quantity: prediction.recommendedOrder,
+            predictionId: prediction.predictionId,
+            source: 'prediction'
+          }
+        });
+      }
+    });
   }
 
   onQuickOrder(prediction: DemandPrediction): void {
-    this.loading.set(true);
-    this.predictionService.createPurchaseFromPrediction(prediction.predictionId).subscribe({
-      next: () => {
-        this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant('PREDICTIONS.ORDER_CREATED', { product: prediction.productName }),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
-        this.loadPredictions();
-      },
-      error: (error) => {
-        this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant('PREDICTIONS.ORDER_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+    if (!prediction?.predictionId) {
+      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('PREDICTIONS.QUICK_ORDER'),
+        message: this.translate.instant('PREDICTIONS.CONFIRM_QUICK_ORDER', {
+          product: prediction.productName
+        }),
+        confirmText: this.translate.instant('COMMON.CONFIRM'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'accent'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loading.set(true);
+        this.predictionService.createPurchaseFromPrediction(prediction.predictionId).subscribe({
+          next: () => {
+            this.loading.set(false);
+            this.showSuccess('PREDICTIONS.ORDER_CREATED', { product: prediction.productName });
+            this.loadPredictions();
+          },
+          error: () => {
+            this.loading.set(false);
+            this.showError('PREDICTIONS.ORDER_ERROR');
+          }
+        });
       }
     });
   }
@@ -189,5 +209,18 @@ export class DemandPredictionsComponent implements OnInit {
     const today = new Date();
     const diffTime = predictionDate.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  private showSuccess(message: string, params?: any): void {
+    this.snackBar.open(this.translate.instant(message, params), this.translate.instant('COMMON.CLOSE'), {
+      duration: 3000,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  private showError(message: string): void {
+    this.snackBar.open(this.translate.instant(message), this.translate.instant('COMMON.CLOSE'), {
+      duration: 3000
+    });
   }
 }

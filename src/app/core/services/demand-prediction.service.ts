@@ -49,7 +49,6 @@ export class DemandPredictionService {
     return this.authService.getPharmacyId() || 1;
   }
 
-  // ✅ FIXED: اقرا الـ content من الـ response
   getPredictions(page: number = 0, size: number = 10): Observable<DemandPrediction[]> {
     const pharmacyId = this.getPharmacyId();
     return this.http.get<ApiResponse<PredictionsResponse>>(this.apiUrl, {
@@ -58,12 +57,11 @@ export class DemandPredictionService {
         .set('page', page)
         .set('size', size)
     }).pipe(
-      map(response => response.data?.content || []),  // ✅ اقرا content
+      map(response => response.data?.content || []),
       catchError(this.handleError<DemandPrediction[]>('getPredictions', []))
     );
   }
 
-  // ✅ FIXED: method جديدة ترجع الـ pagination info
   getPredictionsWithPagination(page: number = 0, size: number = 10): Observable<PredictionsResponse> {
     const pharmacyId = this.getPharmacyId();
     return this.http.get<ApiResponse<PredictionsResponse>>(this.apiUrl, {

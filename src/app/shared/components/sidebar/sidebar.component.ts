@@ -53,7 +53,7 @@ export class SidebarComponent {
       children: [
         { icon: 'inventory', label: 'NAV.STOCK_MANAGE', route: '/stock' },
         { icon: 'warning', label: 'NAV.STOCK_ALERTS', route: '/stock/alerts' },
-        { icon: 'warning', label: 'PREDICTIONS.TITLE', route: '/stock/predictions' },
+        { icon: 'psychology', label: 'PREDICTIONS.TITLE', route: '/stock/predictions' },
         { icon: 'history', label: 'NAV.STOCK_HISTORY', route: '/stock/history' },
         { icon: 'event_busy', label: 'NAV.EXPIRY_REPORT', route: '/reports/expiry' }
       ],
@@ -66,6 +66,16 @@ export class SidebarComponent {
         { icon: 'point_of_sale', label: 'NAV.SALES_POS', route: '/sales/pos' },
         { icon: 'receipt_long', label: 'NAV.SALES_HISTORY', route: '/sales/history' },
         { icon: 'analytics', label: 'NAV.SALES_ANALYTICS', route: '/sales/analytics' }
+      ],
+      roles: ['ADMIN', 'PHARMACIST', 'MANAGER']
+    },
+    {
+      icon: 'local_shipping',
+      label: 'NAV.PURCHASES',
+      children: [
+        { icon: 'list', label: 'PURCHASES.TITLE', route: '/purchases' },
+        { icon: 'add', label: 'PURCHASES.CREATE', route: '/purchases/new' },
+        { icon: 'business', label: 'SUPPLIERS.TITLE', route: '/purchases/suppliers' }
       ],
       roles: ['ADMIN', 'PHARMACIST', 'MANAGER']
     },
@@ -135,6 +145,7 @@ export class SidebarComponent {
       return newPanels;
     });
   }
+
   isExpanded(index: number): boolean {
     return this.expandedPanels().has(index);
   }
