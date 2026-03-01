@@ -1078,6 +1078,43 @@
     "SUPPORT_HOURS": "متاح 24/7",
     "CONTACT_FORM_SUCCESS": "تم إرسال رسالتك بنجاح",
     "CONTACT_FORM_ERROR": "يرجى ملء جميع الحقول المطلوبة"
+  },
+"PREDICTIONS": {
+  "TITLE": "تنبؤات الطلب",
+  "SUBTITLE": "تنبؤات ذكية بالطلب المستقبلي للمنتجات",
+  "GENERATE": "إنشاء تنبؤات",
+  "GENERATED": "تم إنشاء التنبؤات بنجاح",
+  "GENERATE_ERROR": "فشل إنشاء التنبؤات",
+  "LOAD_ERROR": "فشل تحميل التنبؤات",
+  "VIEW_DETAILS": "عرض التفاصيل",
+  "CREATE_ORDER": "إنشاء طلب شراء",
+  "QUICK_ORDER": "طلب سريع",
+  "QUICK_ACTIONS": "إجراءات سريعة",
+  "VIEW_REPORT": "عرض التقرير",
+  "CONFIRM_PURCHASE": "هل تريد إنشاء طلب شراء لـ {{quantity}} وحدة من '{{product}}'؟",
+  "ORDER_CREATED": "تم إنشاء طلب شراء للمنتج '{{product}}' بنجاح",
+  "ORDER_ERROR": "فشل إنشاء طلب الشراء",
+  "NO_PREDICTIONS": "لا توجد تنبؤات",
+  "NO_PREDICTIONS_DESC": "قم بإنشاء تنبؤات جديدة لعرضها هنا",
+  "COLUMN": {
+    "PRODUCT": "المنتج",
+    "DATE": "تاريخ التنبؤ",
+    "PREDICTED": "الكمية المتوقعة",
+    "CURRENT": "المخزون الحالي",
+    "RECOMMENDED": "الطلب المقترح",
+    "TREND": "الاتجاه",
+    "CONFIDENCE": "مستوى الثقة"
+  },
+  "TREND": {
+    "increasing": "في ارتفاع",
+    "decreasing": "في انخفاض",
+    "stable": "مستقر"
+  },
+  "STATS": {
+    "ACCURACY": "دقة التنبؤ",
+    "TOTAL": "إجمالي التنبؤات",
+    "DAYS": "أيام قادمة"
   }
+}
 
 }

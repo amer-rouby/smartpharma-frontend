@@ -53,6 +53,7 @@ export class SidebarComponent {
       children: [
         { icon: 'inventory', label: 'NAV.STOCK_MANAGE', route: '/stock' },
         { icon: 'warning', label: 'NAV.STOCK_ALERTS', route: '/stock/alerts' },
+        { icon: 'warning', label: 'PREDICTIONS.TITLE', route: '/stock/predictions' },
         { icon: 'history', label: 'NAV.STOCK_HISTORY', route: '/stock/history' },
         { icon: 'event_busy', label: 'NAV.EXPIRY_REPORT', route: '/reports/expiry' }
       ],

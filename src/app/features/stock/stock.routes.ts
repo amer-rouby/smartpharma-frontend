@@ -14,6 +14,12 @@ export const STOCK_ROUTES: Routes = [
       .then(m => m.StockAlertsComponent),
     canActivate: [authGuard]
   },
+  {
+    path: 'predictions',  // ✅ أضف الروت ده
+    loadComponent: () => import('./demand-predictions/demand-predictions.component')
+      .then(m => m.DemandPredictionsComponent),
+    canActivate: [authGuard]
+  },
   // {
   //   path: 'batches',
   //   loadComponent: () => import('./stock-batches/stock-batches.component')

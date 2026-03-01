@@ -42,6 +42,12 @@ export const routes: Routes = [
               .then(m => m.StockAlertsComponent)
           },
           {
+            path: 'predictions',  // ✅ أضف الروت ده
+            loadComponent: () => import('./features/stock/demand-predictions/demand-predictions.component')
+              .then(m => m.DemandPredictionsComponent),
+            canActivate: [authGuard]
+          },
+          {
             path: 'add-batch',
             loadComponent: () => import('./features/stock/stock-batch-form/stock-batch-form.component')
               .then(m => m.StockBatchFormComponent)
