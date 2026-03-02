@@ -81,10 +81,12 @@
             <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
             <td mat-cell *matCellDef="let sale">
               <div class="action-buttons">
-                <button mat-icon-button color="primary" matTooltip="{{'COMMON.VIEW' | translate}}">
+                <button mat-icon-button color="primary" (click)="onViewSale(sale)"
+                  [matTooltip]="'COMMON.VIEW' | translate">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button color="accent" matTooltip="{{'COMMON.PRINT' | translate}}">
+                <button mat-icon-button color="accent" (click)="onPrintSale(sale)"
+                  [matTooltip]="'COMMON.PRINT' | translate">
                   <mat-icon>print</mat-icon>
                 </button>
               </div>

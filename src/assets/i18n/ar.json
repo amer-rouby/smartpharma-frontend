@@ -265,7 +265,15 @@
     "AVAILABLE": "{{count}} متاح",
     "QUANTITY": "الكمية",
     "SEARCH_PRODUCT": "بحث عن منتج",
-    "PRODUCTS": "المنتجات"
+    "PRODUCTS": "المنتجات",
+    "ANALYTICS_TITLE": "تحليلات المبيعات",
+    "ANALYTICS_SUBTITLE": "تحليل شامل لأداء المبيعات والإيرادات",
+    "TRANSACTIONS": "معاملات",
+    "LOAD_DETAILS_ERROR": "فشل في تحميل تفاصيل الفاتورة",
+    "PRINT_ERROR": "فشل في الطباعة",
+    "PRINT_BLOCKED": "يرجى السماح بالنوافذ المنبثقة للطباعة",
+    "COPY_SUCCESS": "تم النسخ بنجاح!",
+    "TOTAL_AMOUNT": "إجمالي الفاتورة"
   },
   "STOCK": {
     "TITLE": "المخزون",
@@ -399,7 +407,15 @@
     "EXPIRY_DISTRIBUTION": "توزيع الصلاحية",
     "EXPIRING_PRODUCTS": "المنتجات منتهية الصلاحية",
     "NO_EXPIRING_PRODUCTS": "لا توجد منتجات منتهية الصلاحية",
-    "PRODUCTS_FOUND": "منتج وجد"
+    "PRODUCTS_FOUND": "منتج وجد",
+    "TOTAL_SALES": "إجمالي المبيعات",
+    "PROFIT": "الربح",
+    "SALES_BY_CATEGORY": "المبيعات حسب التصنيف",
+    "WEEKLY": "أسبوعي",
+    "NO_TREND_DATA": "لا توجد بيانات للاتجاه",
+    "NO_PAYMENT_DATA": "لا توجد بيانات لطرق الدفع",
+    "NO_PRODUCTS_DATA": "لا توجد بيانات للمنتجات",
+    "NO_CATEGORY_DATA": "لا توجد بيانات للتصنيفات"
   },
   "USERS": {
     "TITLE": "المستخدمين",
@@ -626,7 +642,11 @@
     "PRODUCT": "المنتج",
     "UNIT_PRICE": "سعر الوحدة",
     "SHARE": "مشاركة",
-    "RECEIVED": "المستلم"
+    "RECEIVED": "المستلم",
+    "PERIOD": "الفترة",
+    "REVENUE": "الإيرادات",
+    "RETRY": "إعادة المحاولة",
+    "CONTINUE": "متابعة"
   },
   "ERRORS": {
     "404": "الصفحة غير موجودة",

@@ -19,7 +19,6 @@ import { SupplierRequest } from '../../../core/models/purchase-request.model';
   imports: [
     MaterialModule,
     PageHeaderComponent,
-    RouterLink,
     MatTableModule,
     MatPaginatorModule,
     ReactiveFormsModule

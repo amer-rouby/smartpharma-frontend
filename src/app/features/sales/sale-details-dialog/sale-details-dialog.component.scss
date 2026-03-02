@@ -1,0 +1,212 @@
+.dialog-container {
+  padding: 24px;
+  max-height: 90vh; // ✅ أقصى ارتفاع 90% من الشاشة
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e9ecef;
+  flex-shrink: 0; // ✅ مش بيقلص
+
+  h2 {
+    margin: 0;
+    color: #667eea;
+  }
+}
+
+.pharmacy-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  flex-shrink: 0; // ✅ مش بيقلص
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 20px;
+  }
+
+  p {
+    margin: 6px 0;
+    font-size: 14px;
+    opacity: 0.95;
+  }
+}
+
+.invoice-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  flex-shrink: 0; // ✅ مش بيقلص
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .label {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+// ✅ ✅ ✅ القسم ده بس هو اللي هيكون فيه scroll ✅ ✅ ✅
+.dialog-content {
+  flex: 1;
+  overflow-y: auto; // ✅ السكرول هنا
+  max-height: calc(90vh - 250px); // ✅ احسب الارتفاع المتبقي
+  padding-right: 8px; // مساحة للـ scrollbar
+
+  // تنسيق الـ scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+
+    &:hover {
+      background: #555;
+    }
+  }
+}
+
+h3 {
+  margin: 0 0 15px;
+  color: #333;
+  font-size: 18px;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+
+  // ✅ جدول ثابت مع scroll أفقي لو احتاج
+  display: block;
+  overflow-x: auto;
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #667eea;
+  }
+
+  th,
+  td {
+    padding: 12px;
+    text-align: right;
+    border-bottom: 1px solid #e9ecef;
+    min-width: 100px; // ✅ أقل عرض للعمود
+  }
+
+  th {
+    background: #667eea;
+    color: white;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background: #f8f9fa;
+  }
+
+  tbody tr {
+    &:hover {
+      background: #e9ecef;
+    }
+  }
+}
+
+.totals {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    &.final {
+      font-size: 18px;
+      font-weight: bold;
+      color: #667eea;
+      border-top: 2px solid #667eea;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+  flex-shrink: 0; // ✅ مش بيقلص
+}
+
+// ✅ ✅ ✅ الطباعة ✅ ✅ ✅
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .dialog-container {
+    padding: 0;
+    max-height: none;
+  }
+
+  .dialog-content {
+    overflow: visible;
+    max-height: none;
+  }
+
+  body {
+    background: white;
+  }
+
+  .pharmacy-header {
+    background: white;
+    color: #333;
+    border: 2px solid #667eea;
+  }
+
+  .invoice-info,
+  .totals {
+    background: white;
+    border: 1px solid #e9ecef;
+  }
+}

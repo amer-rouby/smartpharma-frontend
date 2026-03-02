@@ -64,6 +64,21 @@ export class AuthService {
     return user?.pharmacyId || null;
   }
 
+  // ✅ ✅ ✅ بدون PharmacyInfo - نرجع pharmacyId بس ✅ ✅ ✅
+  getPharmacyInfo(): any {
+    const user = this.getCurrentUser();
+    if (user?.pharmacyId) {
+      return {
+        id: user.pharmacyId,
+        name: 'صيدليتي الذكية',
+        address: '',
+        phone: '',
+        email: ''
+      };
+    }
+    return null;
+  }
+
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
     return user?.role === role;

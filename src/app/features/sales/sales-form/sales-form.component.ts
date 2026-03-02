@@ -196,18 +196,32 @@ export class SalesFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (!this.validateSale()) return;
+
+    this.loading.set(true);
+    const saleRequest = this.mapCartToSaleRequest();
+    this.salesService.createSale(saleRequest).subscribe({
+      next: (response) => this.handleSaleSuccess(response),
+      error: (error) => this.handleSaleError(error)
+    });
+  }
+
+  /** 1. Validation Logic **/
+  private validateSale(): boolean {
     if (this.isCartEmpty()) {
       this.showError('SALES.EMPTY_CART');
-      return;
+      return false;
     }
     if (this.totalAmount() <= 0) {
       this.showError('SALES.INVALID_TOTAL');
-      return;
+      return false;
     }
+    return true;
+  }
 
-    this.loading.set(true);
-
-    const saleRequest: SaleRequest = {
+  /** 2. Data Mapping Logic **/
+  private mapCartToSaleRequest(): SaleRequest {
+    return {
       items: this.cartItems().map(item => ({
         productId: item.product.id,
         quantity: item.quantity,
@@ -219,26 +233,88 @@ export class SalesFormComponent implements OnInit {
       customerPhone: this.customerPhone(),
       totalAmount: this.subtotal()
     };
+  }
 
-    this.salesService.createSale(saleRequest).subscribe({
-      next: (response: any) => {
-        this.loading.set(false);
-        Swal.fire({
-          icon: 'success',
-          title: this.translate.instant('SALES.SUCCESS_TITLE'),
-          text: `${this.translate.instant('SALES.INVOICE_NUMBER')}: ${response.data?.invoiceNumber || 'N/A'}`,
-          timer: 3000,
-          showConfirmButton: false
-        });
-        this.clearCart();
-        this.router.navigate(['/sales/history']);
-      },
-      error: (error: any) => {
-        this.loading.set(false);
-        this.showError(error.error?.message || 'SALES.ERROR');
-      }
+  /** 3. Success Handling & UI **/
+  private handleSaleSuccess(response: any): void {
+    this.loading.set(false);
+
+    const invoiceNumber = response.invoiceNumber || response.data?.invoiceNumber || 'N/A';
+    const totalAmount = response.totalAmount || this.totalAmount();
+
+    Swal.fire({
+      icon: 'success',
+      title: this.translate.instant('SALES.SUCCESS_TITLE'),
+      html: this.getSuccessAlertHtml(invoiceNumber, totalAmount),
+      showConfirmButton: true,
+      confirmButtonText: this.translate.instant('COMMON.CONTINUE'),
+      confirmButtonColor: '#667eea',
+      timer: 10000,
+      timerProgressBar: true,
+      didOpen: () => this.setupCopyFunction(),
+      willClose: () => { delete (window as any).copyInvoiceNumber; }
+    }).then((result) => {
+      this.finalizeSale();
     });
   }
+
+  /** 4. Helper for HTML Template **/
+  private getSuccessAlertHtml(invoiceNumber: string, totalAmount: number): string {
+    return `
+    <div style="text-align: center; padding: 10px;">
+      <div style="margin-bottom: 15px;">
+        <p style="font-size: 14px; color: #666; margin-bottom: 8px;">
+          ${this.translate.instant('SALES.INVOICE_NUMBER')}:
+        </p>
+        <div style="display: inline-flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 10px 20px; border-radius: 8px; border: 2px solid #667eea;">
+          <strong style="color: #667eea; font-size: 20px; font-family: monospace;">${invoiceNumber}</strong>
+          <button id="copyInvoiceBtn" onclick="copyInvoiceNumber('${invoiceNumber}')"
+                  style="background: #667eea; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M4 1.5a.5.5 0 0 1 .5.5v1h6v-1a.5.5 0 0 1 1 0v1h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h1v-1a.5.5 0 0 1 .5-.5z"/>
+            </svg>
+          </button>
+        </div>
+        <p id="copyMessage" style="font-size: 12px; color: #10b981; margin-top: 8px; opacity: 0; transition: opacity 0.3s;"></p>
+      </div>
+      <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+        <p style="font-size: 14px; color: #666; margin-bottom: 5px;">
+          ${this.translate.instant('SALES.TOTAL_AMOUNT')}:
+        </p>
+        <strong style="color: #10b981; font-size: 22px;">${this.formatCurrency(totalAmount)}</strong>
+      </div>
+    </div>`;
+  }
+
+  private setupCopyFunction(): void {
+    (window as any).copyInvoiceNumber = (number: string) => {
+      navigator.clipboard.writeText(number).then(() => {
+        const messageEl = document.getElementById('copyMessage');
+        const btnEl = document.getElementById('copyInvoiceBtn');
+        if (messageEl && btnEl) {
+          messageEl.textContent = '✅ تم النسخ بنجاح!';
+          messageEl.style.opacity = '1';
+          btnEl.style.background = '#10b981';
+          setTimeout(() => {
+            messageEl.style.opacity = '0';
+            btnEl.style.background = '#667eea';
+          }, 2000);
+        }
+      });
+    };
+  }
+
+  private handleSaleError(error: any): void {
+    console.error('Sale Error:', error);
+    this.loading.set(false);
+    this.showError(error.error?.message || 'SALES.ERROR');
+  }
+
+  private finalizeSale(): void {
+    this.clearCart();
+    this.router.navigate(['/sales/history']);
+  }
+
 
   onCancel(): void {
     if (!this.isCartEmpty()) {
