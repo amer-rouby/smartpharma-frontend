@@ -35,6 +35,7 @@ export class StockBatchFormComponent implements OnInit {
   readonly loading = signal(false);
   readonly isEditMode = signal(false);
   readonly batchId = signal<number | null>(null);
+  readonly pharmacyId = 4;
   readonly productsList = computed(() => {
     const prods = this.products();
     return Array.isArray(prods) ? prods : [];
@@ -65,7 +66,7 @@ export class StockBatchFormComponent implements OnInit {
   }
 
   private loadProducts(): void {
-    this.stockBatchService.getProducts().subscribe({
+    this.stockBatchService.getProducts(this.pharmacyId).subscribe({
       next: (response: any) => {
         let productsList: Product[] = [];
 
@@ -101,7 +102,7 @@ export class StockBatchFormComponent implements OnInit {
   private loadBatchData(id: number): void {
     this.loading.set(true);
 
-    this.stockBatchService.getBatch(id).subscribe({
+    this.stockBatchService.getBatch(id, this.pharmacyId).subscribe({
       next: (response: any) => {
         let batch: StockBatch;
 
@@ -144,10 +145,10 @@ export class StockBatchFormComponent implements OnInit {
     }
 
     this.loading.set(true);
-    const formData: Partial<StockBatch> = { ...this.batchForm.value, pharmacyId: 4 };
+    const formData: Partial<StockBatch> = { ...this.batchForm.value };
 
     if (this.isEditMode() && this.batchId()) {
-      this.stockBatchService.updateBatch(this.batchId()!, formData).subscribe({
+      this.stockBatchService.updateBatch(this.batchId()!, formData, this.pharmacyId).subscribe({
         next: () => {
           this.snackBar.open('Batch updated successfully', 'Close', { duration: 3000 });
           this.router.navigate(['/stock']);
@@ -159,7 +160,7 @@ export class StockBatchFormComponent implements OnInit {
         }
       });
     } else {
-      this.stockBatchService.createBatch(formData).subscribe({
+      this.stockBatchService.createBatch(formData, this.pharmacyId).subscribe({
         next: () => {
           this.snackBar.open('Batch added successfully', 'Close', { duration: 3000 });
           this.router.navigate(['/stock']);
