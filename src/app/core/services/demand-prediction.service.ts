@@ -39,6 +39,13 @@ export interface PredictionsResponse {
   last: boolean;
 }
 
+export interface UpdatePredictionDTO {
+  predictedQuantity?: number;
+  confidenceLevel?: number;
+  recommendation?: string;
+  notes?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DemandPredictionService {
   private readonly http = inject(HttpClient);
@@ -119,6 +126,46 @@ export class DemandPredictionService {
     return this.http.get<ApiResponse<DemandPrediction>>(`${this.apiUrl}/${predictionId}`).pipe(
       map(response => response.data),
       catchError(this.handleError<DemandPrediction>('getPredictionDetails'))
+    );
+  }
+
+  updatePrediction(predictionId: number, updates: UpdatePredictionDTO): Observable<DemandPrediction> {
+    return this.http.put<ApiResponse<DemandPrediction>>(`${this.apiUrl}/${predictionId}`, updates).pipe(
+      map(response => response.data),
+      catchError(this.handleError<DemandPrediction>('updatePrediction'))
+    );
+  }
+
+  deletePrediction(predictionId: number): Observable<void> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${predictionId}`).pipe(
+      map(response => response.data),
+      catchError(this.handleError<void>('deletePrediction'))
+    );
+  }
+
+  exportToPdf(predictionId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${predictionId}/export/pdf`, {
+      responseType: 'blob'
+    }).pipe(
+      catchError(this.handleError<Blob>('exportToPdf'))
+    );
+  }
+
+  exportToExcel(predictionId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${predictionId}/export/excel`, {
+      responseType: 'blob'
+    }).pipe(
+      catchError(this.handleError<Blob>('exportToExcel'))
+    );
+  }
+
+  sharePrediction(predictionId: number): Observable<{ shareUrl: string; expiresAt: string }> {
+    return this.http.post<ApiResponse<{ shareUrl: string; expiresAt: string }>>(
+      `${this.apiUrl}/${predictionId}/share`,
+      {}
+    ).pipe(
+      map(response => response.data),
+      catchError(this.handleError<{ shareUrl: string; expiresAt: string }>('sharePrediction'))
     );
   }
 

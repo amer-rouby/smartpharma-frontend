@@ -646,7 +646,9 @@
     "PERIOD": "الفترة",
     "REVENUE": "الإيرادات",
     "RETRY": "إعادة المحاولة",
-    "CONTINUE": "متابعة"
+    "CONTINUE": "متابعة",
+    "EXPORT_PDF": "تصدير PDF",
+    "EXPORT_EXCEL": "تصدير Excel"
   },
   "ERRORS": {
     "404": "الصفحة غير موجودة",
@@ -1043,7 +1045,26 @@
     "DATE": "التاريخ",
     "SALES_VALUE": "قيمة المبيعات",
     "NO_SALES_DATA": "لا توجد بيانات مبيعات متاحة",
-    "BACK_TO_LIST": "العودة للقائمة",
+    "EDIT_QUANTITY_PROMPT": "أدخل الكمية المتوقعة الجديدة لـ {{product}} (الحالية: {{current}})",
+    "EXPORT_NOT_SUPPORTED": "التصدير غير مدعوم",
+    "COPY_ERROR": "فشل نسخ الرابط",
+    "NOT_FOUND": "التنبؤ غير موجود",
+        "EDIT_PREDICTION": "تعديل التنبؤ",
+        "CONFIRM_DELETE_TITLE": "تأكيد الحذف",
+        "CONFIRM_DELETE": "هل أنت متأكد من حذف تنبؤ {{product}}؟",
+        "EXPORT_TITLE": "تصدير التقرير",
+        "SELECT_EXPORT_FORMAT": "اختر صيغة التصدير",
+        "UPDATED_SUCCESS": "تم تحديث التنبؤ بنجاح",
+        "UPDATE_ERROR": "فشل تحديث التنبؤ",
+        "DELETED_SUCCESS": "تم حذف التنبؤ بنجاح",
+        "DELETE_ERROR": "فشل حذف التنبؤ",
+        "EXPORTED_SUCCESS": "تم التصدير بنجاح",
+        "EXPORT_ERROR": "فشل التصدير",
+        "SHARED_SUCCESS": "تم نسخ رابط المشاركة",
+        "SHARE_ERROR": "فشل المشاركة",
+        "LINK_COPIED": "تم نسخ الرابط إلى الحافظة",
+        "CONFIDENCE_HINT": "قيمة بين 0 و 1",
+        "SAVE": "حفظ",
     "COLUMN": {
       "PRODUCT": "المنتج",
       "DATE": "تاريخ التنبؤ",
@@ -1052,6 +1073,7 @@
       "RECOMMENDED": "الطلب المقترح",
       "TREND": "الاتجاه",
       "CONFIDENCE": "مستوى الثقة"
+
     },
     "TREND": {
       "increasing": "في ارتفاع",

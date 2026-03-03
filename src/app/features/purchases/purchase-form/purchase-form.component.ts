@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,7 +11,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { SupplierService } from '../../../core/services/supplier.service';
+import { ProductService } from '../../../core/services/product.service';
 import { Supplier } from '../../../core/models/purchase-order.model';
+import { Product } from '../../../core/models/product.model';
 
 @Component({
   selector: 'app-purchase-form',
@@ -35,15 +37,15 @@ export class PurchaseFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly purchaseService = inject(PurchaseOrderService);
   private readonly supplierService = inject(SupplierService);
+  private readonly productService = inject(ProductService);
 
   readonly loading = signal(false);
   readonly suppliers = signal<Supplier[]>([]);
+  readonly products = signal<Product[]>([]);
   readonly form: FormGroup;
   readonly isEditMode = signal(false);
   readonly orderId = signal<number | null>(null);
   readonly todayDate = signal<string>(new Date().toISOString().split('T')[0]);
-
-  readonly products = signal<any[]>([]);
 
   constructor() {
     this.form = this.fb.group({
@@ -59,7 +61,13 @@ export class PurchaseFormComponent implements OnInit {
     });
   }
 
-  get items(): FormArray { return this.form.get('items') as FormArray; }
+  get itemsFormArray(): FormArray {
+    return this.form.get('items') as FormArray;
+  }
+
+  get itemsControls(): AbstractControl[] {
+    return this.itemsFormArray.controls;
+  }
 
   ngOnInit(): void {
     this.loadSuppliers();
@@ -73,64 +81,49 @@ export class PurchaseFormComponent implements OnInit {
   }
 
   loadSuppliers(): void {
-    console.log('🔄 Loading suppliers for pharmacy...');
     this.supplierService.getAllSuppliers().subscribe({
-      next: (data) => {
-        this.suppliers.set(data || []);
-      },
-      error: (error) => {
-        console.error('❌ Error loading suppliers:', error);
-        this.snackBar.open(
-          this.translate.instant('SUPPLIERS.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-      }
+      next: (data) => this.suppliers.set(data || []),
+      error: (err) => console.error('Error loading suppliers', err)
     });
   }
 
   loadProducts(): void {
-    this.products.set([
-      { id: 16, name: 'بنادول إكسترا' },
-      { id: 17, name: 'أوجمنت 1 جم' },
-      { id: 18, name: 'كونكور 5 مجم' },
-      { id: 19, name: 'أوميبرازول 20 مجم' },
-      { id: 20, name: 'فولتارين 50 مجم' }
-    ]);
+    this.productService.getProductsList().subscribe({
+      next: (response: any) => {
+        if (response && response.success && Array.isArray(response.data)) {
+          this.products.set(response.data);
+        } else if (Array.isArray(response)) {
+          this.products.set(response);
+        } else {
+          console.error('Unexpected data structure:', response);
+          this.products.set([]);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading products from server:', err);
+        this.products.set([]);
+      }
+    });
   }
 
   loadOrder(id: number): void {
     this.loading.set(true);
     this.purchaseService.getOrder(id).subscribe({
       next: (order) => {
-        this.form.patchValue({
-          supplierId: order.supplierId,
-          orderDate: order.orderDate,
-          expectedDeliveryDate: order.expectedDeliveryDate,
-          priority: order.priority,
-          paymentTerms: order.paymentTerms,
-          notes: order.notes,
-          sourceType: order.sourceType,
-          sourceId: order.sourceId
-        });
-        this.items.clear();
+        this.form.patchValue(order);
+        this.itemsFormArray.clear();
         order.items?.forEach(item => this.addItem(item));
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error loading order:', error);
-        this.snackBar.open(
-          this.translate.instant('PURCHASES.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: () => {
         this.loading.set(false);
+        this.showSnackBar('PURCHASES.LOAD_ERROR');
       }
     });
   }
 
   addItem(item?: any): void {
-    this.items.push(this.fb.group({
+    this.itemsFormArray.push(this.fb.group({
       productId: [item?.productId || null, Validators.required],
       productName: [item?.productName || ''],
       quantity: [item?.quantity || 1, [Validators.required, Validators.min(1)]],
@@ -140,69 +133,57 @@ export class PurchaseFormComponent implements OnInit {
   }
 
   removeItem(index: number): void {
-    this.items.removeAt(index);
+    this.itemsFormArray.removeAt(index);
   }
 
   onProductChange(index: number, productId: number): void {
     const product = this.products().find(p => p.id === productId);
     if (product) {
-      const item = this.items.at(index) as FormGroup;
-      item.patchValue({
-        productName: product.name
+      const itemGroup = this.itemsFormArray.at(index) as FormGroup;
+      itemGroup.patchValue({
+        productName: product.name,
+        unitPrice: product.buyPrice || 0
       });
     }
   }
 
-  calculateItemTotal(item: any): number {
-    const qty = item?.quantity || 0;
-    const price = item?.unitPrice || 0;
-    return qty * price;
+  calculateItemTotal(itemValue: any): number {
+    return (itemValue?.quantity || 0) * (itemValue?.unitPrice || 0);
   }
 
   get orderTotal(): number {
-    return this.items.controls.reduce((sum, ctrl) => sum + this.calculateItemTotal(ctrl.value), 0);
+    return this.itemsFormArray.value.reduce((sum: number, item: any) => sum + this.calculateItemTotal(item), 0);
   }
 
   onSubmit(): void {
     if (this.form.invalid) {
-      this.snackBar.open(
-        this.translate.instant('VALIDATION.REQUIRED'),
-        this.translate.instant('COMMON.CLOSE'),
-        { duration: 3000 }
-      );
+      this.showSnackBar('VALIDATION.REQUIRED');
       return;
     }
 
     this.loading.set(true);
-    const request = { ...this.form.value, items: this.items.value };
-
     const call = this.isEditMode()
-      ? this.purchaseService.updateOrder(this.orderId()!, request)
-      : this.purchaseService.createOrder(request);
+      ? this.purchaseService.updateOrder(this.orderId()!, this.form.value)
+      : this.purchaseService.createOrder(this.form.value);
 
     call.subscribe({
       next: (order) => {
         this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant(this.isEditMode() ? 'PURCHASES.UPDATE_SUCCESS' : 'PURCHASES.CREATE_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
+        this.showSnackBar(this.isEditMode() ? 'PURCHASES.UPDATE_SUCCESS' : 'PURCHASES.CREATE_SUCCESS');
         this.router.navigate(['/purchases', order.id]);
       },
-      error: (error) => {
-        console.error('Error saving order:', error);
+      error: () => {
         this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant(this.isEditMode() ? 'PURCHASES.UPDATE_ERROR' : 'PURCHASES.CREATE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        this.showSnackBar(this.isEditMode() ? 'PURCHASES.UPDATE_ERROR' : 'PURCHASES.CREATE_ERROR');
       }
     });
   }
 
   onCancel(): void {
     this.router.navigate(['/purchases']);
+  }
+
+  private showSnackBar(messageKey: string): void {
+    this.snackBar.open(this.translate.instant(messageKey), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
   }
 }

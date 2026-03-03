@@ -8,36 +8,14 @@
 
   <app-page-header [title]="'PREDICTIONS.VIEW_REPORT' | translate" [subtitle]="prediction()!.productName"
     icon="assessment">
-
     <div class="header-actions">
       <button mat-button (click)="router.navigate(['/stock/predictions'])">
         <mat-icon>arrow_back</mat-icon>
         <span>{{'COMMON.BACK' | translate}}</span>
       </button>
-
-      <button mat-button color="primary" (click)="onEdit()">
-        <mat-icon>edit</mat-icon>
-        <span>{{'COMMON.EDIT' | translate}}</span>
-      </button>
-
-      <button mat-button color="warn" (click)="onDelete()">
-        <mat-icon>delete</mat-icon>
-        <span>{{'COMMON.DELETE' | translate}}</span>
-      </button>
-
-      <button mat-button (click)="onExport()">
-        <mat-icon>download</mat-icon>
-        <span>{{'COMMON.EXPORT' | translate}}</span>
-      </button>
-
-      <button mat-raised-button color="accent" (click)="onShare()">
-        <mat-icon>share</mat-icon>
-        <span>{{'COMMON.SHARE' | translate}}</span>
-      </button>
     </div>
   </app-page-header>
 
-  <!-- Prediction Overview -->
   <mat-card class="overview-card">
     <mat-card-header>
       <mat-card-title>{{'PREDICTIONS.OVERVIEW' | translate}}</mat-card-title>
@@ -51,7 +29,6 @@
             <span class="value">{{prediction()!.predictedQuantity}}</span>
           </div>
         </div>
-
         <div class="stat-item">
           <mat-icon>warehouse</mat-icon>
           <div class="stat-info">
@@ -59,7 +36,6 @@
             <span class="value">{{prediction()!.currentStock}}</span>
           </div>
         </div>
-
         <div class="stat-item">
           <mat-icon>shopping_cart</mat-icon>
           <div class="stat-info">
@@ -67,7 +43,6 @@
             <span class="value">{{prediction()!.recommendedOrder}}</span>
           </div>
         </div>
-
         <div class="stat-item">
           <mat-icon>psychology</mat-icon>
           <div class="stat-info">
@@ -111,7 +86,6 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- Sales History -->
   <mat-card class="history-card">
     <mat-card-header>
       <mat-card-title>{{'PREDICTIONS.SALES_HISTORY' | translate}}</mat-card-title>
@@ -124,17 +98,14 @@
           <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.DATE' | translate}}</th>
           <td mat-cell *matCellDef="let item">{{formatDate(item.date)}}</td>
         </ng-container>
-
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef>{{'COMMON.QUANTITY' | translate}}</th>
           <td mat-cell *matCellDef="let item">{{item.quantity}}</td>
         </ng-container>
-
         <ng-container matColumnDef="sales">
           <th mat-header-cell *matHeaderCellDef>{{'PREDICTIONS.SALES_VALUE' | translate}}</th>
           <td mat-cell *matCellDef="let item">{{item.sales | currency:'EGP':'symbol':'1.2-2'}}</td>
         </ng-container>
-
         <tr mat-header-row *matHeaderRowDef="['date', 'quantity', 'sales']"></tr>
         <tr mat-row *matRowDef="let row; columns: ['date', 'quantity', 'sales']"></tr>
       </table>
@@ -147,7 +118,6 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- Analysis -->
   <mat-card class="analysis-card">
     <mat-card-header>
       <mat-card-title>{{'PREDICTIONS.ANALYSIS' | translate}}</mat-card-title>
@@ -156,7 +126,6 @@
       <div class="analysis-content">
         <h4>{{'PREDICTIONS.FORECAST_METHOD' | translate}}</h4>
         <p>{{'PREDICTIONS.METHOD_DESCRIPTION' | translate}}</p>
-
         <h4>{{'PREDICTIONS.FACTORS' | translate}}</h4>
         <ul>
           <li>{{'PREDICTIONS.FACTOR_HISTORICAL' | translate}}</li>

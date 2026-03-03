@@ -8,7 +8,8 @@ import { MaterialModule } from '../../../shared/material.module';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { DemandPredictionService, DemandPrediction, PredictionStats } from '../../../core/services/demand-prediction.service';
+import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO } from '../../../core/services/demand-prediction.service';
+import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-prediction-dialog.component';
 
 @Component({
   selector: 'app-demand-predictions',
@@ -32,6 +33,7 @@ export class DemandPredictionsComponent implements OnInit {
   readonly pageSize = signal(10);
   readonly totalElements = signal(0);
   readonly pageSizeOptions = [5, 10, 20, 50];
+  readonly exportLoading = signal(false);
 
   readonly displayedColumns = [
     'productName', 'predictionDate', 'predictedQuantity',
@@ -166,6 +168,185 @@ export class DemandPredictionsComponent implements OnInit {
     });
   }
 
+  onEditPrediction(prediction: DemandPrediction): void {
+    if (!prediction?.predictionId) {
+      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(EditPredictionDialogComponent, {
+      width: '600px',
+      data: {
+        prediction: { ...prediction }
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.updatePrediction(prediction.predictionId, result);
+      }
+    });
+  }
+
+  private updatePrediction(id: number, updates: UpdatePredictionDTO): void {
+    this.loading.set(true);
+    this.predictionService.updatePrediction(id, updates).subscribe({
+      next: (updated) => {
+        this.loading.set(false);
+        this.showSuccess('PREDICTIONS.UPDATED_SUCCESS');
+        this.loadPredictions();
+      },
+      error: () => {
+        this.loading.set(false);
+        this.showError('PREDICTIONS.UPDATE_ERROR');
+      }
+    });
+  }
+  onDeletePrediction(prediction: DemandPrediction): void {
+    if (!prediction?.predictionId) {
+      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('PREDICTIONS.CONFIRM_DELETE_TITLE'),
+        message: this.translate.instant('PREDICTIONS.CONFIRM_DELETE', {
+          product: prediction.productName
+        }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.loading.set(true);
+        this.predictionService.deletePrediction(prediction.predictionId).subscribe({
+          next: () => {
+            this.loading.set(false);
+            this.showSuccess('PREDICTIONS.DELETED_SUCCESS');
+            this.loadPredictions();
+          },
+          error: () => {
+            this.loading.set(false);
+            this.showError('PREDICTIONS.DELETE_ERROR');
+          }
+        });
+      }
+    });
+  }
+
+  onExportPdf(prediction: DemandPrediction): void {
+    if (!prediction?.predictionId) {
+      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      return;
+    }
+
+    this.exportLoading.set(true);
+    this.predictionService.exportToPdf(prediction.predictionId).subscribe({
+      next: (blob) => {
+        this.downloadFile(blob, `prediction_${prediction.predictionId}.pdf`, 'application/pdf');
+        this.exportLoading.set(false);
+        this.showSuccess('PREDICTIONS.EXPORTED_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.showError('PREDICTIONS.EXPORT_ERROR');
+      }
+    });
+  }
+
+  onExportExcel(prediction: DemandPrediction): void {
+    if (!prediction?.predictionId) {
+      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      return;
+    }
+
+    this.exportLoading.set(true);
+    this.predictionService.exportToExcel(prediction.predictionId).subscribe({
+      next: (blob) => {
+        this.downloadFile(blob, `prediction_${prediction.predictionId}.xlsx`,
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        this.exportLoading.set(false);
+        this.showSuccess('PREDICTIONS.EXPORTED_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.showError('PREDICTIONS.EXPORT_ERROR');
+      }
+    });
+  }
+
+  onSharePrediction(prediction: DemandPrediction): void {
+    if (!prediction?.predictionId) {
+      this.showError('PREDICTIONS.INVALID_PREDICTION');
+      return;
+    }
+
+    this.loading.set(true);
+    this.predictionService.sharePrediction(prediction.predictionId).subscribe({
+      next: (data) => {
+        this.copyToClipboard(data.shareUrl);
+        this.loading.set(false);
+        this.showSuccess('PREDICTIONS.SHARED_SUCCESS');
+      },
+      error: () => {
+        this.loading.set(false);
+        this.showError('PREDICTIONS.SHARE_ERROR');
+      }
+    });
+  }
+
+  private downloadFile(blob: Blob, filename: string, type: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  private copyToClipboard(text: string): void {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.showCopySuccess();
+      }).catch(() => this.fallbackCopy(text));
+    } else {
+      this.fallbackCopy(text);
+    }
+  }
+
+  private fallbackCopy(text: string): void {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    try {
+      document.execCommand('copy');
+      this.showCopySuccess();
+    } catch (err) {
+      console.error('Copy failed:', err);
+      this.showError('PREDICTIONS.COPY_ERROR');
+    } finally {
+      document.body.removeChild(textarea);
+    }
+  }
+
+  private showCopySuccess(): void {
+    this.snackBar.open(
+      this.translate.instant('PREDICTIONS.LINK_COPIED'),
+      this.translate.instant('COMMON.CLOSE'),
+      { duration: 3000, panelClass: ['success-snackbar'] }
+    );
+  }
+
   getTrendIcon(trend: string): string {
     const icons: Record<string, string> = {
       'increasing': 'trending_up',
@@ -212,15 +393,18 @@ export class DemandPredictionsComponent implements OnInit {
   }
 
   private showSuccess(message: string, params?: any): void {
-    this.snackBar.open(this.translate.instant(message, params), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
+    this.snackBar.open(
+      this.translate.instant(message, params),
+      this.translate.instant('COMMON.CLOSE'),
+      { duration: 3000, panelClass: ['success-snackbar'] }
+    );
   }
 
   private showError(message: string): void {
-    this.snackBar.open(this.translate.instant(message), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000
-    });
+    this.snackBar.open(
+      this.translate.instant(message),
+      this.translate.instant('COMMON.CLOSE'),
+      { duration: 4000, panelClass: ['error-snackbar'] }
+    );
   }
 }

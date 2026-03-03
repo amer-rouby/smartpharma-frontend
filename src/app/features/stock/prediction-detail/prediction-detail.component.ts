@@ -4,8 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { DemandPrediction, DemandPredictionService } from '../../../core/services/demand-prediction.service';
 import { CommonModule } from '@angular/common';
+import { DemandPrediction, DemandPredictionService } from '../../../core/services/demand-prediction.service';
 
 @Component({
   selector: 'app-prediction-detail',
@@ -23,19 +23,17 @@ export class PredictionDetailComponent implements OnInit {
 
   readonly loading = signal(false);
   readonly prediction = signal<DemandPrediction | null>(null);
-  readonly salesHistory = signal<any[]>([]);
+  readonly salesHistory = signal<Array<{ date: string; quantity: number; sales: number }>>([]);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadPredictionDetail(+id);
     }
-
   }
 
   loadPredictionDetail(id: number): void {
     this.loading.set(true);
-
     this.predictionService.getPredictionsWithPagination(0, 100).subscribe({
       next: (data) => {
         const pred = data.content.find(p => p.predictionId === id);
@@ -65,34 +63,20 @@ export class PredictionDetailComponent implements OnInit {
     ]);
   }
 
-  onEdit(): void {
-    this.snackBar.open('Coming soon', this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-  }
-
-  onDelete(): void {
-    this.snackBar.open('Coming soon', this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-  }
-
-  onExport(): void {
-    this.snackBar.open('Export feature coming soon', this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-  }
-
-  onShare(): void {
-    this.snackBar.open('Share feature coming soon', this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-  }
-
   onCreatePurchaseOrder(): void {
     const pred = this.prediction();
-    if (pred && pred.recommendedOrder > 0) {
-      this.router.navigate(['/purchases/new'], {
-        queryParams: {
-          productId: pred.productId,
-          quantity: pred.recommendedOrder,
-          predictionId: pred.predictionId,
-          source: 'prediction'
-        }
-      });
+    if (!pred || pred.recommendedOrder <= 0) {
+      this.showError('PREDICTIONS.INVALID_PRODUCT');
+      return;
     }
+    this.router.navigate(['/purchases/new'], {
+      queryParams: {
+        productId: pred.productId,
+        quantity: pred.recommendedOrder,
+        predictionId: pred.predictionId,
+        source: 'prediction'
+      }
+    });
   }
 
   formatDate(date: string): string {
@@ -121,9 +105,19 @@ export class PredictionDetailComponent implements OnInit {
     return colors[trend] || '#6b7280';
   }
 
+  private showSuccess(message: string, params?: any): void {
+    this.snackBar.open(
+      this.translate.instant(message, params),
+      this.translate.instant('COMMON.CLOSE'),
+      { duration: 3000, panelClass: ['success-snackbar'] }
+    );
+  }
+
   private showError(message: string): void {
-    this.snackBar.open(this.translate.instant(message), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000
-    });
+    this.snackBar.open(
+      this.translate.instant(message),
+      this.translate.instant('COMMON.CLOSE'),
+      { duration: 3000, panelClass: ['error-snackbar'] }
+    );
   }
 }
