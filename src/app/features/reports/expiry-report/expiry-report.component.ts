@@ -33,12 +33,8 @@ interface ExpiryData {
   selector: 'app-expiry-report',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
-    TranslateModule,
-    MaterialModule,
-    PageHeaderComponent,
-    BaseChartDirective
+    CommonModule, FormsModule, TranslateModule, MaterialModule,
+    PageHeaderComponent, BaseChartDirective
   ],
   templateUrl: './expiry-report.component.html',
   styleUrl: './expiry-report.component.scss'
@@ -48,50 +44,31 @@ export class ExpiryReportComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
-private readonly exportService = inject(ExportService);
-  readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
+  private readonly exportService = inject(ExportService);
 
+  readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
   readonly expiryData = signal<ExpiryData | null>(null);
   readonly reportLoading = signal(false);
   readonly reportError = signal<string>('');
+  readonly exportLoading = signal(false);
 
   readonly displayedColumns = ['productName', 'batchNumber', 'expiryDate', 'daysUntilExpiry', 'currentStock', 'status'];
-  readonly exportLoading = signal(false);
+
   readonly doughnutChartData: ChartConfiguration<'doughnut'>['data'] = {
     labels: ['عاجل (7 أيام)', 'تحذير (30 يوم)', 'جيد (90 يوم)'],
-    datasets: [
-      {
-        data: [],
-        backgroundColor: ['#ef4444', '#f59e0b', '#10b981']
-      }
-    ] as ChartDataset<'doughnut'>[]
+    datasets: [{ data: [], backgroundColor: ['#ef4444', '#f59e0b', '#10b981'] }] as ChartDataset<'doughnut'>[]
   };
 
   readonly doughnutChartOptions: ChartOptions<'doughnut'> = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: { display: true, position: 'bottom' }
-    }
+    plugins: { legend: { display: true, position: 'bottom' } }
   };
 
   ngOnInit(): void {
     this.generateReport();
   }
 
-  exportPDF(): void {
-    this.exportLoading.set(true);
-
-    this.exportService.exportExpensesPdf(
-      this.getPharmacyId(),
-      0,
-      100,
-      true
-    ).subscribe({
-      next: () => this.exportLoading.set(false),
-      error: () => this.exportLoading.set(false)
-    });
-  }
   generateReport(): void {
     this.reportLoading.set(true);
     this.reportError.set('');
@@ -107,11 +84,10 @@ private readonly exportService = inject(ExportService);
         this.updateChart(data);
         this.reportLoading.set(false);
       },
-      error: (error) => {
+      error: () => {
         this.reportError.set('REPORTS.LOAD_ERROR');
         this.reportLoading.set(false);
-        this.snackBar.open(this.translate.instant('REPORTS.LOAD_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-        console.error('Expiry report error:', error);
+        this.snackBar.open(this.t('REPORTS.LOAD_ERROR'), this.t('COMMON.CLOSE'), { duration: 3000 });
       }
     });
   }
@@ -124,25 +100,61 @@ private readonly exportService = inject(ExportService);
     ];
   }
 
+  exportPDF(): void {
+    this.exportLoading.set(true);
+    this.exportService.exportReport({
+      fileName: `expiry_report_${new Date().toISOString().split('T')[0]}.pdf`,
+      fileType: 'pdf',
+      endpoint: '/expiry/pdf',
+      params: { pharmacyId: this.getPharmacyId() },
+      preview: false,
+      onError: () => this.exportLoading.set(false)
+    }).subscribe({
+      next: () => this.exportLoading.set(false),
+      error: () => this.exportLoading.set(false)
+    });
+  }
+
+  exportExcel(): void {
+    this.exportLoading.set(true);
+    this.exportService.exportReport({
+      fileName: `expiry_report_${new Date().toISOString().split('T')[0]}.xlsx`,
+      fileType: 'excel',
+      endpoint: '/expiry/excel',
+      params: { pharmacyId: this.getPharmacyId() },
+      preview: false,
+      onError: () => this.exportLoading.set(false)
+    }).subscribe({
+      next: () => this.exportLoading.set(false),
+      error: () => this.exportLoading.set(false)
+    });
+  }
+
   getStatusColor(status: string): 'warn' | 'accent' | 'primary' {
-    const colors: Record<string, 'warn' | 'accent' | 'primary'> = {
-      'URGENT': 'warn',
-      'WARNING': 'accent',
-      'OK': 'primary'
+    const map: Record<string, 'warn' | 'accent' | 'primary'> = {
+      'URGENT': 'warn', 'WARNING': 'accent', 'OK': 'primary'
     };
-    return colors[status] || 'primary';
+    return map[status] || 'primary';
   }
 
   getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      'URGENT': 'عاجل',
-      'WARNING': 'تحذير',
-      'OK': 'جيد'
-    };
-    return labels[status] || status;
+    const map: Record<string, string> = { 'URGENT': 'عاجل', 'WARNING': 'تحذير', 'OK': 'جيد' };
+    return this.t(map[status] || status);
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('ar-EG', { style: 'currency', currency: 'EGP', minimumFractionDigits: 2 }).format(amount);
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;
+  }
+
+  private t(key: string): string {
+    return this.translate.instant(key);
   }
 }
