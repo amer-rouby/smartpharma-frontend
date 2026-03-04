@@ -11,6 +11,11 @@ export interface NotificationModel {
   icon?: string;
   time?: string;
   link?: string;
+  typeLabelAr?: string;
+  priorityLabelAr?: string;
+  iconName?: string;
+  priorityColor?: string;
+
 }
 export interface NotificationsResponse {
   content: NotificationModel[];

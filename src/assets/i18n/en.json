@@ -740,7 +740,8 @@
     "INSURANCE": "Insurance",
     "LICENSES": "Licenses",
     "TRANSPORT": "Transport",
-    "OTHER": "Other"
+    "OTHER": "Other",
+    "DELETE": "Delete notification"
   },
   "SECURITY": {
     "SUBTITLE": "Manage security settings and account protection",

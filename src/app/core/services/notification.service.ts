@@ -215,4 +215,5 @@ export class NotificationService {
     };
     return labels[type] || type;
   }
+
 }
