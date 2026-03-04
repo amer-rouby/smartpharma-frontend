@@ -64,7 +64,6 @@ export class AuthService {
     return user?.pharmacyId || null;
   }
 
-  // ✅ ✅ ✅ بدون PharmacyInfo - نرجع pharmacyId بس ✅ ✅ ✅
   getPharmacyInfo(): any {
     const user = this.getCurrentUser();
     if (user?.pharmacyId) {

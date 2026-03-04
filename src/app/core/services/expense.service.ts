@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { Expense, ExpenseCategory, ExpenseSummary } from '../models/Expense.model';
 import { environment } from '../../../environments/environment';
-
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,7 @@ import { environment } from '../../../environments/environment';
 export class ExpenseService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly translate = inject(TranslateService);
   private readonly baseUrl = `${environment.apiUrl}/expenses`;
 
   private getPharmacyId(): number {
@@ -80,28 +81,26 @@ export class ExpenseService {
     );
   }
 
-  getExpenseCategories(): { value: ExpenseCategory; label: string; labelAr: string }[] {
-    return [
-      { value: 'PURCHASES', label: 'Purchases', labelAr: 'المشتريات' },
-      { value: 'SALARIES', label: 'Salaries', labelAr: 'الرواتب' },
-      { value: 'RENT', label: 'Rent', labelAr: 'الإيجار' },
-      { value: 'UTILITIES', label: 'Utilities', labelAr: 'المرافق' },
-      { value: 'MAINTENANCE', label: 'Maintenance', labelAr: 'الصيانة' },
-      { value: 'MARKETING', label: 'Marketing', labelAr: 'التسويق' },
-      { value: 'INSURANCE', label: 'Insurance', labelAr: 'التأمين' },
-      { value: 'LICENSES', label: 'Licenses', labelAr: 'التراخيص' },
-      { value: 'TRANSPORT', label: 'Transport', labelAr: 'النقل' },
-      { value: 'OTHER', label: 'Other', labelAr: 'أخرى' }
+  getExpenseCategories(): { value: ExpenseCategory; label: string }[] {
+    const categories: ExpenseCategory[] = [
+      'PURCHASES', 'SALARIES', 'RENT', 'UTILITIES', 'MAINTENANCE',
+      'MARKETING', 'INSURANCE', 'LICENSES', 'TRANSPORT', 'OTHER'
     ];
+
+    return categories.map(value => ({
+      value,
+      label: this.translate.instant(`EXPENSES.CATEGORIES.${value}`)
+    }));
   }
 
-  getPaymentMethods(): { value: string; label: string; labelAr: string }[] {
-    return [
-      { value: 'CASH', label: 'Cash', labelAr: 'نقدي' },
-      { value: 'VISA', label: 'Credit Card', labelAr: 'بطاقة ائتمان' },
-      { value: 'INSTAPAY', label: 'InstaPay', labelAr: 'إنستا باي' },
-      { value: 'BANK_TRANSFER', label: 'Bank Transfer', labelAr: 'تحويل بنكي' },
-      { value: 'WALLET', label: 'E-Wallet', labelAr: 'محفظة إلكترونية' }
+  getPaymentMethods(): { value: string; label: string }[] {
+    const methods = [
+      'CASH', 'VISA', 'INSTAPAY', 'BANK_TRANSFER', 'WALLET'
     ];
+
+    return methods.map(value => ({
+      value,
+      label: this.translate.instant(`COMMON.PAYMENT_METHODS.${value}`)
+    }));
   }
 }

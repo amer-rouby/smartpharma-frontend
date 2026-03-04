@@ -48,8 +48,16 @@ export class StockMovementsComponent implements OnInit {
     this.loading.set(true);
 
     this.stockMovementService.getMovements().subscribe({
-      next: (data) => {
-        this.movements.set(data);
+      next: (response: any) => {
+        let movementsData: any[] = [];
+        if (response?.data?.content && Array.isArray(response.data.content)) {
+          movementsData = response.data.content;
+        } else if (response?.content && Array.isArray(response.content)) {
+          movementsData = response.content;
+        } else if (Array.isArray(response)) {
+          movementsData = response;
+        }
+        this.movements.set(movementsData);
         this.loading.set(false);
       },
       error: (error) => {
@@ -65,12 +73,14 @@ export class StockMovementsComponent implements OnInit {
   }
 
   loadStats(): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
-    const startDateStr = startDate.toISOString().split('T')[0];
 
-    this.stockMovementService.getStats(startDateStr, today).subscribe({
+    const startDateStr = this.formatDateForAPI(startDate);
+    const endDateStr = this.formatDateForAPI(today);
+
+    this.stockMovementService.getStats(startDateStr, endDateStr).subscribe({
       next: (data) => {
         this.stats.set(data);
       },
@@ -78,6 +88,13 @@ export class StockMovementsComponent implements OnInit {
         console.error('Error loading stats:', error);
       }
     });
+  }
+
+  private formatDateForAPI(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   onFilter(): void {
@@ -89,11 +106,21 @@ export class StockMovementsComponent implements OnInit {
       this.loading.set(true);
 
       this.stockMovementService.getMovementsByDateRange(startDate, endDate).subscribe({
-        next: (data) => {
-          let filtered = data;
+        next: (response: any) => {
+          let movementsData: any[] = [];
+
+          if (response?.data?.content && Array.isArray(response.data.content)) {
+            movementsData = response.data.content;
+          } else if (response?.content && Array.isArray(response.content)) {
+            movementsData = response.content;
+          } else if (Array.isArray(response)) {
+            movementsData = response;
+          }
+
+          let filtered = movementsData;
 
           if (movementType !== 'all') {
-            filtered = data.filter(m => m.movementType === movementType);
+            filtered = movementsData.filter(m => m.movementType === movementType);
           }
 
           this.movements.set(filtered);

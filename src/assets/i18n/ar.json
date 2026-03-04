@@ -664,7 +664,14 @@
     "RETRY": "إعادة المحاولة",
     "CONTINUE": "متابعة",
     "EXPORT_PDF": "تصدير PDF",
-    "EXPORT_EXCEL": "تصدير Excel"
+    "EXPORT_EXCEL": "تصدير Excel",
+    "PAYMENT_METHODS": {
+      "CASH": "نقدي",
+      "VISA": "بطاقة ائتمان",
+      "INSTAPAY": "إنستا باي",
+      "BANK_TRANSFER": "تحويل بنكي",
+      "WALLET": "محفظة إلكترونية"
+    }
   },
   "ERRORS": {
     "404": "الصفحة غير موجودة",
@@ -1293,5 +1300,10 @@
       "ADDRESS": "العنوان",
       "STATUS": "الحالة"
     }
-  }
+  },
+"CASH": "نقدي",
+"VISA": "بطاقة ائتمان",
+"INSTAPAY": "إنستا باي",
+"BANK_TRANSFER": "تحويل بنكي",
+"WALLET": "محفظة إلكترونية"
 }

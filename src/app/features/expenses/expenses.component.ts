@@ -77,7 +77,7 @@ export class ExpensesComponent implements OnInit {
       error: (error) => {
         this.error.set('Failed to load expenses');
         this.loading.set(false);
-        this.snackBar.open(this.translate.instant('EXPENSES.LOAD_ERROR'), 'إغلاق', { duration: 3000 });
+        this.snackBar.open(this.translate.instant('EXPENSES.LOAD_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
         console.error('Expense load error:', error);
       }
     });
@@ -112,11 +112,11 @@ export class ExpensesComponent implements OnInit {
       if (confirmed) {
         this.expenseService.deleteExpense(id).subscribe({
           next: () => {
-            this.snackBar.open(this.translate.instant('EXPENSES.DELETE_SUCCESS'), 'إغلاق', { duration: 3000 });
+            this.snackBar.open(this.translate.instant('EXPENSES.DELETE_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
             this.loadExpenses();
           },
           error: (error) => {
-            this.snackBar.open(this.translate.instant('EXPENSES.DELETE_ERROR'), 'إغلاق', { duration: 3000 });
+            this.snackBar.open(this.translate.instant('EXPENSES.DELETE_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
             console.error('Delete error:', error);
           }
         });

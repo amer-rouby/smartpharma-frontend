@@ -8,13 +8,19 @@ import { MaterialModule } from '../../../shared/material.module';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ShareDialogComponent } from '../../../shared/components/share-dialog/share-dialog.component';
 import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO } from '../../../core/services/demand-prediction.service';
 import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-prediction-dialog.component';
 
 @Component({
   selector: 'app-demand-predictions',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, MatPaginatorModule, MatMenuModule],
+  imports: [
+    MaterialModule,
+    PageHeaderComponent,
+    MatPaginatorModule,
+    MatMenuModule
+  ],
   templateUrl: './demand-predictions.component.html',
   styleUrl: './demand-predictions.component.scss'
 })
@@ -23,8 +29,8 @@ export class DemandPredictionsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly predictionService = inject(DemandPredictionService);
   private readonly dialog = inject(MatDialog);
-  readonly router = inject(Router);
 
+  readonly router = inject(Router);
   readonly loading = signal(false);
   readonly predictions = signal<DemandPrediction[]>([]);
   readonly stats = signal<PredictionStats | null>(null);
@@ -202,6 +208,7 @@ export class DemandPredictionsComponent implements OnInit {
       }
     });
   }
+
   onDeletePrediction(prediction: DemandPrediction): void {
     if (!prediction?.predictionId) {
       this.showError('PREDICTIONS.INVALID_PREDICTION');
@@ -286,16 +293,13 @@ export class DemandPredictionsComponent implements OnInit {
       return;
     }
 
-    this.loading.set(true);
-    this.predictionService.sharePrediction(prediction.predictionId).subscribe({
-      next: (data) => {
-        this.copyToClipboard(data.shareUrl);
-        this.loading.set(false);
-        this.showSuccess('PREDICTIONS.SHARED_SUCCESS');
-      },
-      error: () => {
-        this.loading.set(false);
-        this.showError('PREDICTIONS.SHARE_ERROR');
+    this.dialog.open(ShareDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: {
+        entityType: 'PREDICTION',
+        entityId: prediction.predictionId,
+        entityName: prediction.productName
       }
     });
   }
