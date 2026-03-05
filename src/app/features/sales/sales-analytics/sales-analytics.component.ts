@@ -1,28 +1,14 @@
 import { Component, OnInit, inject, signal, computed, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { SalesService } from '../../../core/services/sales.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { CategorySales, ProductSales, SalesAnalytics, SalesAnalyticsParams } from '../../../core/models/sale.model';
 import { MaterialModule } from '../../../shared/material.module';
-
-type PeriodType = 'daily' | 'weekly' | 'monthly' | 'yearly';
-
-interface FilterState {
-  period: PeriodType;
-  startDate: string;
-  endDate: string;
-}
-
-interface StatCard {
-  key: string;
-  label: string;
-  icon: string;
-  class: string;
-  showMargin?: boolean;
-}
+import { FilterState, PeriodType, StatCard } from '../../../core/models';
 
 @Component({
   selector: 'app-sales-analytics',
@@ -34,6 +20,8 @@ interface StatCard {
 export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   private readonly salesService = inject(SalesService);
   private readonly authService = inject(AuthService);
+  private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly destroy$ = new Subject<void>();
 
   readonly state = signal<{
@@ -137,12 +125,12 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
         }));
       },
       error: err => {
-        console.error('Error loading analytics:', err);
         this.state.update(s => ({
           ...s,
           loading: false,
-          error: err?.message || 'ERRORS.LOAD_FAILED'
+          error: 'REPORTS.LOAD_ERROR'
         }));
+        this.errorHandler.handleHttpError(err, 'REPORTS.LOAD_ERROR');
       }
     });
   }
@@ -154,10 +142,11 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   onRefresh(): void {
     this.setDefaultDates();
     this.loadData();
+    this.errorHandler.showSuccess('REPORTS.REFRESH_SUCCESS');
   }
 
   onExport(format: 'excel' | 'pdf'): void {
-    console.log(`Exporting as ${format}...`);
+    this.errorHandler.showWarning('REPORTS.EXPORT_NOT_SUPPORTED');
   }
 
   calculateBarHeight(value: number): number {

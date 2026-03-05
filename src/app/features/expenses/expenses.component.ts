@@ -9,6 +9,7 @@ import { MaterialModule } from '../../shared/material.module';
 import { ExpenseService } from '../../core/services/expense.service';
 import { AddExpenseDialogComponent } from './add-expense-dialog/add-expense-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 interface ExpenseRow {
   id: number;
@@ -40,6 +41,7 @@ export class ExpensesComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly expenses = signal<ExpenseRow[]>([]);
   readonly loading = signal(false);
@@ -77,8 +79,7 @@ export class ExpensesComponent implements OnInit {
       error: (error) => {
         this.error.set('Failed to load expenses');
         this.loading.set(false);
-        this.snackBar.open(this.translate.instant('EXPENSES.LOAD_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-        console.error('Expense load error:', error);
+        this.errorHandler.handleHttpError(error, 'EXPENSES.LOAD_ERROR');
       }
     });
   }
@@ -112,12 +113,11 @@ export class ExpensesComponent implements OnInit {
       if (confirmed) {
         this.expenseService.deleteExpense(id).subscribe({
           next: () => {
-            this.snackBar.open(this.translate.instant('EXPENSES.DELETE_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+            this.errorHandler.showSuccess('EXPENSES.DELETE_SUCCESS');
             this.loadExpenses();
           },
           error: (error) => {
-            this.snackBar.open(this.translate.instant('EXPENSES.DELETE_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
-            console.error('Delete error:', error);
+            this.errorHandler.handleHttpError(error, 'EXPENSES.DELETE_ERROR');
           }
         });
       }

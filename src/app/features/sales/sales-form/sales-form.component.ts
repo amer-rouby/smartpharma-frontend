@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
 import { SalesService } from '../../../core/services/sales.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { Product } from '../../../core/models/product.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
@@ -46,6 +47,7 @@ export class SalesFormComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
   readonly cartItems = signal<CartItem[]>([]);
@@ -110,7 +112,7 @@ export class SalesFormComponent implements OnInit {
         this.products.set(data);
         this.filteredProductsSubject.next(data.slice(0, 10));
       },
-      error: () => this.showError('PRODUCTS.LOAD_ERROR')
+      error: (err) => this.errorHandler.handleHttpError(err, 'PRODUCTS.LOAD_ERROR')
     });
   }
 
@@ -135,13 +137,13 @@ export class SalesFormComponent implements OnInit {
 
   addProductToCart(product: Product): void {
     if (product.totalStock <= 0) {
-      this.showError('SALES.INSUFFICIENT_STOCK');
+      this.errorHandler.showWarning('SALES.INSUFFICIENT_STOCK');
       return;
     }
 
     const unitPrice = product.sellPrice || 0;
     if (unitPrice === 0) {
-      this.showError('SALES.NO_PRICE', { name: product.name });
+      this.errorHandler.showWarning('SALES.NO_PRICE', { params: { name: product.name } });
       return;
     }
 
@@ -150,7 +152,7 @@ export class SalesFormComponent implements OnInit {
 
     if (existingItem) {
       if (existingItem.quantity >= product.totalStock) {
-        this.showError('SALES.QUANTITY_EXCEEDED');
+        this.errorHandler.showWarning('SALES.QUANTITY_EXCEEDED');
         return;
       }
       this.cartItems.set(currentItems.map(item =>
@@ -178,7 +180,7 @@ export class SalesFormComponent implements OnInit {
       return;
     }
     if (quantity > item.product.totalStock) {
-      this.showError('SALES.QUANTITY_EXCEEDED');
+      this.errorHandler.showWarning('SALES.QUANTITY_EXCEEDED');
       return;
     }
     this.cartItems.set(this.cartItems().map(cartItem =>
@@ -202,18 +204,18 @@ export class SalesFormComponent implements OnInit {
     const saleRequest = this.mapCartToSaleRequest();
     this.salesService.createSale(saleRequest).subscribe({
       next: (response) => this.handleSaleSuccess(response),
-      error: (error) => this.handleSaleError(error)
+      error: (error) => this.errorHandler.handleHttpError(error, 'SALES.CREATE_ERROR')
     });
   }
 
   /** 1. Validation Logic **/
   private validateSale(): boolean {
     if (this.isCartEmpty()) {
-      this.showError('SALES.EMPTY_CART');
+      this.errorHandler.showWarning('SALES.EMPTY_CART');
       return false;
     }
     if (this.totalAmount() <= 0) {
-      this.showError('SALES.INVALID_TOTAL');
+      this.errorHandler.showWarning('SALES.INVALID_TOTAL');
       return false;
     }
     return true;
@@ -305,16 +307,14 @@ export class SalesFormComponent implements OnInit {
   }
 
   private handleSaleError(error: any): void {
-    console.error('Sale Error:', error);
     this.loading.set(false);
-    this.showError(error.error?.message || 'SALES.ERROR');
+    this.errorHandler.handleHttpError(error, 'SALES.CREATE_ERROR');
   }
 
   private finalizeSale(): void {
     this.clearCart();
     this.router.navigate(['/sales/history']);
   }
-
 
   onCancel(): void {
     if (!this.isCartEmpty()) {
@@ -347,17 +347,10 @@ export class SalesFormComponent implements OnInit {
   }
 
   getPaymentMethodLabel(method: string): string {
-    return this.translate.instant(`SALES.${method}`);
+    return this.translate.instant(`SALES.PAYMENT_METHOD.${method}`);
   }
 
   getStockLabel(stock: number): string {
     return this.translate.instant('SALES.AVAILABLE', { count: stock });
-  }
-
-  private showError(key: string, params?: any): void {
-    this.snackBar.open(this.translate.instant(key, params), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['error-snackbar']
-    });
   }
 }

@@ -2,7 +2,6 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
@@ -10,6 +9,7 @@ import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
 import { ReportService } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ExportService } from '../../../core/services/export.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { FinancialReportData, ReportRequest } from '../../../core/models/Report.model';
 
 @Component({
@@ -25,9 +25,9 @@ import { FinancialReportData, ReportRequest } from '../../../core/models/Report.
 export class FinancialReportComponent implements OnInit {
   private readonly reportService = inject(ReportService);
   private readonly authService = inject(AuthService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly exportService = inject(ExportService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly startDate = signal<string>(this.formatDate(new Date(new Date().setMonth(new Date().getMonth() - 1))));
   readonly endDate = signal<string>(this.formatDate(new Date()));
@@ -40,8 +40,8 @@ export class FinancialReportComponent implements OnInit {
   readonly lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [],
     datasets: [
-      { data: [], label: this.t('REPORTS.REVENUE'), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)', tension: 0.4, fill: true },
-      { data: [], label: this.t('REPORTS.EXPENSES'), borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.2)', tension: 0.4, fill: true }
+      { data: [], label: this.translate.instant('REPORTS.REVENUE'), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)', tension: 0.4, fill: true },
+      { data: [], label: this.translate.instant('REPORTS.EXPENSES'), borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.2)', tension: 0.4, fill: true }
     ] as ChartDataset<'line'>[]
   };
 
@@ -83,10 +83,10 @@ export class FinancialReportComponent implements OnInit {
         this.updateCharts(data);
         this.reportLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.reportError.set('REPORTS.LOAD_ERROR');
         this.reportLoading.set(false);
-        this.snackBar.open(this.t('REPORTS.LOAD_ERROR'), this.t('COMMON.CLOSE'), { duration: 3000 });
+        this.errorHandler.handleHttpError(err, 'REPORTS.LOAD_ERROR');
       }
     });
   }
@@ -100,7 +100,7 @@ export class FinancialReportComponent implements OnInit {
     if (data.expensesByCategory?.length) {
       this.pieChartData.labels = data.expensesByCategory.map(c => {
         const key = `EXPENSES.${c.category.toUpperCase()}`;
-        const translated = this.t(key);
+        const translated = this.translate.instant(key);
         return translated !== key ? translated : c.category;
       });
       this.pieChartData.datasets[0].data = data.expensesByCategory.map(c => c.amount);
@@ -119,10 +119,19 @@ export class FinancialReportComponent implements OnInit {
         endDate: this.endDate()
       },
       preview: false,
-      onError: () => this.exportLoading.set(false)
+      onError: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     }).subscribe({
-      next: () => this.exportLoading.set(false),
-      error: () => this.exportLoading.set(false)
+      next: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     });
   }
 
@@ -138,10 +147,19 @@ export class FinancialReportComponent implements OnInit {
         endDate: this.endDate()
       },
       preview: false,
-      onError: () => this.exportLoading.set(false)
+      onError: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     }).subscribe({
-      next: () => this.exportLoading.set(false),
-      error: () => this.exportLoading.set(false)
+      next: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     });
   }
 
@@ -155,9 +173,5 @@ export class FinancialReportComponent implements OnInit {
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;
-  }
-
-  private t(key: string): string {
-    return this.translate.instant(key);
   }
 }

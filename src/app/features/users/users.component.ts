@@ -1,9 +1,10 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../shared/material.module';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
 import { User, UserRequest, UserRole } from '../../core/models/user.model';
@@ -13,14 +14,14 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, FormsModule],
+  imports: [MaterialModule, PageHeaderComponent, FormsModule, ConfirmDialogComponent],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
 export class UsersComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly userService = inject(UserService);
   private readonly authService = inject(AuthService);
 
@@ -48,14 +49,9 @@ export class UsersComponent implements OnInit {
         this.users.set(data);
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error loading users:', error);
-        this.snackBar.open(
-          this.translate.instant('USERS.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: (err) => {
         this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'USERS.LOAD_ERROR');
       }
     });
   }
@@ -66,7 +62,7 @@ export class UsersComponent implements OnInit {
     if (query.trim()) {
       this.userService.searchUsers(query).subscribe({
         next: (data) => this.users.set(data),
-        error: (error) => console.error('Search error:', error)
+        error: (err) => this.errorHandler.handleHttpError(err, 'USERS.LOAD_ERROR')
       });
     } else {
       this.loadUsers();
@@ -107,26 +103,28 @@ export class UsersComponent implements OnInit {
   }
 
   onDelete(user: User): void {
-    if (!confirm(this.translate.instant('USERS.CONFIRM_DELETE', { name: user.fullName }))) {
-      return;
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('COMMON.CONFIRM'),
+        message: this.translate.instant('USERS.CONFIRM_DELETE', { name: user.fullName }),
+        confirmText: this.translate.instant('COMMON.YES'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
 
-    this.userService.deleteUser(user.id).subscribe({
-      next: () => {
-        this.users.update(users => users.filter(u => u.id !== user.id));
-        this.snackBar.open(
-          this.translate.instant('USERS.DELETE_SUCCESS', { name: user.fullName }),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-      },
-      error: (error) => {
-        console.error('Delete error:', error);
-        this.snackBar.open(
-          this.translate.instant('USERS.DELETE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.userService.deleteUser(user.id).subscribe({
+          next: () => {
+            this.users.update(users => users.filter(u => u.id !== user.id));
+            this.errorHandler.showSuccess('USERS.DELETE_SUCCESS', { params: { name: user.fullName } });
+          },
+          error: (err) => {
+            this.errorHandler.handleHttpError(err, 'USERS.DELETE_ERROR');
+          }
+        });
       }
     });
   }
@@ -147,19 +145,10 @@ export class UsersComponent implements OnInit {
         this.users.update(users =>
           users.map(u => u.id === user.id ? data : u)
         );
-        this.snackBar.open(
-          this.translate.instant('USERS.STATUS_UPDATED'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 2000 }
-        );
+        this.errorHandler.showSuccess('USERS.STATUS_UPDATED');
       },
-      error: (error) => {
-        console.error('Toggle error:', error);
-        this.snackBar.open(
-          this.translate.instant('USERS.STATUS_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: (err) => {
+        this.errorHandler.handleHttpError(err, 'USERS.STATUS_ERROR');
       }
     });
   }

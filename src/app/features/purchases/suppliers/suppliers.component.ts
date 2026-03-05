@@ -12,6 +12,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 import { SupplierService } from '../../../core/services/supplier.service';
 import { Supplier } from '../../../core/models/purchase-order.model';
 import { SupplierRequest } from '../../../core/models/purchase-request.model';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-suppliers',
@@ -33,6 +34,7 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
   readonly showDialog = signal(false);
@@ -73,9 +75,9 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
         this.dataSource.data = data.content || [];
         this.loading.set(false);
       },
-      error: () => {
-        this.showError('SUPPLIERS.LOAD_ERROR');
+      error: (err) => {
         this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'SUPPLIERS.LOAD_ERROR');
       }
     });
   }
@@ -87,10 +89,9 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
     this.showDialog.set(true);
   }
 
-
   onEdit(supplier: Supplier): void {
     if (!supplier?.id) {
-      this.showError('SUPPLIERS.INVALID_SUPPLIER');
+      this.errorHandler.showWarning('SUPPLIERS.INVALID_SUPPLIER');
       return;
     }
 
@@ -111,7 +112,7 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
 
   onDelete(supplier: Supplier): void {
     if (!supplier?.id) {
-      this.showError('SUPPLIERS.INVALID_SUPPLIER');
+      this.errorHandler.showWarning('SUPPLIERS.INVALID_SUPPLIER');
       return;
     }
 
@@ -130,10 +131,10 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
       if (result) {
         this.supplierService.deleteSupplier(supplier.id).subscribe({
           next: () => {
-            this.showSuccess('SUPPLIERS.DELETED');
+            this.errorHandler.showSuccess('SUPPLIERS.DELETED');
             this.loadSuppliers();
           },
-          error: () => this.showError('SUPPLIERS.DELETE_ERROR')
+          error: (err) => this.errorHandler.handleHttpError(err, 'SUPPLIERS.DELETE_ERROR')
         });
       }
     });
@@ -141,7 +142,7 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
 
   onToggleStatus(supplier: Supplier): void {
     if (!supplier?.id) {
-      this.showError('SUPPLIERS.INVALID_SUPPLIER');
+      this.errorHandler.showWarning('SUPPLIERS.INVALID_SUPPLIER');
       return;
     }
 
@@ -153,16 +154,16 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
 
     this.supplierService.updateSupplier(supplier.id, request).subscribe({
       next: () => {
-        this.showSuccess('SUPPLIERS.STATUS_UPDATED');
+        this.errorHandler.showSuccess('SUPPLIERS.STATUS_UPDATED');
         this.loadSuppliers();
       },
-      error: () => this.showError('SUPPLIERS.STATUS_ERROR')
+      error: (err) => this.errorHandler.handleHttpError(err, 'SUPPLIERS.STATUS_ERROR')
     });
   }
 
   onSubmit(): void {
     if (this.supplierForm.invalid) {
-      this.showError('VALIDATION.REQUIRED');
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -177,14 +178,14 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
       next: () => {
         this.loading.set(false);
         this.showDialog.set(false);
-        this.showSuccess(this.isEditMode() ? 'SUPPLIERS.UPDATE_SUCCESS' : 'SUPPLIERS.ADD_SUCCESS');
+        this.errorHandler.showSuccess(this.isEditMode() ? 'SUPPLIERS.UPDATE_SUCCESS' : 'SUPPLIERS.ADD_SUCCESS');
         this.loadSuppliers();
         this.supplierForm.reset({ status: 'ACTIVE' });
         this.editingSupplierId.set(null);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.showError(this.isEditMode() ? 'SUPPLIERS.UPDATE_ERROR' : 'SUPPLIERS.ADD_ERROR');
+        this.errorHandler.handleHttpError(err, this.isEditMode() ? 'SUPPLIERS.UPDATE_ERROR' : 'SUPPLIERS.ADD_ERROR');
       }
     });
   }
@@ -211,18 +212,5 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
       'BLOCKED': '#ef4444'
     };
     return colors[status] || '#6b7280';
-  }
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(this.translate.instant(message), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(this.translate.instant(message), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000
-    });
   }
 }

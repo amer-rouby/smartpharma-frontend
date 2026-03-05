@@ -5,9 +5,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { DashboardService} from '../../../core/services/dashboard.service';
+import { DashboardService } from '../../../core/services/dashboard.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { DashboardStats } from '../../../core/models/dashboard.model';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,6 +23,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly destroy$ = new Subject<void>();
 
   readonly stats = signal<DashboardStats | null>(null);
@@ -57,22 +59,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.loading.set(false);
         },
         error: (err) => {
-          this.error.set(this.getErrorMessage(err));
+          this.error.set('DASHBOARD.LOAD_ERROR');
           this.loading.set(false);
-          this.snackBar.open(this.error(), this.translate.instant('COMMON.CLOSE'), {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.errorHandler.handleHttpError(err, 'DASHBOARD.LOAD_ERROR');
         }
       });
   }
 
   refreshData(): void {
     this.loadDashboardStats();
-    this.snackBar.open(this.translate.instant('DASHBOARD.LOADING'), this.translate.instant('COMMON.CLOSE'), {
-      duration: 2000,
-      panelClass: ['info-snackbar']
-    });
+    this.errorHandler.showSuccess('DASHBOARD.REFRESH_SUCCESS');
   }
 
   formatCurrency(amount: number): string {
@@ -128,18 +124,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   viewLowStockProducts(): void {
-    this.snackBar.open(this.translate.instant('DASHBOARD.STOCK_ALERTS_BTN'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
+    this.errorHandler.showWarning('DASHBOARD.STOCK_ALERTS_BTN');
   }
 
   viewAllSales(): void {
     this.router.navigate(['/sales/history']);
-  }
-
-  private getErrorMessage(error: any): string {
-    if (error?.status === 0) return this.translate.instant('ERRORS.NETWORK');
-    if (error?.status === 401) return this.translate.instant('ERRORS.401');
-    if (error?.status === 403) return this.translate.instant('ERRORS.403');
-    if (error?.status === 404) return this.translate.instant('ERRORS.404');
-    return this.translate.instant('DASHBOARD.ERROR');
   }
 }

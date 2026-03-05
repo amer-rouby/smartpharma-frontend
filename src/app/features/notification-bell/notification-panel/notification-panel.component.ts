@@ -13,7 +13,7 @@ import { NotificationService } from '../../../core/services/notification.service
     CommonModule,
     TranslateModule
   ],
-  templateUrl: "./notification-panel.component.html",
+  templateUrl: './notification-panel.component.html',
   styleUrls: ['./notification-panel.component.scss']
 })
 export class NotificationPanelComponent {
@@ -66,7 +66,7 @@ export class NotificationPanelComponent {
     this.notificationClick.emit(n);
   }
 
-  formatTime(date: string) {
+  formatTime(date: string): string {
     return (this.notificationService as any).formatTime(date);
   }
 

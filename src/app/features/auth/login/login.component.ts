@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/services/language.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/LoginRequest.model';
@@ -22,6 +23,7 @@ export class LoginComponent {
   readonly snackBar = inject(MatSnackBar);
   readonly translate = inject(TranslateService);
   readonly languageService = inject(LanguageService);
+  readonly errorHandler = inject(ErrorHandlerService);
 
   credentials: LoginRequest = { username: '', password: '' };
   loading = false;
@@ -32,7 +34,7 @@ export class LoginComponent {
     this.isSubmitted = true;
 
     if (!this.credentials.username || !this.credentials.password) {
-      this.showError(this.translate.instant('AUTH.LOGIN_FAILED'));
+      this.errorHandler.showWarning('AUTH.LOGIN_FAILED');
       return;
     }
 
@@ -52,17 +54,8 @@ export class LoginComponent {
       },
       error: (error) => {
         this.loading = false;
-        this.showError(error.error?.message || this.translate.instant('AUTH.INVALID_CREDENTIALS'));
+        this.errorHandler.handleHttpError(error, 'AUTH.INVALID_CREDENTIALS');
       }
-    });
-  }
-
-  showError(message: string): void {
-    Swal.fire({
-      icon: 'error',
-      title: this.translate.instant('COMMON.ERROR'),
-      text: message,
-      confirmButtonText: this.translate.instant('COMMON.OK')
     });
   }
 

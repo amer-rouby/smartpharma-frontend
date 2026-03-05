@@ -1,8 +1,7 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -10,6 +9,7 @@ import { SalesService } from '../../../core/services/sales.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
 import { InvoicePrintService, PrintableSale } from '../../../core/services/invoice-print.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { SaleDetailsDialogComponent } from '../sale-details-dialog/sale-details-dialog.component';
@@ -22,15 +22,15 @@ import { PharmacySettings } from '../../../core/models/settings/pharmacy-setting
   templateUrl: './sales-history.component.html',
   styleUrl: './sales-history.component.scss'
 })
-export class SalesHistoryComponent {
+export class SalesHistoryComponent implements OnInit {
   private readonly salesService = inject(SalesService);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly authService = inject(AuthService);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly dialog = inject(MatDialog);
   private readonly pharmacySettingsService = inject(PharmacySettingsService);
   private readonly invoicePrintService = inject(InvoicePrintService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly displayedColumns = ['invoiceNumber', 'date', 'items', 'total', 'paymentMethod', 'actions'];
   readonly sales = signal<any[]>([]);
@@ -56,7 +56,7 @@ export class SalesHistoryComponent {
         this.pharmacySettings.set(settings);
       },
       error: (err) => {
-        console.error('❌ Failed to load pharmacy settings:', err);
+        this.errorHandler.handleHttpError(err, 'SETTINGS.LOAD_ERROR');
         this.pharmacySettings.set(this.getDefaultPharmacyInfo());
       }
     });
@@ -66,7 +66,7 @@ export class SalesHistoryComponent {
     return {
       id: 1,
       pharmacyId: this.authService.getPharmacyId() || 1,
-      pharmacyName: 'صيدليتي الذكية',
+      pharmacyName: this.translate.instant('PHARMACY.DEFAULT_NAME'),
       address: '',
       phone: '',
       email: '',
@@ -99,9 +99,9 @@ export class SalesHistoryComponent {
         this.totalElements.set(data.totalElements || this.sales().length);
         this.loading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.showError('SALES.LOAD_ERROR');
+        this.errorHandler.handleHttpError(err, 'SALES.LOAD_ERROR');
       }
     });
   }
@@ -118,9 +118,9 @@ export class SalesHistoryComponent {
           this.sales.set(data.content || data.sales || []);
           this.loading.set(false);
         },
-        error: () => {
+        error: (err) => {
           this.loading.set(false);
-          this.showError('SALES.SEARCH_ERROR');
+          this.errorHandler.handleHttpError(err, 'SALES.SEARCH_ERROR');
         }
       });
     } else {
@@ -148,37 +148,42 @@ export class SalesHistoryComponent {
           data: { sale: saleDetails }
         });
       },
-      error: () => {
-        this.showError('SALES.LOAD_DETAILS_ERROR');
+      error: (err) => {
+        this.errorHandler.handleHttpError(err, 'SALES.LOAD_DETAILS_ERROR');
       }
     });
   }
 
   onPrintSale(sale: any): void {
-    const pharmacy = this.pharmacySettings() || this.getDefaultPharmacyInfo();
+    try {
+      const pharmacy = this.pharmacySettings() || this.getDefaultPharmacyInfo();
 
-    const printableSale: PrintableSale = {
-      id: sale.id,
-      invoiceNumber: sale.invoiceNumber,
-      transactionDate: sale.transactionDate,
-      paymentMethod: sale.paymentMethod,
-      totalAmount: sale.totalAmount,
-      subtotal: sale.subtotal,
-      discountAmount: sale.discountAmount,
-      items: sale.items.map((item: any) => ({
-        id: item.id,
-        productName: item.productName,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        totalPrice: item.totalPrice
-      }))
-    };
+      const printableSale: PrintableSale = {
+        id: sale.id,
+        invoiceNumber: sale.invoiceNumber,
+        transactionDate: sale.transactionDate,
+        paymentMethod: sale.paymentMethod,
+        totalAmount: sale.totalAmount,
+        subtotal: sale.subtotal,
+        discountAmount: sale.discountAmount,
+        items: sale.items.map((item: any) => ({
+          id: item.id,
+          productName: item.productName,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice
+        }))
+      };
 
-    this.invoicePrintService.printInvoice(printableSale, pharmacy);
+      this.invoicePrintService.printInvoice(printableSale, pharmacy);
+      this.errorHandler.showSuccess('SALES.PRINT_SUCCESS');
+    } catch (err) {
+      this.errorHandler.showError('SALES.PRINT_ERROR');
+    }
   }
 
   getPaymentMethodLabel(method: string): string {
-    return this.translate.instant(`SALES.${method}`);
+    return this.translate.instant(`SALES.PAYMENT_METHOD.${method}`);
   }
 
   formatDate(dateString: string): string {
@@ -193,11 +198,5 @@ export class SalesHistoryComponent {
     return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
       style: 'currency', currency: 'EGP', minimumFractionDigits: 2
     }).format(amount);
-  }
-
-  private showError(key: string): void {
-    this.snackBar.open(this.translate.instant(key), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000, panelClass: ['error-snackbar']
-    });
   }
 }

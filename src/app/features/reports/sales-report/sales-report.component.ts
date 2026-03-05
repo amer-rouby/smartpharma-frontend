@@ -10,20 +10,8 @@ import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
 import { ReportService } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ExportService } from '../../../core/services/export.service';
-import { ReportRequest, SalesReportData } from '../../../core/models/Report.model';
-
-interface DailySalesRow {
-  date: string;
-  revenue: number;
-  orders: number;
-}
-
-interface TopProductRow {
-  rank: number;
-  productName: string;
-  quantitySold: number;
-  totalRevenue: number;
-}
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { DailySalesRow, ReportRequest, SalesReportData, TopProductRow } from '../../../core/models/Report.model';
 
 @Component({
   selector: 'app-sales-report',
@@ -45,6 +33,7 @@ export class SalesReportComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly exportService = inject(ExportService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly startDate = signal<string>(this.formatDate(new Date(new Date().setMonth(new Date().getMonth() - 1))));
   readonly endDate = signal<string>(this.formatDate(new Date()));
@@ -114,10 +103,10 @@ export class SalesReportComponent implements OnInit {
         this.updateCharts(data);
         this.reportLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.reportError.set('REPORTS.LOAD_ERROR');
         this.reportLoading.set(false);
-        this.snackBar.open(this.t('REPORTS.LOAD_ERROR'), this.t('COMMON.CLOSE'), { duration: 3000 });
+        this.errorHandler.handleHttpError(err, 'REPORTS.LOAD_ERROR');
       }
     });
   }
@@ -166,10 +155,19 @@ export class SalesReportComponent implements OnInit {
         reportType: this.reportType()
       },
       preview: false,
-      onError: () => this.exportLoading.set(false)
+      onError: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     }).subscribe({
-      next: () => this.exportLoading.set(false),
-      error: () => this.exportLoading.set(false)
+      next: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     });
   }
 
@@ -186,10 +184,19 @@ export class SalesReportComponent implements OnInit {
         reportType: this.reportType()
       },
       preview: false,
-      onError: () => this.exportLoading.set(false)
+      onError: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     }).subscribe({
-      next: () => this.exportLoading.set(false),
-      error: () => this.exportLoading.set(false)
+      next: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     });
   }
 
@@ -202,7 +209,7 @@ export class SalesReportComponent implements OnInit {
       'CASH': 'SALES.CASH', 'VISA': 'SALES.VISA', 'INSTAPAY': 'SALES.INSTAPAY',
       'WALLET': 'SALES.WALLET', 'CREDIT': 'SALES.CREDIT'
     };
-    return this.t(map[method] || method);
+    return this.translate.instant(map[method] || method);
   }
 
   private formatDate(date: Date): string {
@@ -211,9 +218,5 @@ export class SalesReportComponent implements OnInit {
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;
-  }
-
-  private t(key: string): string {
-    return this.translate.instant(key);
   }
 }

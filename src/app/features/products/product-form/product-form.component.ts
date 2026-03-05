@@ -10,6 +10,7 @@ import { ProductRequest } from '../../../core/models/product.model';
 import { Category } from '../../../core/models/category';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-product-form',
@@ -24,6 +25,7 @@ export class ProductFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly translate = inject(TranslateService);
   readonly languageService = inject(LanguageService);
@@ -87,13 +89,8 @@ export class ProductFormComponent implements OnInit {
         this.categoriesLoading.set(false);
       },
       error: (error) => {
-        console.error('Error loading categories:', error);
         this.categoriesLoading.set(false);
-        this.snackBar.open(
-          this.translate.instant('CATEGORIES.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        this.errorHandler.handleHttpError(error, 'CATEGORIES.LOAD_ERROR');
       }
     });
   }
@@ -125,9 +122,9 @@ export class ProductFormComponent implements OnInit {
         });
         this.loading.set(false);
       },
-      error: () => {
+      error: (error) => {
         this.loading.set(false);
-        this.showError('PRODUCTS.LOAD_ERROR');
+        this.errorHandler.handleHttpError(error, 'PRODUCTS.LOAD_ERROR');
         this.router.navigate(['/products']);
       }
     });
@@ -137,12 +134,16 @@ export class ProductFormComponent implements OnInit {
     const p = this.product();
 
     if (!p.name?.trim()) {
-      this.showError('VALIDATION.REQUIRED', { field: this.translate.instant('PRODUCTS.NAME') });
+      this.errorHandler.showWarning('VALIDATION.REQUIRED', {
+        params: { field: this.translate.instant('PRODUCTS.NAME') }
+      });
       return;
     }
 
     if (!p.sellPrice || p.sellPrice <= 0) {
-      this.showError('VALIDATION.REQUIRED', { field: this.translate.instant('PRODUCTS.SELL_PRICE') });
+      this.errorHandler.showWarning('VALIDATION.REQUIRED', {
+        params: { field: this.translate.instant('PRODUCTS.SELL_PRICE') }
+      });
       return;
     }
 
@@ -156,15 +157,16 @@ export class ProductFormComponent implements OnInit {
       next: (response: any) => {
         this.loading.set(false);
         const msg = response.message || (this.isEditMode() ? 'PRODUCTS.UPDATE_SUCCESS' : 'PRODUCTS.ADD_SUCCESS');
-        this.showSuccess(msg);
+        this.errorHandler.showSuccess(msg);
         this.router.navigate(['/products']);
       },
       error: (error: any) => {
         this.loading.set(false);
-        this.showError(error.error?.message || 'COMMON.ERROR');
+        this.errorHandler.handleHttpError(error, error.error?.message || 'COMMON.ERROR');
       }
     });
   }
+
 
   onCancel(): void {
     this.router.navigate(['/products']);
@@ -172,7 +174,7 @@ export class ProductFormComponent implements OnInit {
 
   regenerateBarcode(): void {
     this.generateUniqueBarcode();
-    this.snackBar.open(this.translate.instant('PRODUCTS.BARCODE_REGENERATED'), this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
+    this.errorHandler.showSuccess('PRODUCTS.BARCODE_REGENERATED');
   }
 
   formatCurrency(amount: number): string {
@@ -198,19 +200,5 @@ export class ProductFormComponent implements OnInit {
 
   translateUnitType(key: string): string {
     return this.translate.instant(key);
-  }
-
-  private showSuccess(key: string, params?: any): void {
-    this.snackBar.open(this.translate.instant(key, params), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
-  }
-
-  private showError(key: string, params?: any): void {
-    this.snackBar.open(this.translate.instant(key, params), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['error-snackbar']
-    });
   }
 }

@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { NotificationSettingsService } from '../../../core/services/settings/notification-settings.service';
 
 type ChannelType = 'email' | 'sms' | 'push';
@@ -38,6 +39,7 @@ export class NotificationSettingsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly notificationSettingsService = inject(NotificationSettingsService);
 
   readonly loading = signal(false);
@@ -199,14 +201,9 @@ export class NotificationSettingsComponent implements OnInit {
 
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error loading notification settings:', error);
-        this.snackBar.open(
-          this.translate.instant('NOTIFICATIONS.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: (err) => {
         this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'NOTIFICATIONS.LOAD_ERROR');
       }
     });
   }
@@ -239,11 +236,7 @@ export class NotificationSettingsComponent implements OnInit {
 
   onSave(): void {
     if (this.notificationForm.invalid) {
-      this.snackBar.open(
-        this.translate.instant('VALIDATION.REQUIRED'),
-        this.translate.instant('COMMON.CLOSE'),
-        { duration: 3000 }
-      );
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -271,31 +264,18 @@ export class NotificationSettingsComponent implements OnInit {
     this.notificationSettingsService.updateSettings(request).subscribe({
       next: () => {
         this.saving.set(false);
-        this.snackBar.open(
-          this.translate.instant('SETTINGS.SAVE_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
+        this.errorHandler.showSuccess('SETTINGS.SAVE_SUCCESS');
       },
-      error: (error) => {
-        console.error('Error saving notification settings:', error);
+      error: (err) => {
         this.saving.set(false);
-        this.snackBar.open(
-          this.translate.instant('SETTINGS.SAVE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        this.errorHandler.handleHttpError(err, 'SETTINGS.SAVE_ERROR');
       }
     });
   }
 
   onReset(): void {
     this.loadNotificationSettings();
-    this.snackBar.open(
-      this.translate.instant('COMMON.RESET'),
-      this.translate.instant('COMMON.CLOSE'),
-      { duration: 2000 }
-    );
+    this.errorHandler.showSuccess('COMMON.RESET');
   }
 
   getChannelIcon(channel: ChannelType): string {

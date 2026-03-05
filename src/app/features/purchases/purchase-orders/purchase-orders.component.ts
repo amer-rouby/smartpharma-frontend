@@ -10,6 +10,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-purchase-orders',
@@ -24,6 +25,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
   readonly stats = signal<any>(null);
@@ -49,9 +51,9 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
         this.dataSource.data = data.content || [];
         this.loading.set(false);
       },
-      error: () => {
-        this.showError('PURCHASES.LOAD_ERROR');
+      error: (err) => {
         this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'PURCHASES.LOAD_ERROR');
       }
     });
   }
@@ -59,7 +61,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
   loadStats(): void {
     this.purchaseService.getStats().subscribe({
       next: (data) => this.stats.set(data),
-      error: () => console.error('Error loading stats')
+      error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.LOAD_ERROR')
     });
   }
 
@@ -71,13 +73,13 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
     if (order.status === 'DRAFT') {
       this.router.navigate(['/purchases', order.id, 'edit']);
     } else {
-      this.showError('PURCHASES.EDIT_DRAFT_ONLY');
+      this.errorHandler.showWarning('PURCHASES.EDIT_DRAFT_ONLY');
     }
   }
 
   onDelete(order: PurchaseOrder): void {
     if (order.status !== 'DRAFT') {
-      this.showError('PURCHASES.DELETE_DRAFT_ONLY');
+      this.errorHandler.showWarning('PURCHASES.DELETE_DRAFT_ONLY');
       return;
     }
 
@@ -96,11 +98,11 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
       if (result) {
         this.purchaseService.deleteOrder(order.id).subscribe({
           next: () => {
-            this.showSuccess('PURCHASES.DELETED');
+            this.errorHandler.showSuccess('PURCHASES.DELETED');
             this.loadOrders();
             this.loadStats();
           },
-          error: () => this.showError('PURCHASES.DELETE_ERROR')
+          error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.DELETE_ERROR')
         });
       }
     });
@@ -122,11 +124,11 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
       if (result) {
         this.purchaseService.approveOrder(order.id).subscribe({
           next: () => {
-            this.showSuccess('PURCHASES.APPROVED');
+            this.errorHandler.showSuccess('PURCHASES.APPROVED');
             this.loadOrders();
             this.loadStats();
           },
-          error: () => this.showError('PURCHASES.APPROVE_ERROR')
+          error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.APPROVE_ERROR')
         });
       }
     });
@@ -148,11 +150,11 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
       if (result) {
         this.purchaseService.receiveOrder(order.id).subscribe({
           next: () => {
-            this.showSuccess('PURCHASES.RECEIVED');
+            this.errorHandler.showSuccess('PURCHASES.RECEIVED');
             this.loadOrders();
             this.loadStats();
           },
-          error: () => this.showError('PURCHASES.RECEIVE_ERROR')
+          error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.RECEIVE_ERROR')
         });
       }
     });
@@ -199,18 +201,5 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
 
   formatAmount(amount: number): string {
     return amount.toLocaleString('ar-EG', { style: 'currency', currency: 'EGP' });
-  }
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(this.translate.instant(message), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(this.translate.instant(message), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000
-    });
   }
 }

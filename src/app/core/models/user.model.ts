@@ -37,6 +37,7 @@ export interface RegisterData {
   username: string;
   password: string;
   fullName: string;
+  pharmacyId?: number | null;
 }
 export interface User {
   id: number;

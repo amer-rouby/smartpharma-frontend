@@ -86,3 +86,63 @@ export interface ReportRequest {
   endDate?: string;
   reportType?: 'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM';
 }
+
+
+export interface ExpiryData {
+  totalExpiring: number;
+  urgentExpiring: number;
+  warningExpiring: number;
+  okExpiring: number;
+  expiringProducts: Array<{
+    productId: number;
+    productName: string;
+    batchNumber: string;
+    expiryDate: string;
+    daysUntilExpiry: number;
+    currentStock: number;
+    status: 'URGENT' | 'WARNING' | 'OK';
+    estimatedValue: number;
+  }>;
+}
+
+
+export interface DailySalesRow {
+  date: string;
+  revenue: number;
+  orders: number;
+}
+
+export interface TopProductRow {
+  rank: number;
+  productName: string;
+  quantitySold: number;
+  totalRevenue: number;
+}
+
+
+export interface StockCategoryRow {
+  categoryName: string;
+  itemCount: number;
+  totalValue: number;
+}
+
+export interface LowStockRow {
+  productId: number;
+  productName: string;
+  batchNumber: string;
+  currentStock: number;
+  minStock: number;
+  expiryDate?: string;
+  progress: number;
+}
+
+export interface ExpiringRow {
+  productId: number;
+  productName: string;
+  batchNumber: string;
+  currentStock: number;
+  expiryDate: string;
+  daysUntilExpiry: number;
+  status: 'urgent' | 'warning' | 'ok';
+}
+

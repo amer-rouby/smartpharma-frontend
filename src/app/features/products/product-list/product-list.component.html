@@ -114,7 +114,7 @@
           <ng-container matColumnDef="price">
             <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.SELL_PRICE' | translate}}</th>
             <td mat-cell *matCellDef="let product">
-              <span class="price">{{formatCurrency(product.sellPrice || 0)}} {{getCurrencySuffix()}}</span>
+              <span class="price">{{formatCurrency(product.sellPrice || 0)}}</span>
             </td>
           </ng-container>
 

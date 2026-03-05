@@ -1,11 +1,14 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../shared/material.module';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { NotificationService } from '../../core/services/notification.service';
 import { NotificationModel } from '../../core/models/Notification.model';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-notifications',
@@ -16,19 +19,18 @@ import { NotificationModel } from '../../core/models/Notification.model';
 })
 export class NotificationsComponent implements OnInit {
   private readonly notificationService = inject(NotificationService);
-
+  private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly dialog = inject(MatDialog);
+  private readonly translate = inject(TranslateService);
   readonly notifications = signal<NotificationModel[]>([]);
   readonly loading = signal(false);
   readonly selectedTab = signal(0);
 
-  // الباجينيشن
   readonly pageIndex = signal(0);
   readonly pageSize = signal(10);
   readonly totalElements = signal(0);
 
-  // تحديث تلقائي للعدد غير المقروء في الـ Badge فقط
   readonly unreadBadgeCount = computed(() => {
-    // هذا فقط للعرض في التبويب العلوي
     return this.notifications().filter(n => !n.read).length;
   });
 
@@ -36,11 +38,9 @@ export class NotificationsComponent implements OnInit {
     this.loadNotifications();
   }
 
-  // ✅ دالة التحميل المركزية
   loadNotifications(): void {
     this.loading.set(true);
 
-    // إرسال رقم الصفحة والحجم للسيرفر
     this.notificationService.getNotifications(this.pageIndex(), this.pageSize())
       .subscribe({
         next: (res) => {
@@ -48,21 +48,20 @@ export class NotificationsComponent implements OnInit {
           this.totalElements.set(res.totalElements || 0);
           this.loading.set(false);
         },
-        error: () => {
+        error: (err) => {
           this.loading.set(false);
           this.notifications.set([]);
+          this.errorHandler.handleHttpError(err, 'NOTIFICATIONS.LOAD_ERROR');
         }
       });
   }
 
-  // ✅ عند تغيير التبويب، نعود للصفحة رقم 0 ونعيد التحميل
   onTabChange(index: number): void {
     this.selectedTab.set(index);
     this.pageIndex.set(0);
     this.loadNotifications();
   }
 
-  // ✅ عند تغيير الصفحة أو الحجم
   onPageChange(event: any): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
@@ -70,33 +69,51 @@ export class NotificationsComponent implements OnInit {
   }
 
   markAsRead(id: number): void {
-    // تحديث فوري في الواجهة (Optimistic)
     this.notifications.update(list => list.map(n => n.id === id ? { ...n, read: true } : n));
-    this.notificationService.markAsRead(id).subscribe();
+    this.notificationService.markAsRead(id).subscribe({
+      error: (err) => this.errorHandler.handleHttpError(err, 'NOTIFICATIONS.MARK_READ_ERROR')
+    });
   }
 
   markAllAsRead(): void {
     this.notifications.update(list => list.map(n => ({ ...n, read: true })));
     this.notificationService.markAllAsRead().subscribe({
-      next: () => this.loadNotifications() // إعادة تحميل لضمان دقة البيانات من السيرفر
+      next: () => {
+        this.errorHandler.showSuccess('NOTIFICATIONS.MARK_ALL_SUCCESS');
+        this.loadNotifications();
+      },
+      error: (err) => this.errorHandler.handleHttpError(err, 'NOTIFICATIONS.MARK_ALL_ERROR')
     });
   }
 
   deleteNotification(id: number): void {
-    if (confirm('هل أنت متأكد من حذف هذا التنبيه؟')) {
-      this.notificationService.deleteNotification(id).subscribe({
-        next: () => {
-          // إذا حذفنا آخر عنصر في الصفحة، نعود صفحة للخلف
-          if (this.notifications().length === 1 && this.pageIndex() > 0) {
-            this.pageIndex.update(v => v - 1);
-          }
-          this.loadNotifications();
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('NOTIFICATIONS.DELETE_CONFIRM_TITLE'),
+        message: this.translate.instant('NOTIFICATIONS.DELETE_CONFIRM_MESSAGE'),
+        confirmText: this.translate.instant('COMMON.YES'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.notificationService.deleteNotification(id).subscribe({
+          next: () => {
+            this.errorHandler.showSuccess('NOTIFICATIONS.DELETE_SUCCESS');
+            if (this.notifications().length === 1 && this.pageIndex() > 0) {
+              this.pageIndex.update(v => v - 1);
+            }
+            this.loadNotifications();
+          },
+          error: (err) => this.errorHandler.handleHttpError(err, 'NOTIFICATIONS.DELETE_ERROR')
+        });
+      }
+    });
   }
 
-  // الدوال المساعدة
   getPriorityClass(priority: string) {
     const p = priority?.toUpperCase();
     if (p === 'URGENT') return 'urgent';

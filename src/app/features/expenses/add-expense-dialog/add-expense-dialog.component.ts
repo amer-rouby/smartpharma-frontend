@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../../shared/material.module';
 import { ExpenseService } from '../../../core/services/expense.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { Expense } from '../../../core/models/Expense.model';
 import { Subscription } from 'rxjs';
 
@@ -27,6 +28,7 @@ export class AddExpenseDialogComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   readonly dialogRef = inject(MatDialogRef<AddExpenseDialogComponent>);
   readonly data = inject(MAT_DIALOG_DATA);
 
@@ -85,7 +87,7 @@ export class AddExpenseDialogComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (!this.isValid()) {
-      this.snackBar.open(this.translate.instant('VALIDATION.REQUIRED'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -93,11 +95,11 @@ export class AddExpenseDialogComponent implements OnInit, OnDestroy {
 
     this.expenseService.createExpense(this.expense).subscribe({
       next: () => {
-        this.snackBar.open(this.translate.instant('EXPENSES.ADD_SUCCESS'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+        this.errorHandler.showSuccess('EXPENSES.ADD_SUCCESS');
         this.dialogRef.close(true);
       },
       error: (error) => {
-        this.snackBar.open(this.translate.instant('EXPENSES.ADD_ERROR'), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+        this.errorHandler.handleHttpError(error, 'EXPENSES.ADD_ERROR');
         console.error('Create expense error:', error);
       }
     });

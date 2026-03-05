@@ -10,24 +10,9 @@ import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
 import { ReportService } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ExportService } from '../../../core/services/export.service';
-import { ReportRequest } from '../../../core/models/Report.model';
+import { ExpiryData, ReportRequest } from '../../../core/models/Report.model';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
-interface ExpiryData {
-  totalExpiring: number;
-  urgentExpiring: number;
-  warningExpiring: number;
-  okExpiring: number;
-  expiringProducts: Array<{
-    productId: number;
-    productName: string;
-    batchNumber: string;
-    expiryDate: string;
-    daysUntilExpiry: number;
-    currentStock: number;
-    status: 'URGENT' | 'WARNING' | 'OK';
-    estimatedValue: number;
-  }>;
-}
 
 @Component({
   selector: 'app-expiry-report',
@@ -45,6 +30,7 @@ export class ExpiryReportComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly exportService = inject(ExportService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
   readonly expiryData = signal<ExpiryData | null>(null);
@@ -84,10 +70,10 @@ export class ExpiryReportComponent implements OnInit {
         this.updateChart(data);
         this.reportLoading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.reportError.set('REPORTS.LOAD_ERROR');
         this.reportLoading.set(false);
-        this.snackBar.open(this.t('REPORTS.LOAD_ERROR'), this.t('COMMON.CLOSE'), { duration: 3000 });
+        this.errorHandler.handleHttpError(err, 'REPORTS.LOAD_ERROR');
       }
     });
   }
@@ -108,10 +94,19 @@ export class ExpiryReportComponent implements OnInit {
       endpoint: '/expiry/pdf',
       params: { pharmacyId: this.getPharmacyId() },
       preview: false,
-      onError: () => this.exportLoading.set(false)
+      onError: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     }).subscribe({
-      next: () => this.exportLoading.set(false),
-      error: () => this.exportLoading.set(false)
+      next: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     });
   }
 
@@ -123,10 +118,19 @@ export class ExpiryReportComponent implements OnInit {
       endpoint: '/expiry/excel',
       params: { pharmacyId: this.getPharmacyId() },
       preview: false,
-      onError: () => this.exportLoading.set(false)
+      onError: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     }).subscribe({
-      next: () => this.exportLoading.set(false),
-      error: () => this.exportLoading.set(false)
+      next: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
+      },
+      error: () => {
+        this.exportLoading.set(false);
+        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
+      }
     });
   }
 
@@ -139,7 +143,7 @@ export class ExpiryReportComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const map: Record<string, string> = { 'URGENT': 'عاجل', 'WARNING': 'تحذير', 'OK': 'جيد' };
-    return this.t(map[status] || status);
+    return this.translate.instant(map[status] || status);
   }
 
   formatCurrency(amount: number): string {
@@ -152,9 +156,5 @@ export class ExpiryReportComponent implements OnInit {
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;
-  }
-
-  private t(key: string): string {
-    return this.translate.instant(key);
   }
 }

@@ -15,11 +15,18 @@ import { MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
 import { StockAdjustmentDialogComponent } from '../stock-adjustment-dialog/stock-adjustment-dialog.component';
 import { StockAdjustmentHistoryComponent } from '../stock-adjustment-history/stock-adjustment-history.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-stock-management',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MaterialModule, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    MaterialModule,
+    PageHeaderComponent,
+  ],
   templateUrl: './stock-management.component.html',
   styleUrl: './stock-management.component.scss'
 })
@@ -73,7 +80,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
         this.loading.set(false);
       },
       error: () => {
-        this.showError('فشل في تحميل بيانات المخزون');
+        this.showError('STOCK.LOAD_ERROR');
         this.loading.set(false);
       }
     });
@@ -100,15 +107,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      'ACTIVE': 'نشط',
-      'EXPIRED': 'منتهي',
-      'DISCARDED': 'ملغي',
-      'GOOD': 'جيد',
-      'LOW': 'منخفض',
-      'EXPIRING_SOON': 'ينتهي قريباً'
-    };
-    return labels[status] || status;
+    return this.translate.instant(`STOCK.STATUS.${status?.toUpperCase()}`);
   }
 
   getStatusChipColor(status: string): 'primary' | 'accent' | 'warn' | '' {
@@ -131,7 +130,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
   formatDate(dateString: string | null): string {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('ar-EG', {
+    return new Date(dateString).toLocaleDateString(this.languageService.getCurrentLanguage() === 'ar' ? 'ar-EG' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -158,17 +157,30 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   onDelete(batch: StockBatch): void {
-    if (confirm('هل أنت متأكد من حذف هذه الدفعة؟')) {
-      this.stockBatchService.deleteBatch(batch.id, this.pharmacyId).subscribe({
-        next: () => {
-          this.showSuccess('تم حذف الدفعة بنجاح');
-          this.loadStockBatches();
-        },
-        error: () => {
-          this.showError('فشل في حذف الدفعة');
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('COMMON.CONFIRM'),
+        message: this.translate.instant('STOCK.DELETE_CONFIRM', { name: batch.batchNumber }),
+        confirmText: this.translate.instant('COMMON.YES'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.stockBatchService.deleteBatch(batch.id, this.pharmacyId).subscribe({
+          next: () => {
+            this.showSuccess('STOCK.DELETE_SUCCESS');
+            this.loadStockBatches();
+          },
+          error: () => {
+            this.showError('STOCK.DELETE_ERROR');
+          }
+        });
+      }
+    });
   }
 
   onViewHistory(batch: StockBatch): void {
@@ -193,11 +205,13 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
     this.applyFilter();
   }
 
-  private showError(message: string): void {
-    this.snackBar.open(message, 'إغلاق', { duration: 3000 });
+  private showError(key: string): void {
+    const message = this.translate.instant(key);
+    this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
   }
 
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'إغلاق', { duration: 2000 });
+  private showSuccess(key: string): void {
+    const message = this.translate.instant(key);
+    this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
   }
 }

@@ -8,6 +8,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { SupplierService } from '../../../core/services/supplier.service';
@@ -38,6 +39,7 @@ export class PurchaseFormComponent implements OnInit {
   private readonly purchaseService = inject(PurchaseOrderService);
   private readonly supplierService = inject(SupplierService);
   private readonly productService = inject(ProductService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
   readonly suppliers = signal<Supplier[]>([]);
@@ -83,7 +85,7 @@ export class PurchaseFormComponent implements OnInit {
   loadSuppliers(): void {
     this.supplierService.getAllSuppliers().subscribe({
       next: (data) => this.suppliers.set(data || []),
-      error: (err) => console.error('Error loading suppliers', err)
+      error: (err) => this.errorHandler.handleHttpError(err, 'SUPPLIERS.LOAD_ERROR')
     });
   }
 
@@ -101,6 +103,7 @@ export class PurchaseFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading products from server:', err);
+        this.errorHandler.handleHttpError(err, 'PRODUCTS.LOAD_ERROR');
         this.products.set([]);
       }
     });
@@ -115,9 +118,9 @@ export class PurchaseFormComponent implements OnInit {
         order.items?.forEach(item => this.addItem(item));
         this.loading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.showSnackBar('PURCHASES.LOAD_ERROR');
+        this.errorHandler.handleHttpError(err, 'PURCHASES.LOAD_ERROR');
       }
     });
   }
@@ -157,7 +160,7 @@ export class PurchaseFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.form.invalid) {
-      this.showSnackBar('VALIDATION.REQUIRED');
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -169,21 +172,19 @@ export class PurchaseFormComponent implements OnInit {
     call.subscribe({
       next: (order) => {
         this.loading.set(false);
-        this.showSnackBar(this.isEditMode() ? 'PURCHASES.UPDATE_SUCCESS' : 'PURCHASES.CREATE_SUCCESS');
+        const successKey = this.isEditMode() ? 'PURCHASES.UPDATE_SUCCESS' : 'PURCHASES.CREATE_SUCCESS';
+        this.errorHandler.showSuccess(successKey);
         this.router.navigate(['/purchases', order.id]);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.showSnackBar(this.isEditMode() ? 'PURCHASES.UPDATE_ERROR' : 'PURCHASES.CREATE_ERROR');
+        const errorKey = this.isEditMode() ? 'PURCHASES.UPDATE_ERROR' : 'PURCHASES.CREATE_ERROR';
+        this.errorHandler.handleHttpError(err, errorKey);
       }
     });
   }
 
   onCancel(): void {
     this.router.navigate(['/purchases']);
-  }
-
-  private showSnackBar(messageKey: string): void {
-    this.snackBar.open(this.translate.instant(messageKey), this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
   }
 }
