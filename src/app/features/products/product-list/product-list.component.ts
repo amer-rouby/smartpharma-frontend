@@ -1,14 +1,15 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import Swal from 'sweetalert2';
+import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../../core/services/language.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-product-list',
@@ -17,11 +18,12 @@ import { LanguageService } from '../../../core/services/language.service';
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly dialog = inject(MatDialog);
 
   readonly products = signal<Product[]>([]);
   readonly loading = signal(false);
@@ -85,17 +87,19 @@ export class ProductListComponent {
   }
 
   onDelete(product: Product): void {
-    Swal.fire({
-      title: this.translate.instant('COMMON.CONFIRM'),
-      text: this.translate.instant('PRODUCTS.DELETE_CONFIRM', { name: product.name }),
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: this.translate.instant('COMMON.YES'),
-      cancelButtonText: this.translate.instant('COMMON.CANCEL')
-    }).then((result) => {
-      if (result.isConfirmed) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('COMMON.CONFIRM'),
+        message: this.translate.instant('PRODUCTS.DELETE_CONFIRM', { name: product.name }),
+        confirmText: this.translate.instant('COMMON.YES'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
         this.productService.deleteProduct(product.id).subscribe({
           next: () => {
             this.loadProducts();

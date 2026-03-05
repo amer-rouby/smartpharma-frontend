@@ -1,10 +1,5 @@
-<!-- src/app/features/stock/stock-management/stock-management.component.html -->
-
 <div class="stock-container">
-
-  <!-- ✅ Page Header -->
   <app-page-header [title]="'STOCK.MANAGE' | translate" [subtitle]="'STOCK.MANAGE_SUBTITLE' | translate" icon="storage">
-
     <button mat-raised-button color="primary" routerLink="/stock/add-batch">
       <mat-icon>add</mat-icon>
       <span>{{'STOCK.ADD_BATCH' | translate}}</span>
@@ -13,8 +8,6 @@
 
   <mat-card class="stock-card">
     <mat-card-content>
-
-      <!-- ✅ Search Bar -->
       <div class="search-container">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>{{'STOCK.SEARCH_PLACEHOLDER' | translate}}</mat-label>
@@ -30,7 +23,6 @@
         </mat-form-field>
       </div>
 
-      <!-- ✅ Loading State -->
       @if (loading()) {
       <div class="loading-state">
         <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
@@ -38,12 +30,10 @@
       </div>
       }
 
-      <!-- ✅ Stock Table -->
       @if (!loading()) {
       <div class="table-container">
         <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 stock-table">
 
-          <!-- Product Name Column -->
           <ng-container matColumnDef="product">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               <mat-icon>inventory_2</mat-icon>
@@ -56,7 +46,6 @@
             </td>
           </ng-container>
 
-          <!-- Batch Number Column -->
           <ng-container matColumnDef="batch">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               <mat-icon>label</mat-icon>
@@ -67,7 +56,6 @@
             </td>
           </ng-container>
 
-          <!-- Quantity Column -->
           <ng-container matColumnDef="quantity">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               <mat-icon>shopping_cart</mat-icon>
@@ -82,7 +70,6 @@
             </td>
           </ng-container>
 
-          <!-- Expiry Date Column -->
           <ng-container matColumnDef="expiry">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               <mat-icon>event</mat-icon>
@@ -95,7 +82,6 @@
             </td>
           </ng-container>
 
-          <!-- Status Column -->
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
               <mat-icon>info</mat-icon>
@@ -110,7 +96,6 @@
             </td>
           </ng-container>
 
-          <!-- Actions Column -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>
               <mat-icon>settings</mat-icon>
@@ -126,6 +111,9 @@
                   [matTooltip]="'STOCK.ADJUST' | translate">
                   <mat-icon>adjust</mat-icon>
                 </button>
+                <button mat-icon-button color="warn" (click)="onViewHistory(element)" [matTooltip]="'STOCK.VIEW_HISTORY' | translate">
+                  <mat-icon>history</mat-icon>
+                </button>
                 <button mat-icon-button color="warn" (click)="onDelete(element)"
                   [matTooltip]="'COMMON.DELETE' | translate">
                   <mat-icon>delete</mat-icon>
@@ -134,7 +122,6 @@
             </td>
           </ng-container>
 
-          <!-- Header & Row Declarations -->
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="stock-row"
             [class.expiring-soon]="row.isExpiringSoon">
@@ -142,14 +129,12 @@
 
         </table>
 
-        <!-- ✅ Simple Material Paginator -->
-        <mat-paginator [length]="dataSource.data.length" [pageIndex]="0" [pageSize]="10"
-          [pageSizeOptions]="[5,10, 20, 50, 100]" [showFirstLastButtons]="true" (page)="onPageChange($event)"
+        <mat-paginator [length]="totalElements()" [pageIndex]="currentPage()" [pageSize]="pageSize()"
+          [pageSizeOptions]="[5, 10, 20, 50]" [showFirstLastButtons]="true" (page)="onPageChange($event)"
           aria-label="Select page">
         </mat-paginator>
 
-        <!-- ✅ Empty State -->
-        @if (dataSource.data.length === 0 && !loading()) {
+        @if (dataSource.data.length === 0) {
         <div class="empty-state">
           <mat-icon>inventory_2</mat-icon>
           <h3>{{'STOCK.NO_STOCK' | translate}}</h3>

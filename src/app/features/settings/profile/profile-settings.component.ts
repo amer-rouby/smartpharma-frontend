@@ -6,6 +6,7 @@ import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { catchError, finalize, map, throwError, first } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ProfileService } from '../../../core/services/settings/profile.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PasswordChangeRequest, Profile, ProfileUpdateRequest } from '../../../core/models/settings/profile.model';
@@ -22,6 +23,7 @@ export class ProfileSettingsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly profileService = inject(ProfileService);
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
@@ -69,7 +71,9 @@ export class ProfileSettingsComponent implements OnInit {
     }, { validators: this.passwordMatchValidator });
   }
 
-  ngOnInit(): void { this.loadProfile(); }
+  ngOnInit(): void {
+    this.loadProfile();
+  }
 
   loadProfile(): void {
     this.loading.set(true);
@@ -79,7 +83,10 @@ export class ProfileSettingsComponent implements OnInit {
         this.profileForm.patchValue(data);
         this.loading.set(false);
       },
-      error: () => { this.showError('PROFILE.LOAD_ERROR'); this.loading.set(false); }
+      error: (err) => {
+        this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'PROFILE.LOAD_ERROR');
+      }
     });
   }
 
@@ -97,10 +104,19 @@ export class ProfileSettingsComponent implements OnInit {
   }
 
   private handleFile(file: File): void {
-    if (!this.ALLOWED_TYPES.includes(file.type)) { this.showError('PROFILE.INVALID_FILE_TYPE'); return; }
-    if (file.size > this.MAX_FILE_SIZE) { this.showError('PROFILE.FILE_TOO_LARGE'); return; }
+    if (!this.ALLOWED_TYPES.includes(file.type)) {
+      this.errorHandler.showWarning('PROFILE.INVALID_FILE_TYPE');
+      return;
+    }
+    if (file.size > this.MAX_FILE_SIZE) {
+      this.errorHandler.showWarning('PROFILE.FILE_TOO_LARGE');
+      return;
+    }
     const reader = new FileReader();
-    reader.onload = (e) => { this.previewImageUrl.set(e.target?.result as string); this.selectedFile.set(file); };
+    reader.onload = (e) => {
+      this.previewImageUrl.set(e.target?.result as string);
+      this.selectedFile.set(file);
+    };
     reader.readAsDataURL(file);
   }
 
@@ -110,25 +126,23 @@ export class ProfileSettingsComponent implements OnInit {
     if (this.fileInput?.nativeElement) this.fileInput.nativeElement.value = '';
   }
 
-  private showError(messageKey: string): void {
-    this.snackBar.open(this.translate.instant(messageKey), this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['error-snackbar'] });
-  }
-
-  private showSuccess(messageKey: string): void {
-    this.snackBar.open(this.translate.instant(messageKey), this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['success-snackbar'] });
-  }
-
   onSubmit(): void {
-    if (this.profileForm.invalid) { this.showError('VALIDATION.REQUIRED'); return; }
+    if (this.profileForm.invalid) {
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
+      return;
+    }
     this.loading.set(true);
     if (this.selectedFile()) {
       this.uploadProfileImage().subscribe({
         next: (imageUrl) => this.updateProfileWithImage(imageUrl),
-        error: () => this.handleUploadError()
+        error: (err) => {
+          this.handleUploadError();
+          this.errorHandler.handleHttpError(err, 'PROFILE.UPLOAD_ERROR');
+        }
       });
-    } else { this.updateProfile(); }
+    } else {
+      this.updateProfile();
+    }
   }
 
   private uploadProfileImage() {
@@ -174,9 +188,12 @@ export class ProfileSettingsComponent implements OnInit {
         this.previewImageUrl.set(null);
         this.selectedFile.set(null);
         this.loading.set(false);
-        this.showSuccess('PROFILE.UPDATE_SUCCESS');
+        this.errorHandler.showSuccess('PROFILE.UPDATE_SUCCESS');
       },
-      error: () => this.handleUpdateError()
+      error: (err) => {
+        this.handleUpdateError();
+        this.errorHandler.handleHttpError(err, 'PROFILE.UPDATE_ERROR');
+      }
     });
   }
 
@@ -186,25 +203,29 @@ export class ProfileSettingsComponent implements OnInit {
       next: (updated) => {
         this.profile.set(updated);
         this.loading.set(false);
-        this.showSuccess('PROFILE.UPDATE_SUCCESS');
+        this.errorHandler.showSuccess('PROFILE.UPDATE_SUCCESS');
       },
-      error: () => this.handleUpdateError()
+      error: (err) => {
+        this.handleUpdateError();
+        this.errorHandler.handleHttpError(err, 'PROFILE.UPDATE_ERROR');
+      }
     });
   }
 
   private handleUploadError(): void {
     this.loading.set(false);
     this.uploading.set(false);
-    this.showError('PROFILE.UPLOAD_ERROR');
   }
 
   private handleUpdateError(): void {
     this.loading.set(false);
-    this.showError('PROFILE.UPDATE_ERROR');
   }
 
   onChangePassword(): void {
-    if (this.passwordForm.invalid) { this.showError('VALIDATION.REQUIRED'); return; }
+    if (this.passwordForm.invalid) {
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
+      return;
+    }
     this.loading.set(true);
     const request: PasswordChangeRequest = this.passwordForm.value;
     this.profileService.changePassword(request).subscribe({
@@ -212,9 +233,12 @@ export class ProfileSettingsComponent implements OnInit {
         this.loading.set(false);
         this.passwordForm.reset();
         this.showPasswordForm.set(false);
-        this.showSuccess('PROFILE.PASSWORD_CHANGED');
+        this.errorHandler.showSuccess('PROFILE.PASSWORD_CHANGED');
       },
-      error: () => { this.loading.set(false); this.showError('PROFILE.PASSWORD_ERROR'); }
+      error: (err) => {
+        this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'PROFILE.PASSWORD_ERROR');
+      }
     });
   }
 

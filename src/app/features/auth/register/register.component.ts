@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { RegisterData } from '../../../core/models';
 import { MaterialModule } from '../../../shared/material.module';
@@ -20,6 +21,7 @@ export class RegisterComponent {
   readonly router = inject(Router);
   readonly translate = inject(TranslateService);
   readonly languageService = inject(LanguageService);
+  readonly errorHandler = inject(ErrorHandlerService);
 
   readonly registerData = signal<RegisterData>({
     pharmacyName: '',
@@ -28,7 +30,8 @@ export class RegisterComponent {
     phone: '',
     username: '',
     password: '',
-    fullName: ''
+    fullName: '',
+    pharmacyId: 1  // ✅ أضف الحقل ده (أو اجعله nullable حسب الـ backend)
   });
 
   readonly loading = signal(false);
@@ -57,13 +60,18 @@ export class RegisterComponent {
     if (!this.validateForm()) return;
 
     if (this.registerData().password !== this.confirmPassword()) {
-      this.showError(this.translate.instant('VALIDATION.PASSWORD_MISMATCH'));
+      this.errorHandler.showWarning('VALIDATION.PASSWORD_MISMATCH');
       return;
     }
 
     this.loading.set(true);
 
-    this.authService.register(this.registerData()).subscribe({
+    const registerPayload = {
+      ...this.registerData(),
+      pharmacyId: this.registerData().pharmacyId ?? 1
+    };
+
+    this.authService.register(registerPayload).subscribe({
       next: () => {
         this.loading.set(false);
         Swal.fire({
@@ -77,7 +85,10 @@ export class RegisterComponent {
       },
       error: (error) => {
         this.loading.set(false);
-        this.showError(error.error?.message || this.translate.instant('REGISTER.ERROR'));
+        const errorMessage = error.error?.message ||
+          error.error?.errors?.[0]?.defaultMessage ||
+          'REGISTER.ERROR';
+        this.errorHandler.handleHttpError(error, errorMessage);
       }
     });
   }
@@ -89,13 +100,13 @@ export class RegisterComponent {
       const value = this.getFieldValue(field.key);
       if (!value) {
         const label = this.translate.instant(field.label);
-        this.showError(this.translate.instant('VALIDATION.REQUIRED', { field: label }));
+        this.errorHandler.showWarning('VALIDATION.REQUIRED', { params: { field: label } });
         return false;
       }
     }
 
     if (data.password.length < 6) {
-      this.showError(this.translate.instant('VALIDATION.PASSWORD_MIN'));
+      this.errorHandler.showWarning('VALIDATION.PASSWORD_MIN');
       return false;
     }
 
@@ -108,15 +119,6 @@ export class RegisterComponent {
 
   setFieldValue(key: keyof RegisterData, value: string): void {
     this.registerData.update(data => ({ ...data, [key]: value }));
-  }
-
-  showError(message: string): void {
-    Swal.fire({
-      icon: 'error',
-      title: this.translate.instant('COMMON.ERROR'),
-      text: message,
-      confirmButtonText: this.translate.instant('COMMON.OK')
-    });
   }
 
   togglePasswordVisibility(): void {

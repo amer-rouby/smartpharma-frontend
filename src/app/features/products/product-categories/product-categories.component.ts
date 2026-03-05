@@ -7,6 +7,8 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { CategoryService } from '../../../core/services/category.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Category, CategoryRequest } from '../../../core/models/category';
 import { CategoryDialogComponent } from '../category-dialog/category-dialog.component';
 
@@ -16,7 +18,7 @@ import { CategoryDialogComponent } from '../category-dialog/category-dialog.comp
   imports: [
     FormsModule,
     MaterialModule,
-    PageHeaderComponent
+    PageHeaderComponent,
   ],
   templateUrl: './product-categories.component.html',
   styleUrl: './product-categories.component.scss'
@@ -27,6 +29,7 @@ export class ProductCategoriesComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly categoryService = inject(CategoryService);
   private readonly authService = inject(AuthService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly categories = signal<Category[]>([]);
   readonly loading = signal(false);
@@ -47,13 +50,8 @@ export class ProductCategoriesComponent implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading categories:', error);
-        this.snackBar.open(
-          this.translate.instant('CATEGORIES.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
         this.loading.set(false);
+        this.errorHandler.handleHttpError(error, 'CATEGORIES.LOAD_ERROR');
       }
     });
   }
@@ -64,7 +62,7 @@ export class ProductCategoriesComponent implements OnInit {
     if (query.trim()) {
       this.categoryService.searchCategories(query).subscribe({
         next: (data) => this.categories.set(data),
-        error: (error) => console.error('Search error:', error)
+        error: (error) => this.errorHandler.handleHttpError(error, 'CATEGORIES.LOAD_ERROR')
       });
     } else {
       this.loadCategories();
@@ -105,26 +103,28 @@ export class ProductCategoriesComponent implements OnInit {
   }
 
   onDelete(category: Category): void {
-    if (!confirm(this.translate.instant('CATEGORIES.CONFIRM_DELETE', { name: category.name }))) {
-      return;
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('COMMON.CONFIRM'),
+        message: this.translate.instant('CATEGORIES.CONFIRM_DELETE', { name: category.name }),
+        confirmText: this.translate.instant('COMMON.YES'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
 
-    this.categoryService.deleteCategory(category.id).subscribe({
-      next: () => {
-        this.categories.update(cats => cats.filter(c => c.id !== category.id));
-        this.snackBar.open(
-          this.translate.instant('CATEGORIES.DELETE_SUCCESS', { name: category.name }),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-      },
-      error: (error) => {
-        console.error('Delete error:', error);
-        this.snackBar.open(
-          this.translate.instant('CATEGORIES.DELETE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.categoryService.deleteCategory(category.id).subscribe({
+          next: () => {
+            this.categories.update(cats => cats.filter(c => c.id !== category.id));
+            this.errorHandler.showSuccess('CATEGORIES.DELETE_SUCCESS');
+          },
+          error: (error) => {
+            this.errorHandler.handleHttpError(error, 'CATEGORIES.DELETE_ERROR');
+          }
+        });
       }
     });
   }
@@ -144,19 +144,10 @@ export class ProductCategoriesComponent implements OnInit {
         this.categories.update(cats =>
           cats.map(c => c.id === category.id ? data : c)
         );
-        this.snackBar.open(
-          this.translate.instant('CATEGORIES.STATUS_UPDATED'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 2000 }
-        );
+        this.errorHandler.showSuccess('CATEGORIES.STATUS_UPDATED');
       },
       error: (error) => {
-        console.error('Toggle error:', error);
-        this.snackBar.open(
-          this.translate.instant('CATEGORIES.STATUS_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        this.errorHandler.handleHttpError(error, 'CATEGORIES.STATUS_ERROR');
       }
     });
   }

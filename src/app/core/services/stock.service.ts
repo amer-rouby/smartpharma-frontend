@@ -3,8 +3,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
-import { StockBatch, StockBatchResponse, StockAdjustment } from '../models/stock.model';
-import { Product } from '../models/product.model';
+import { StockBatch, StockBatchResponse, StockAdjustmentHistory } from '../models/stock.model';
 
 @Injectable({
   providedIn: 'root'
@@ -30,37 +29,44 @@ export class StockBatchService {
     const params = this.getCommonParams(pharmacyId)
       .set('page', page)
       .set('size', size);
-
     return this.http.get<any>(this.apiUrl, { headers: this.getAuthHeaders(), params });
   }
 
-  getBatch(id: number): Observable<StockBatch> {
-    return this.http.get<StockBatch>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  createBatch(batch: Partial<StockBatch>): Observable<StockBatch> {
-    return this.http.post<StockBatch>(this.apiUrl, batch, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  updateBatch(id: number, batch: Partial<StockBatch>): Observable<StockBatch> {
-    return this.http.put<StockBatch>(`${this.apiUrl}/${id}`, batch, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  deleteBatch(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  getProducts(pharmacyId: number = 4): Observable<Product[]> {
+  getBatch(id: number, pharmacyId: number): Observable<StockBatch> {
     const params = new HttpParams().set('pharmacyId', pharmacyId);
-    return this.http.get<Product[]>(`${environment.apiUrl}/products`, {
+    return this.http.get<StockBatch>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders(),
+      params
+    });
+  }
+
+  createBatch(batch: Partial<StockBatch>, pharmacyId: number): Observable<StockBatch> {
+    const params = new HttpParams().set('pharmacyId', pharmacyId);
+    return this.http.post<StockBatch>(this.apiUrl, batch, {
+      headers: this.getAuthHeaders(),
+      params
+    });
+  }
+
+  updateBatch(id: number, batch: Partial<StockBatch>, pharmacyId: number): Observable<StockBatch> {
+    const params = new HttpParams().set('pharmacyId', pharmacyId);
+    return this.http.put<StockBatch>(`${this.apiUrl}/${id}`, batch, {
+      headers: this.getAuthHeaders(),
+      params
+    });
+  }
+
+  deleteBatch(id: number, pharmacyId: number): Observable<void> {
+    const params = new HttpParams().set('pharmacyId', pharmacyId);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders(),
+      params
+    });
+  }
+
+  getProducts(pharmacyId: number = 4): Observable<any[]> {
+    const params = new HttpParams().set('pharmacyId', pharmacyId);
+    return this.http.get<any[]>(`${environment.apiUrl}/products`, {
       headers: this.getAuthHeaders(),
       params
     });
@@ -82,9 +88,19 @@ export class StockBatchService {
     });
   }
 
-  adjustStock(batchId: number, adjustment: StockAdjustment): Observable<StockBatch> {
+  adjustStock(batchId: number, adjustment: any, pharmacyId: number): Observable<StockBatch> {
+    const params = new HttpParams().set('pharmacyId', pharmacyId);
     return this.http.post<StockBatch>(`${this.apiUrl}/${batchId}/adjust`, adjustment, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
+      params
     });
+  }
+
+  getAdjustmentHistory(batchId: number, pharmacyId: number): Observable<StockAdjustmentHistory[]> {
+    const params = new HttpParams().set('pharmacyId', pharmacyId);
+    return this.http.get<StockAdjustmentHistory[]>(
+      `${this.apiUrl}/${batchId}/adjustments`,
+      { headers: this.getAuthHeaders(), params }
+    );
   }
 }

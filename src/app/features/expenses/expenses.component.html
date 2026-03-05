@@ -94,7 +94,7 @@
         <ng-container matColumnDef="paymentMethod">
           <th mat-header-cell *matHeaderCellDef>{{'EXPENSES.PAYMENT_METHOD' | translate}}</th>
           <td mat-cell *matCellDef="let row">
-            <mat-chip class="small-chip">{{row.paymentMethod}}</mat-chip>
+            <mat-chip class="small-chip">{{row.paymentMethod | translate}}</mat-chip>
           </td>
         </ng-container>
 

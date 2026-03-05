@@ -87,12 +87,10 @@
       }
     }
 
-    .product-cell {
-      strong {
-        color: #2d3748;
-        font-weight: 600;
-        font-size: 14px;
-      }
+    .product-cell strong {
+      color: #2d3748;
+      font-weight: 600;
+      font-size: 14px;
     }
 
     .batch-code {
@@ -144,6 +142,7 @@
       }
     }
   }
+
   mat-paginator {
     margin-top: 16px;
     border-top: 1px solid #e9ecef;

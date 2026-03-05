@@ -6,13 +6,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../../shared/material.module';
 import { CategoryService } from '../../../core/services/category.service';
 import { CategoryRequest } from '../../../core/models/category';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
 @Component({
   selector: 'app-category-dialog',
   standalone: true,
   imports: [MaterialModule, ReactiveFormsModule],
-  templateUrl:"./category-dialog.component.html",
-  styleUrl:"./category-dialog.component.scss"
+  templateUrl: "./category-dialog.component.html",
+  styleUrl: "./category-dialog.component.scss"
 })
 export class CategoryDialogComponent {
   private readonly fb = inject(FormBuilder);
@@ -20,6 +21,7 @@ export class CategoryDialogComponent {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly categoryService = inject(CategoryService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   readonly data = inject(MAT_DIALOG_DATA);
 
   readonly loading = signal(false);
@@ -66,20 +68,14 @@ export class CategoryDialogComponent {
     operation.subscribe({
       next: (result) => {
         this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant(this.data?.category ? 'CATEGORIES.UPDATE_SUCCESS' : 'CATEGORIES.ADD_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        const successKey = this.data?.category ? 'CATEGORIES.UPDATE_SUCCESS' : 'CATEGORIES.ADD_SUCCESS';
+        this.errorHandler.showSuccess(successKey);
         this.dialogRef.close(result);
       },
       error: (error) => {
         this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant('CATEGORIES.ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+        const errorKey = this.data?.category ? 'CATEGORIES.UPDATE_ERROR' : 'CATEGORIES.ADD_ERROR';
+        this.errorHandler.handleHttpError(error, errorKey);
         console.error('Category error:', error);
       }
     });

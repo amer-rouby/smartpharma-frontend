@@ -1,13 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaterialModule } from '../../../shared/material.module';
-import {ExpenseService } from '../../../core/services/expense.service';
+import { ExpenseService } from '../../../core/services/expense.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { Expense } from '../../../core/models/Expense.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add-expense-dialog',
@@ -18,95 +20,21 @@ import { Expense } from '../../../core/models/Expense.model';
     TranslateModule,
     MaterialModule
   ],
-  template: `
-    <div class="dialog-container">
-      <h2 mat-dialog-title>{{'EXPENSES.ADD_EXPENSE' | translate}}</h2>
-
-      <mat-dialog-content>
-        <form #expenseForm="ngForm" (ngSubmit)="onSubmit()">
-
-          <!-- Category -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'EXPENSES.CATEGORY' | translate}}</mat-label>
-            <mat-select [(ngModel)]="expense.category" name="category" required>
-              @for (cat of categories; track cat.value) {
-                <mat-option [value]="cat.value">{{cat.labelAr}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Title -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'EXPENSES.TITLE' | translate}}</mat-label>
-            <input matInput [(ngModel)]="expense.title" name="title" required maxlength="200">
-          </mat-form-field>
-
-          <!-- Description -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'EXPENSES.DESCRIPTION' | translate}}</mat-label>
-            <textarea matInput [(ngModel)]="expense.description" name="description" rows="3" maxlength="1000"></textarea>
-          </mat-form-field>
-
-          <!-- Amount -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'EXPENSES.AMOUNT' | translate}}</mat-label>
-            <input matInput type="number" [(ngModel)]="expense.amount" name="amount" required min="0.01" step="0.01">
-          </mat-form-field>
-
-          <!-- Expense Date -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'EXPENSES.DATE' | translate}}</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="expenseDate" name="expenseDate" required>
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-
-          <!-- Payment Method -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'EXPENSES.PAYMENT_METHOD' | translate}}</mat-label>
-            <mat-select [(ngModel)]="expense.paymentMethod" name="paymentMethod">
-              @for (method of paymentMethods; track method.value) {
-                <mat-option [value]="method.value">{{method.labelAr}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Reference Number -->
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'EXPENSES.REFERENCE_NUMBER' | translate}}</mat-label>
-            <input matInput [(ngModel)]="expense.referenceNumber" name="referenceNumber" maxlength="100">
-          </mat-form-field>
-
-        </form>
-      </mat-dialog-content>
-
-      <mat-dialog-actions align="end">
-        <button mat-button (click)="dialogRef.close()">{{'COMMON.CANCEL' | translate}}</button>
-        <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isValid()">
-          {{'COMMON.SAVE' | translate}}
-        </button>
-      </mat-dialog-actions>
-    </div>
-  `,
-  styles: [`
-    .dialog-container {
-      min-width: 500px;
-      max-width: 90vw;
-    }
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
-    }
-  `]
+  templateUrl: "./add-expense-dialog.component.html",
+  styleUrl: "./add-expense-dialog.component.scss"
 })
-export class AddExpenseDialogComponent {
+export class AddExpenseDialogComponent implements OnInit, OnDestroy {
   private readonly expenseService = inject(ExpenseService);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   readonly dialogRef = inject(MatDialogRef<AddExpenseDialogComponent>);
+  readonly data = inject(MAT_DIALOG_DATA);
 
-  readonly categories = this.expenseService.getExpenseCategories();
-  readonly paymentMethods = this.expenseService.getPaymentMethods();
+  categories: { value: string; label: string }[] = [];
+  paymentMethods: { value: string; label: string }[] = [];
+  private langChangeSub?: Subscription;
 
   expense: Expense = {
     pharmacyId: this.authService.getPharmacyId() || 1,
@@ -121,6 +49,33 @@ export class AddExpenseDialogComponent {
 
   expenseDate: Date = new Date();
 
+  ngOnInit(): void {
+    this.loadCategories();
+    this.loadPaymentMethods();
+
+    this.langChangeSub = this.translate.onLangChange.subscribe(() => {
+      this.loadCategories();
+      this.loadPaymentMethods();
+    });
+
+    if (this.data?.expense) {
+      this.expense = { ...this.data.expense };
+      this.expenseDate = new Date(this.data.expense.expenseDate);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.langChangeSub?.unsubscribe();
+  }
+
+  private loadCategories(): void {
+    this.categories = this.expenseService.getExpenseCategories();
+  }
+
+  private loadPaymentMethods(): void {
+    this.paymentMethods = this.expenseService.getPaymentMethods();
+  }
+
   isValid(): boolean {
     const hasCategory = !!this.expense.category && this.expense.category.length > 0;
     const hasTitle = !!this.expense.title && this.expense.title.length > 0;
@@ -132,7 +87,7 @@ export class AddExpenseDialogComponent {
 
   onSubmit(): void {
     if (!this.isValid()) {
-      this.snackBar.open('يرجى ملء جميع الحقول المطلوبة', 'إغلاق', { duration: 3000 });
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -140,11 +95,11 @@ export class AddExpenseDialogComponent {
 
     this.expenseService.createExpense(this.expense).subscribe({
       next: () => {
-        this.snackBar.open('تم إضافة المصروف بنجاح', 'إغلاق', { duration: 3000 });
+        this.errorHandler.showSuccess('EXPENSES.ADD_SUCCESS');
         this.dialogRef.close(true);
       },
       error: (error) => {
-        this.snackBar.open('فشل إضافة المصروف', 'إغلاق', { duration: 3000 });
+        this.errorHandler.handleHttpError(error, 'EXPENSES.ADD_ERROR');
         console.error('Create expense error:', error);
       }
     });

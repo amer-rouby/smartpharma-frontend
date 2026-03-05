@@ -1,13 +1,15 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../shared/material.module';
 import { ExpenseService } from '../../core/services/expense.service';
 import { AddExpenseDialogComponent } from './add-expense-dialog/add-expense-dialog.component';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ErrorHandlerService } from '../../core/services/error-handler.service';
 
 interface ExpenseRow {
   id: number;
@@ -38,6 +40,8 @@ export class ExpensesComponent implements OnInit {
   private readonly expenseService = inject(ExpenseService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly expenses = signal<ExpenseRow[]>([]);
   readonly loading = signal(false);
@@ -75,8 +79,7 @@ export class ExpensesComponent implements OnInit {
       error: (error) => {
         this.error.set('Failed to load expenses');
         this.loading.set(false);
-        this.snackBar.open('فشل تحميل المصروفات', 'إغلاق', { duration: 3000 });
-        console.error('Expense load error:', error);
+        this.errorHandler.handleHttpError(error, 'EXPENSES.LOAD_ERROR');
       }
     });
   }
@@ -96,18 +99,29 @@ export class ExpensesComponent implements OnInit {
   }
 
   deleteExpense(id: number): void {
-    if (confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
-      this.expenseService.deleteExpense(id).subscribe({
-        next: () => {
-          this.snackBar.open('تم حذف المصروف بنجاح', 'إغلاق', { duration: 3000 });
-          this.loadExpenses();
-        },
-        error: (error) => {
-          this.snackBar.open('فشل حذف المصروف', 'إغلاق', { duration: 3000 });
-          console.error('Delete error:', error);
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('EXPENSES.DELETE_CONFIRM_TITLE'),
+        message: this.translate.instant('EXPENSES.DELETE_CONFIRM_MESSAGE'),
+        confirmText: this.translate.instant('EXPENSES.DELETE_CONFIRM_YES'),
+        cancelText: this.translate.instant('EXPENSES.DELETE_CONFIRM_NO')
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.expenseService.deleteExpense(id).subscribe({
+          next: () => {
+            this.errorHandler.showSuccess('EXPENSES.DELETE_SUCCESS');
+            this.loadExpenses();
+          },
+          error: (error) => {
+            this.errorHandler.handleHttpError(error, 'EXPENSES.DELETE_ERROR');
+          }
+        });
+      }
+    });
   }
 
   formatCurrency(amount: number): string {

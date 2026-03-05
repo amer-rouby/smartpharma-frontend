@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { SecuritySettingsService } from '../../../core/services/settings/security-settings.service';
 
 @Component({
@@ -17,6 +18,7 @@ export class SecuritySettingsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly securitySettingsService = inject(SecuritySettingsService);
 
   readonly loading = signal(false);
@@ -60,14 +62,9 @@ export class SecuritySettingsComponent implements OnInit {
         this.securitySettings = data;
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error loading security settings:', error);
-        this.snackBar.open(
-          this.translate.instant('SECURITY.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: (err) => {
         this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'SECURITY.LOAD_ERROR');
       }
     });
   }
@@ -99,11 +96,7 @@ export class SecuritySettingsComponent implements OnInit {
 
   onChangePassword(): void {
     if (this.passwordForm.invalid) {
-      this.snackBar.open(
-        this.translate.instant('VALIDATION.REQUIRED'),
-        this.translate.instant('COMMON.CLOSE'),
-        { duration: 3000 }
-      );
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -117,20 +110,11 @@ export class SecuritySettingsComponent implements OnInit {
       next: () => {
         this.saving.set(false);
         this.passwordForm.reset();
-        this.snackBar.open(
-          this.translate.instant('SECURITY.PASSWORD_CHANGED'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
+        this.errorHandler.showSuccess('SECURITY.PASSWORD_CHANGED');
       },
-      error: (error) => {
+      error: (err) => {
         this.saving.set(false);
-        this.snackBar.open(
-          this.translate.instant('SECURITY.PASSWORD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-        console.error('Password change error:', error);
+        this.errorHandler.handleHttpError(err, 'SECURITY.PASSWORD_ERROR');
       }
     });
   }

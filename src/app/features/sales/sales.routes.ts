@@ -12,8 +12,14 @@ export const SALES_ROUTES: Routes = [
       .then(m => m.SalesFormComponent)
   },
   {
+    path: 'analytics',  // <-- أضف هذا
+    loadComponent: () => import('./sales-analytics/sales-analytics.component')
+      .then(m => m.SalesAnalyticsComponent)
+  },
+  {
     path: 'history',
     loadComponent: () => import('./sales-history/sales-history.component')
       .then(m => m.SalesHistoryComponent)
-  }
+  },
+
 ];

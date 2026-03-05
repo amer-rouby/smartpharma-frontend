@@ -28,9 +28,27 @@ export interface StockBatchResponse {
   pageSize: number;
 }
 
+export interface StockAdjustmentHistory {
+  id: number;
+  batchId: number;
+  batchNumber?: string;
+  productName?: string;
+  type: 'ADD' | 'REMOVE' | 'CORRECTION';
+  quantity: number;
+  reason: 'DAMAGED' | 'EXPIRED' | 'RETURNED' | 'COUNT_ERROR' | 'OTHER';
+  previousQuantity: number;
+  newQuantity: number;
+  notes?: string;
+  adjustmentDate: string;
+  adjustedBy?: number;
+  adjustedByName?: string;
+}
+
 export interface StockAdjustment {
   batchId: number;
+  type: 'ADD' | 'REMOVE' | 'CORRECTION';
   quantity: number;
-  reason: string;
-  reference?: string;
+  reason: 'DAMAGED' | 'EXPIRED' | 'RETURNED' | 'COUNT_ERROR' | 'OTHER';
+  notes?: string;
+  adjustmentDate?: string;
 }

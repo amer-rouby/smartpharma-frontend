@@ -51,3 +51,20 @@ export interface ProductSale {
   quantitySold: number;
   totalRevenue: number;
 }
+
+export type PeriodType = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export interface FilterState {
+  period: PeriodType;
+  startDate: string;
+  endDate: string;
+}
+
+export interface StatCard {
+  key: string;
+  label: string;
+  icon: string;
+  class: string;
+  showMargin?: boolean;
+}
+

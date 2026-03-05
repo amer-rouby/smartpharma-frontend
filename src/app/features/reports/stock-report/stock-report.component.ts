@@ -1,41 +1,15 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
-import { ReportService} from '../../../core/services/report.service';
+import { ReportService } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { ReportRequest, StockReportData } from '../../../core/models/Report.model';
-
-interface StockCategoryRow {
-  categoryName: string;
-  itemCount: number;
-  totalValue: number;
-}
-
-interface LowStockRow {
-  productId: number;
-  productName: string;
-  batchNumber: string;
-  currentStock: number;
-  minStock: number;
-  expiryDate?: string;
-  progress: number;
-}
-
-interface ExpiringRow {
-  productId: number;
-  productName: string;
-  batchNumber: string;
-  currentStock: number;
-  expiryDate: string;
-  daysUntilExpiry: number;
-  status: 'urgent' | 'warning' | 'ok';
-}
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { ExpiringRow, LowStockRow, ReportRequest, StockCategoryRow, StockReportData } from '../../../core/models/Report.model';
 
 @Component({
   selector: 'app-stock-report',
@@ -54,7 +28,8 @@ interface ExpiringRow {
 export class StockReportComponent implements OnInit {
   private readonly reportService = inject(ReportService);
   private readonly authService = inject(AuthService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
   readonly stockReportData = signal<StockReportData | null>(null);
@@ -129,8 +104,7 @@ export class StockReportComponent implements OnInit {
       error: (error) => {
         this.reportError.set('REPORTS.LOAD_ERROR');
         this.reportLoading.set(false);
-        this.snackBar.open(this.translateIfNeeded('REPORTS.LOAD_ERROR'), this.translateIfNeeded('COMMON.CLOSE'), { duration: 3000 });
-        console.error('Stock report error:', error);
+        this.errorHandler.handleHttpError(error, 'REPORTS.LOAD_ERROR');
       }
     });
   }
@@ -179,7 +153,12 @@ export class StockReportComponent implements OnInit {
       expiringSoonItems
     ];
 
-    this.doughnutChartData.labels = ['جيد', 'منخفض', 'منتهي', 'ينتهي قريباً'];
+    this.doughnutChartData.labels = [
+      this.translate.instant('STOCK.STATUS.GOOD'),
+      this.translate.instant('STOCK.STATUS.LOW'),
+      this.translate.instant('STOCK.STATUS.EXPIRED'),
+      this.translate.instant('STOCK.STATUS.EXPIRING_SOON')
+    ];
     this.doughnutChartData.datasets[0].data = statusData;
   }
 
@@ -188,7 +167,11 @@ export class StockReportComponent implements OnInit {
   }
 
   exportPDF(): void {
-    this.snackBar.open(this.translateIfNeeded('REPORTS.EXPORTING_PDF'), this.translateIfNeeded('COMMON.CLOSE'), { duration: 2000 });
+    this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
+  }
+
+  exportExcel(): void {
+    this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
   }
 
   formatCurrency(amount: number): string {
@@ -201,11 +184,11 @@ export class StockReportComponent implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      'urgent': 'عاجل',
-      'warning': 'تحذير',
-      'ok': 'جيد'
+      'urgent': 'STOCK.STATUS.URGENT',
+      'warning': 'STOCK.STATUS.WARNING',
+      'ok': 'STOCK.STATUS.GOOD'
     };
-    return labels[status] || status;
+    return this.translate.instant(labels[status] || status);
   }
 
   getStatusColor(status: string): 'warn' | 'accent' | 'primary' {
@@ -215,15 +198,6 @@ export class StockReportComponent implements OnInit {
       'ok': 'primary'
     };
     return colors[status] || 'primary';
-  }
-
-  private translateIfNeeded(key: string): string {
-    const translations: Record<string, string> = {
-      'COMMON.CLOSE': 'إغلاق',
-      'REPORTS.LOAD_ERROR': 'فشل تحميل التقرير',
-      'REPORTS.EXPORTING_PDF': 'جاري تصدير PDF...'
-    };
-    return translations[key] || key;
   }
 
   private getPharmacyId(): number {

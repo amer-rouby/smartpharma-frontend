@@ -1,26 +1,15 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, throwError } from 'rxjs';
+import { ErrorHandlerService } from '../services/error-handler.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const snackBar = inject(MatSnackBar);
+  const errorHandler = inject(ErrorHandlerService);
 
   return next(req).pipe(
-    catchError(error => {
-      let errorMessage = 'حدث خطأ غير متوقع';
-
-      if (error.error?.message) {
-        errorMessage = error.error.message;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-
-      snackBar.open(errorMessage, 'إغلاق', {
-        duration: 5000,
-        panelClass: ['error-snackbar']
-      });
-
+    catchError((error: HttpErrorResponse) => {
+      console.error('HTTP Error:', error);
+      errorHandler.handleHttpError(error);
       return throwError(() => error);
     })
   );

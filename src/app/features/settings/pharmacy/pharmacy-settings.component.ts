@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
 import { PharmacySettings, PharmacySettingsRequest } from '../../../core/models/settings/pharmacy-settings.model';
 
@@ -18,6 +19,7 @@ export class PharmacySettingsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly pharmacySettingsService = inject(PharmacySettingsService);
 
   readonly loading = signal(false);
@@ -89,25 +91,16 @@ export class PharmacySettingsComponent implements OnInit {
         });
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error loading settings:', error);
-        this.snackBar.open(
-          this.translate.instant('SETTINGS.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: (err) => {
         this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'SETTINGS.LOAD_ERROR');
       }
     });
   }
 
   onSubmit(): void {
     if (this.form.invalid) {
-      this.snackBar.open(
-        this.translate.instant('VALIDATION.REQUIRED'),
-        this.translate.instant('COMMON.CLOSE'),
-        { duration: 3000 }
-      );
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -117,25 +110,17 @@ export class PharmacySettingsComponent implements OnInit {
     this.pharmacySettingsService.updateSettings(request).subscribe({
       next: () => {
         this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant('SETTINGS.SAVE_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
+        this.errorHandler.showSuccess('SETTINGS.SAVE_SUCCESS');
       },
-      error: (error) => {
+      error: (err) => {
         this.loading.set(false);
-        this.snackBar.open(
-          this.translate.instant('SETTINGS.SAVE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-        console.error('Save error:', error);
+        this.errorHandler.handleHttpError(err, 'SETTINGS.SAVE_ERROR');
       }
     });
   }
 
   onCancel(): void {
     this.loadSettings();
+    this.errorHandler.showSuccess('COMMON.RESET');
   }
 }

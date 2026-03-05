@@ -144,7 +144,6 @@
             </div>
 
             <div class="setting-controls">
-              <!-- ✅ FIXED: أضفنا ngModelOptions للـ mat-slide-toggle -->
               <mat-slide-toggle [(ngModel)]="setting.enabled" [ngModelOptions]="{standalone: true}" color="primary">
                 {{'COMMON.ENABLED' | translate}}
               </mat-slide-toggle>
@@ -152,7 +151,6 @@
               @if (setting.enabled) {
               <div class="channel-checkboxes">
                 @for (channel of channelTypes; track channel) {
-                <!-- ✅ FIXED: أضفنا ngModelOptions للـ mat-checkbox -->
                 <mat-checkbox [(ngModel)]="setting.channels[channel]" [ngModelOptions]="{standalone: true}"
                   [disabled]="!notificationForm.get(channel + 'Notifications')?.value">
                   <mat-icon>{{getChannelIcon(channel)}}</mat-icon>

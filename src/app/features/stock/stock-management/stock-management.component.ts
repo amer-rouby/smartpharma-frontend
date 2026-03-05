@@ -3,6 +3,7 @@ import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
@@ -12,6 +13,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { CommonModule } from '@angular/common';
+import { StockAdjustmentDialogComponent } from '../stock-adjustment-dialog/stock-adjustment-dialog.component';
+import { StockAdjustmentHistoryComponent } from '../stock-adjustment-history/stock-adjustment-history.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-stock-management',
@@ -21,7 +25,7 @@ import { CommonModule } from '@angular/common';
     RouterLink,
     FormsModule,
     MaterialModule,
-    PageHeaderComponent
+    PageHeaderComponent,
   ],
   templateUrl: './stock-management.component.html',
   styleUrl: './stock-management.component.scss'
@@ -32,6 +36,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   private readonly languageService = inject(LanguageService);
   private readonly stockBatchService = inject(StockBatchService);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -51,14 +56,8 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      if (this.paginator) {
-        this.dataSource.paginator = this.paginator;
-      }
-      if (this.sort) {
-        this.dataSource.sort = this.sort;
-      }
-    }, 100);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   loadStockBatches(): void {
@@ -66,22 +65,8 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
     this.stockBatchService.getBatches(this.pharmacyId, this.currentPage(), this.pageSize()).subscribe({
       next: (response: any) => {
-        let batches: StockBatch[] = [];
-        let total = 0;
-
-        if (response?.content && Array.isArray(response.content)) {
-          batches = response.content;
-          total = response.totalElements || response.content.length;
-        } else if (response?.data?.content && Array.isArray(response.data.content)) {
-          batches = response.data.content;
-          total = response.data.totalElements || response.data.content.length;
-        } else if (response?.data && Array.isArray(response.data)) {
-          batches = response.data;
-          total = response.data.length;
-        } else if (Array.isArray(response)) {
-          batches = response;
-          total = response.length;
-        }
+        const batches = this.extractBatches(response);
+        const total = this.extractTotal(response);
 
         this.dataSource.data = batches;
         this.totalElements.set(total);
@@ -94,11 +79,25 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
         this.loading.set(false);
       },
-      error: (error: unknown) => {
-        this.snackBar.open('فشل في تحميل بيانات المخزون', 'إغلاق', { duration: 3000 });
+      error: () => {
+        this.showError('STOCK.LOAD_ERROR');
         this.loading.set(false);
       }
     });
+  }
+
+  private extractBatches(response: any): StockBatch[] {
+    if (response?.content && Array.isArray(response.content)) return response.content;
+    if (response?.data?.content && Array.isArray(response.data.content)) return response.data.content;
+    if (response?.data && Array.isArray(response.data)) return response.data;
+    if (Array.isArray(response)) return response;
+    return [];
+  }
+
+  private extractTotal(response: any): number {
+    if (response?.totalElements) return response.totalElements;
+    if (response?.data?.totalElements) return response.data.totalElements;
+    return this.dataSource.data.length;
   }
 
   onPageChange(event: PageEvent): void {
@@ -108,30 +107,18 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      'ACTIVE': 'نشط',
-      'EXPIRED': 'منتهي',
-      'DISCARDED': 'ملغي',
-      'GOOD': 'جيد',
-      'LOW': 'منخفض',
-      'EXPIRING_SOON': 'ينتهي قريباً'
-    };
-    return labels[status] || status;
+    return this.translate.instant(`STOCK.STATUS.${status?.toUpperCase()}`);
   }
 
   getStatusChipColor(status: string): 'primary' | 'accent' | 'warn' | '' {
     switch (status) {
       case 'ACTIVE':
-      case 'GOOD':
-        return 'primary';
+      case 'GOOD': return 'primary';
       case 'LOW':
-      case 'EXPIRING_SOON':
-        return 'accent';
+      case 'EXPIRING_SOON': return 'accent';
       case 'EXPIRED':
-      case 'DISCARDED':
-        return 'warn';
-      default:
-        return '';
+      case 'DISCARDED': return 'warn';
+      default: return '';
     }
   }
 
@@ -143,8 +130,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
   formatDate(dateString: string | null): string {
     if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-EG', {
+    return new Date(dateString).toLocaleDateString(this.languageService.getCurrentLanguage() === 'ar' ? 'ar-EG' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -152,34 +138,62 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   onEdit(batch: StockBatch): void {
-    this.router.navigate(['/stock', 'batches', batch.id, 'edit']);
+    this.router.navigate(['/stock', 'batches', batch.id, 'edit'], {
+      queryParams: { pharmacyId: this.pharmacyId }
+    });
   }
 
   onAdjust(batch: StockBatch): void {
-    this.snackBar.open(`تعديل مخزون: ${batch.batchNumber}`, 'إغلاق', { duration: 2000 });
+    const dialogRef = this.dialog.open(StockAdjustmentDialogComponent, {
+      width: '600px',
+      data: { batch, pharmacyId: this.pharmacyId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadStockBatches();
+      }
+    });
   }
 
   onDelete(batch: StockBatch): void {
-    if (confirm('هل أنت متأكد من حذف هذه الدفعة؟')) {
-      this.stockBatchService.deleteBatch(batch.id).subscribe({
-        next: () => {
-          this.snackBar.open('تم حذف الدفعة بنجاح', 'إغلاق', { duration: 2000 });
-          this.loadStockBatches();
-        },
-        error: (error: unknown) => {
-          this.snackBar.open('فشل في حذف الدفعة', 'إغلاق', { duration: 3000 });
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('COMMON.CONFIRM'),
+        message: this.translate.instant('STOCK.DELETE_CONFIRM', { name: batch.batchNumber }),
+        confirmText: this.translate.instant('COMMON.YES'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.stockBatchService.deleteBatch(batch.id, this.pharmacyId).subscribe({
+          next: () => {
+            this.showSuccess('STOCK.DELETE_SUCCESS');
+            this.loadStockBatches();
+          },
+          error: () => {
+            this.showError('STOCK.DELETE_ERROR');
+          }
+        });
+      }
+    });
+  }
+
+  onViewHistory(batch: StockBatch): void {
+    this.dialog.open(StockAdjustmentHistoryComponent, {
+      width: '700px',
+      maxHeight: '90vh',
+      data: { batch: { ...batch, pharmacyId: this.pharmacyId } }
+    });
   }
 
   applyFilter(): void {
     const query = this.searchQuery().trim().toLowerCase();
-    if (query) {
-      this.dataSource.filter = query;
-    } else {
-      this.dataSource.filter = '';
-    }
+    this.dataSource.filter = query;
   }
 
   onSearch(): void {
@@ -189,5 +203,15 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   clearSearch(): void {
     this.searchQuery.set('');
     this.applyFilter();
+  }
+
+  private showError(key: string): void {
+    const message = this.translate.instant(key);
+    this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+  }
+
+  private showSuccess(key: string): void {
+    const message = this.translate.instant(key);
+    this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), { duration: 2000 });
   }
 }

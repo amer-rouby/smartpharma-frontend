@@ -1,35 +1,27 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { BackupService } from '../../../core/services/settings/backup.service';
-
-interface Backup {
-  id: number;
-  backupName: string;
-  filePath: string;
-  fileSize: number;
-  backupType: string;
-  status: string;
-  description: string;
-  createdAt: string;
-  restoredAt?: string;
-}
+import { Backup } from '../../../core/models/settings/Backup.model';
 
 @Component({
   selector: 'app-backup-settings',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule],
+  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, ConfirmDialogComponent],
   templateUrl: './backup-settings.component.html',
   styleUrl: './backup-settings.component.scss'
 })
 export class BackupSettingsComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
+  private readonly dialog = inject(MatDialog);
   private readonly backupService = inject(BackupService);
+  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
   readonly creating = signal(false);
@@ -58,25 +50,16 @@ export class BackupSettingsComponent implements OnInit {
         this.backups.set(data);
         this.loading.set(false);
       },
-      error: (error) => {
-        console.error('Error loading backups:', error);
-        this.snackBar.open(
-          this.translate.instant('BACKUP.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
+      error: (err) => {
         this.loading.set(false);
+        this.errorHandler.handleHttpError(err, 'BACKUP.LOAD_ERROR');
       }
     });
   }
 
   onCreateBackup(): void {
     if (this.backupForm.invalid) {
-      this.snackBar.open(
-        this.translate.instant('VALIDATION.REQUIRED'),
-        this.translate.instant('COMMON.CLOSE'),
-        { duration: 3000 }
-      );
+      this.errorHandler.showWarning('VALIDATION.REQUIRED');
       return;
     }
 
@@ -89,70 +72,65 @@ export class BackupSettingsComponent implements OnInit {
           backupType: 'FULL'
         });
         this.loadBackups();
-        this.snackBar.open(
-          this.translate.instant('BACKUP.CREATE_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
+        this.errorHandler.showSuccess('BACKUP.CREATE_SUCCESS');
       },
-      error: (error) => {
+      error: (err) => {
         this.creating.set(false);
-        this.snackBar.open(
-          this.translate.instant('BACKUP.CREATE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-        console.error('Error creating backup:', error);
+        this.errorHandler.handleHttpError(err, 'BACKUP.CREATE_ERROR');
       }
     });
   }
 
   onRestoreBackup(backup: Backup): void {
-    if (!confirm(this.translate.instant('BACKUP.CONFIRM_RESTORE', { name: backup.backupName }))) {
-      return;
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('BACKUP.CONFIRM_RESTORE_TITLE'),
+        message: this.translate.instant('BACKUP.CONFIRM_RESTORE', { name: backup.backupName }),
+        confirmText: this.translate.instant('COMMON.YES'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
 
-    this.backupService.restoreBackup(backup.id).subscribe({
-      next: () => {
-        this.loadBackups();
-        this.snackBar.open(
-          this.translate.instant('BACKUP.RESTORE_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
-      },
-      error: (error) => {
-        this.snackBar.open(
-          this.translate.instant('BACKUP.RESTORE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-        console.error('Error restoring backup:', error);
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.backupService.restoreBackup(backup.id).subscribe({
+          next: () => {
+            this.loadBackups();
+            this.errorHandler.showSuccess('BACKUP.RESTORE_SUCCESS');
+          },
+          error: (err) => {
+            this.errorHandler.handleHttpError(err, 'BACKUP.RESTORE_ERROR');
+          }
+        });
       }
     });
   }
 
   onDeleteBackup(backup: Backup): void {
-    if (!confirm(this.translate.instant('BACKUP.CONFIRM_DELETE', { name: backup.backupName }))) {
-      return;
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('BACKUP.CONFIRM_DELETE_TITLE'),
+        message: this.translate.instant('BACKUP.CONFIRM_DELETE', { name: backup.backupName }),
+        confirmText: this.translate.instant('COMMON.DELETE'),
+        cancelText: this.translate.instant('COMMON.CANCEL'),
+        color: 'warn'
+      }
+    });
 
-    this.backupService.deleteBackup(backup.id).subscribe({
-      next: () => {
-        this.backups.update(backups => backups.filter(b => b.id !== backup.id));
-        this.snackBar.open(
-          this.translate.instant('BACKUP.DELETE_SUCCESS'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
-      },
-      error: (error) => {
-        this.snackBar.open(
-          this.translate.instant('BACKUP.DELETE_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-        console.error('Error deleting backup:', error);
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.backupService.deleteBackup(backup.id).subscribe({
+          next: () => {
+            this.backups.update(backups => backups.filter(b => b.id !== backup.id));
+            this.errorHandler.showSuccess('BACKUP.DELETE_SUCCESS');
+          },
+          error: (err) => {
+            this.errorHandler.handleHttpError(err, 'BACKUP.DELETE_ERROR');
+          }
+        });
       }
     });
   }
@@ -166,14 +144,10 @@ export class BackupSettingsComponent implements OnInit {
         link.download = `${backup.backupName}.sql`;
         link.click();
         window.URL.revokeObjectURL(url);
+        this.errorHandler.showSuccess('BACKUP.DOWNLOAD_SUCCESS');
       },
-      error: (error) => {
-        this.snackBar.open(
-          this.translate.instant('BACKUP.DOWNLOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-        console.error('Error downloading backup:', error);
+      error: (err) => {
+        this.errorHandler.handleHttpError(err, 'BACKUP.DOWNLOAD_ERROR');
       }
     });
   }
@@ -205,6 +179,6 @@ export class BackupSettingsComponent implements OnInit {
       'PENDING': 'BACKUP.STATUS.PENDING',
       'FAILED': 'BACKUP.STATUS.FAILED'
     };
-    return labels[status] || status;
+    return this.translate.instant(labels[status] || status);
   }
 }
