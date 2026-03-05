@@ -1,0 +1,217 @@
+// src/styles.scss أو src/app/styles/global-styles.scss
+
+/* =========================================
+   🌍 Global Direction Styles
+   ========================================= */
+
+// Default (RTL for Arabic)
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+
+  body {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+// LTR for English
+html[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+
+  body {
+    direction: ltr;
+    text-align: left;
+  }
+}
+
+// Body classes
+body.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+body.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* =========================================
+   🔄 Bidirectional Components
+   ========================================= */
+
+// Flexbox layouts
+.rtl {
+  .flex-row {
+    flex-direction: row;
+  }
+
+  .flex-row-reverse {
+    flex-direction: row-reverse;
+  }
+}
+
+.ltr {
+  .flex-row {
+    flex-direction: row;
+  }
+
+  .flex-row-reverse {
+    flex-direction: row-reverse;
+  }
+}
+
+/* =========================================
+   📐 Margins & Paddings (Logical Properties)
+   ========================================= */
+
+// استخدم logical properties بدلاً من left/right
+.margin-start {
+  margin-inline-start: 16px;
+}
+
+.margin-end {
+  margin-inline-end: 16px;
+}
+
+.padding-start {
+  padding-inline-start: 16px;
+}
+
+.padding-end {
+  padding-inline-end: 16px;
+}
+
+/* =========================================
+   🎨 Material Overrides for RTL/LTR
+   ========================================= */
+
+html[dir="rtl"] {
+  .mat-mdc-paginator {
+    direction: rtl;
+
+    .mat-mdc-paginator-range-label {
+      margin-right: 8px;
+      margin-left: 0;
+    }
+  }
+
+  .mat-mdc-table {
+    direction: rtl;
+  }
+
+  .mat-mdc-menu-panel {
+    direction: rtl;
+  }
+
+  .mat-mdc-dialog-container {
+    direction: rtl;
+  }
+}
+
+html[dir="ltr"] {
+  .mat-mdc-paginator {
+    direction: ltr;
+
+    .mat-mdc-paginator-range-label {
+      margin-left: 8px;
+      margin-right: 0;
+    }
+  }
+
+  .mat-mdc-table {
+    direction: ltr;
+  }
+
+  .mat-mdc-menu-panel {
+    direction: ltr;
+  }
+
+  .mat-mdc-dialog-container {
+    direction: ltr;
+  }
+}
+
+/* =========================================
+   🔄 Icon Flipping for RTL
+   ========================================= */
+
+html[dir="rtl"] {
+  .flip-rtl {
+    transform: scaleX(-1);
+  }
+
+  // أيقونات تحتاج flip في RTL
+  .mat-icon.arrow-back,
+  .mat-icon.chevron-right,
+  .mat-icon.navigate-next {
+    transform: scaleX(-1);
+  }
+}
+
+html[dir="ltr"] {
+  .flip-rtl {
+    transform: scaleX(1);
+  }
+}
+
+/* =========================================
+   📱 Sidebar/Navigation
+   ========================================= */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 280px;
+  transition: transform 0.3s ease;
+
+  html[dir="rtl"] & {
+    right: 0;
+    left: auto;
+  }
+
+  html[dir="ltr"] & {
+    left: 0;
+    right: auto;
+  }
+}
+
+/* =========================================
+   🎯 Utility Classes
+   ========================================= */
+
+.text-start {
+  text-align: start;
+}
+
+.text-end {
+  text-align: end;
+}
+
+.float-start {
+  float: inline-start;
+}
+
+.float-end {
+  float: inline-end;
+}
+
+.border-start {
+  border-inline-start: 1px solid #e0e0e0;
+}
+
+.border-end {
+  border-inline-end: 1px solid #e0e0e0;
+}
+
+.rounded-start {
+  border-start-start-radius: 8px;
+  border-end-start-radius: 8px;
+}
+
+.rounded-end {
+  border-start-end-radius: 8px;
+  border-end-end-radius: 8px;
+}

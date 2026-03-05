@@ -1,52 +1,41 @@
 import {
   ApplicationConfig,
   provideZoneChangeDetection,
-  importProvidersFrom,
-  APP_INITIALIZER
+  provideAppInitializer,
+  inject
 } from '@angular/core';
-
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import {
-  provideHttpClient,
-  withInterceptors,
-  HttpClient
-} from '@angular/common/http';
-
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
-
-import {
-  TranslateModule,
-  TranslateLoader,
-  TranslateService
-} from '@ngx-translate/core';
-
+import { TranslateLoader, TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { Observable, firstValueFrom } from 'rxjs';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { MAT_PAGINATOR_DEFAULT_OPTIONS } from '@angular/material/paginator';
 
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) { }
-
   getTranslation(lang: string): Observable<any> {
-    return this.http.get(`assets/i18n/${lang}.json`);
+    return this.http.get(`./assets/i18n/${lang}.json`);
   }
 }
 
-export function createTranslateLoader(http: HttpClient) {
-  return new CustomTranslateLoader(http);
-}
-
-export function initializeApp(translate: TranslateService): () => Promise<void> {
+export function initializeApp() {
+  const translate = inject(TranslateService);
   return async () => {
     const savedLang = localStorage.getItem('language') || 'ar';
-    translate.setDefaultLang('ar');
-    await firstValueFrom(translate.use(savedLang));
-    const dir = savedLang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.dir = dir;
-    document.documentElement.lang = savedLang;
+    translate.setFallbackLang('ar');
+    try {
+      await firstValueFrom(translate.use(savedLang));
+      const dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.dir = dir;
+      document.documentElement.lang = savedLang;
+    } catch (err) {
+      console.error('Translation failed', err);
+    }
   };
 }
 
@@ -55,25 +44,27 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
-    provideAnimationsAsync(),
+    provideAnimations(),
     provideCharts(withDefaultRegisterables()),
-
-    importProvidersFrom(
-      TranslateModule.forRoot({
-        loader: {
-          provide: TranslateLoader,
-          useFactory: createTranslateLoader,
-          deps: [HttpClient]
-        },
-        defaultLanguage: 'ar'
-      })
-    ),
-
+    provideTranslateService({
+      defaultLanguage: 'ar',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (http: HttpClient) => new CustomTranslateLoader(http),
+        deps: [HttpClient]
+      }
+    }),
+    provideAppInitializer(() => {
+      const initFn = initializeApp();
+      return initFn();
+    }),
     {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [TranslateService],
-      multi: true
+      provide: MAT_PAGINATOR_DEFAULT_OPTIONS,
+      useValue: {
+        pageSize: 10,
+        pageSizeOptions: [5, 10, 20, 50],
+        formFieldAppearance: 'outline'
+      }
     }
   ]
 };

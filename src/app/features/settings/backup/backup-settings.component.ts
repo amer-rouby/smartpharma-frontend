@@ -12,7 +12,7 @@ import { Backup } from '../../../core/models/settings/Backup.model';
 @Component({
   selector: 'app-backup-settings',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule],
   templateUrl: './backup-settings.component.html',
   styleUrl: './backup-settings.component.scss'
 })

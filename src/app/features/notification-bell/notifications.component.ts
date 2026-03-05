@@ -22,6 +22,7 @@ export class NotificationsComponent implements OnInit {
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
+
   readonly notifications = signal<NotificationModel[]>([]);
   readonly loading = signal(false);
   readonly selectedTab = signal(0);
@@ -29,6 +30,22 @@ export class NotificationsComponent implements OnInit {
   readonly pageIndex = signal(0);
   readonly pageSize = signal(10);
   readonly totalElements = signal(0);
+
+  // ✅ computed signal للفلترة حسب التبويب
+  readonly filteredNotifications = computed(() => {
+    const allNotifications = this.notifications();
+    const tab = this.selectedTab();
+
+    if (tab === 0) {
+      // التبويب الأول: الكل
+      return allNotifications;
+    } else if (tab === 1) {
+      // التبويب الثاني: غير المقروءة فقط
+      return allNotifications.filter(n => !n.read);
+    }
+
+    return allNotifications;
+  });
 
   readonly unreadBadgeCount = computed(() => {
     return this.notifications().filter(n => !n.read).length;
@@ -58,8 +75,7 @@ export class NotificationsComponent implements OnInit {
 
   onTabChange(index: number): void {
     this.selectedTab.set(index);
-    this.pageIndex.set(0);
-    this.loadNotifications();
+    // مفيش داعي نعيد التحميل، الـ computed signal هيفلتر تلقائياً
   }
 
   onPageChange(event: any): void {

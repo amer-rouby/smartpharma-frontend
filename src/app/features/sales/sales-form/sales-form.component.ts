@@ -347,7 +347,7 @@ export class SalesFormComponent implements OnInit {
   }
 
   getPaymentMethodLabel(method: string): string {
-    return this.translate.instant(`SALES.PAYMENT_METHOD.${method}`);
+    return this.translate.instant(`COMMON.PAYMENT_METHODS.${method}`);
   }
 
   getStockLabel(stock: number): string {

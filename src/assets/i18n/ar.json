@@ -817,6 +817,7 @@
     "DELETE_ERROR": "فشل في حذف الإشعار",
     "DELETE_CONFIRM_TITLE": "تأكيد الحذف",
     "DELETE_CONFIRM_MESSAGE": "هل أنت متأكد من حذف هذا الإشعار؟",
+    "EMPTY_STATE_DESC": "لا توجد إشعارات في هذا القسم",
     "PRIORITY": {
       "URGENT": "عاجل جداً",
       "HIGH": "أولوية عالية",
@@ -884,12 +885,6 @@
       "SYSTEM_UPDATES": "إشعارات تحديثات النظام والصيانة",
       "BACKUP_REMINDER": "تذكير بأخذ نسخ احتياطي",
       "SECURITY_ALERTS": "تنبيهات الأمان والدخول غير المصرح به"
-    },
-    "PRIORITY": {
-      "URGENT": "عاجل",
-      "HIGH": "عالي",
-      "MEDIUM": "متوسط",
-      "LOW": "منخفض"
     },
     "TYPE": {
       "LOW_STOCK": "مخزون منخفض",
