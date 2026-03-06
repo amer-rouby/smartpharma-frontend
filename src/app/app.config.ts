@@ -1,3 +1,4 @@
+// src/app/app.config.ts
 import {
   ApplicationConfig,
   provideZoneChangeDetection,
@@ -15,26 +16,30 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { MAT_PAGINATOR_DEFAULT_OPTIONS } from '@angular/material/paginator';
+import { LanguageService } from './core/services/language.service';
 
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) { }
+
   getTranslation(lang: string): Observable<any> {
-    return this.http.get(`./assets/i18n/${lang}.json`);
+    return this.http.get(`assets/i18n/${lang}.json`);
   }
 }
 
 export function initializeApp() {
   const translate = inject(TranslateService);
+  const languageService = inject(LanguageService);
+
   return async () => {
     const savedLang = localStorage.getItem('language') || 'ar';
     translate.setFallbackLang('ar');
+
     try {
       await firstValueFrom(translate.use(savedLang));
-      const dir = savedLang === 'ar' ? 'rtl' : 'ltr';
-      document.documentElement.dir = dir;
-      document.documentElement.lang = savedLang;
+      languageService.setLanguage(savedLang as 'ar' | 'en');
     } catch (err) {
       console.error('Translation failed', err);
+      languageService.setLanguage('ar');
     }
   };
 }

@@ -1,11 +1,10 @@
 .sales-analytics {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
   background: #f8fafc;
   min-height: 100vh;
 }
 
-// Header
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -15,6 +14,7 @@
   background: white;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  direction: inherit;
 
   .header-content {
     h2 {
@@ -28,7 +28,7 @@
 
       mat-icon {
         color: #667eea;
-        font-size: 32px; // ✅ تكبير الأيقونة
+        font-size: 32px;
         width: 32px;
         height: 32px;
       }
@@ -47,25 +47,26 @@
 
     button {
       mat-icon {
-        font-size: 20px; // ✅ تكبير أيقونات الأزرار
+        font-size: 20px;
         width: 20px;
         height: 20px;
-        margin-left: 4px;
+        margin-inline-end: 4px;
       }
     }
   }
 }
 
-// Filters
 .filters-card {
   margin-bottom: 24px;
   border-radius: 16px;
+  direction: inherit;
 
   .filters-form {
     display: flex;
     gap: 16px;
     align-items: flex-end;
     flex-wrap: wrap;
+    direction: inherit;
 
     mat-form-field {
       flex: 1;
@@ -74,20 +75,20 @@
 
     button {
       mat-icon {
-        font-size: 20px; // ✅ تكبير أيقونة الزر
+        font-size: 20px;
         width: 20px;
         height: 20px;
-        margin-left: 4px;
+        margin-inline-end: 4px;
       }
     }
   }
 }
 
-// Loading & Error States
 .loading-card,
 .error-card {
   margin-bottom: 24px;
   border-radius: 16px;
+  direction: inherit;
 
   .loading-state,
   .error-state {
@@ -112,7 +113,6 @@
   }
 }
 
-// Stats Grid
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -123,6 +123,7 @@
 .stat-card {
   border-radius: 16px;
   transition: transform 0.2s ease;
+  direction: inherit;
 
   &:hover {
     transform: translateY(-4px);
@@ -171,7 +172,7 @@
   }
 
   .stat-icon {
-    font-size: 40px; // ✅ تكبير الأيقونة (كان 32px)
+    font-size: 40px;
     width: 40px;
     height: 40px;
     color: white;
@@ -194,7 +195,6 @@
   }
 }
 
-// Charts Grid
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -204,6 +204,7 @@
 
 .chart-card {
   border-radius: 16px;
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -218,7 +219,7 @@
 
       mat-icon {
         color: #667eea;
-        font-size: 24px; // ✅ تكبير الأيقونة (كان 20px)
+        font-size: 24px;
         width: 24px;
         height: 24px;
       }
@@ -230,13 +231,15 @@
   }
 }
 
-// Bar Chart
 .bar-chart {
   display: flex;
   align-items: flex-end;
+  justify-content: space-around;
   gap: 12px;
   height: 200px;
-  padding: 20px 0;
+  padding: 20px 12px;
+  overflow-x: auto;
+  direction: inherit;
 
   .bar-item {
     display: flex;
@@ -244,44 +247,52 @@
     align-items: center;
     gap: 8px;
     flex: 1;
-  }
+    min-width: 60px;
 
-  .bar {
-    width: 100%;
-    min-height: 10px;
-    background: linear-gradient(180deg, #667eea, #764ba2);
-    border-radius: 4px 4px 0 0;
-    position: relative;
-    transition: height 0.3s ease;
+    .bar {
+      width: 100%;
+      min-height: 10px;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      transition: all 0.3s ease;
+      max-height: 160px;
 
-    &:hover {
-      opacity: 0.9;
+      &:hover {
+        opacity: 0.8;
+        transform: translateY(-2px);
+      }
+
+      .bar-label {
+        position: absolute;
+        top: -24px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        font-weight: 600;
+        color: #667eea;
+        white-space: nowrap;
+        background: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
     }
 
-    .bar-label {
-      position: absolute;
-      top: -24px;
-      left: 50%;
-      transform: translateX(-50%);
+    .bar-period {
       font-size: 11px;
-      font-weight: 600;
-      color: #667eea;
+      color: #666;
+      text-align: center;
       white-space: nowrap;
     }
   }
-
-  .bar-period {
-    font-size: 11px;
-    color: #666;
-    text-align: center;
-  }
 }
 
-// Payment Methods
 .payment-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  direction: inherit;
 }
 
 .payment-item {
@@ -331,7 +342,6 @@
   }
 }
 
-// Tables Grid
 .tables-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -340,6 +350,7 @@
 
 .table-card {
   border-radius: 16px;
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -354,7 +365,7 @@
 
       mat-icon {
         color: #667eea;
-        font-size: 24px; // ✅ تكبير الأيقونة (كان 20px)
+        font-size: 24px;
         width: 24px;
         height: 24px;
       }
@@ -368,6 +379,7 @@
 
 .data-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -375,6 +387,7 @@
     color: #666;
     padding: 16px 24px;
     background: #f8fafc;
+    text-align: start;
   }
 
   td.mat-cell {
@@ -382,6 +395,7 @@
     font-size: 14px;
     color: #1a1a1a;
     border-bottom: 1px solid #e9ecef;
+    text-align: start;
   }
 
   .text-center {
@@ -397,7 +411,6 @@
   }
 }
 
-// Empty State
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -409,7 +422,35 @@
   font-size: 14px;
 }
 
-// Responsive
+.empty-chart-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #ddd;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  small {
+    font-size: 13px;
+    color: #bbb;
+  }
+}
+
 @media (max-width: 768px) {
   .sales-analytics {
     padding: 16px;
@@ -455,110 +496,59 @@
   }
 }
 
-
-// أضف الـ CSS ده في آخر الملف
-
-.empty-chart-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-  color: #999;
-
-  mat-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
-    color: #ddd;
-    margin-bottom: 16px;
+@media print {
+  .sales-analytics {
+    padding: 0;
+    background: white;
   }
 
-  p {
-    margin: 0 0 8px;
-    font-size: 16px;
-    font-weight: 500;
+  .no-print {
+    display: none !important;
   }
 
-  small {
-    font-size: 13px;
-    color: #bbb;
+  .page-header,
+  .filters-card {
+    display: none;
+  }
+
+  .stats-grid,
+  .charts-grid,
+  .tables-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card,
+  .table-card {
+    break-inside: avoid;
   }
 }
 
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
-  gap: 12px;
-  height: 200px;
-  padding: 20px 12px;
-  overflow-x: auto;
+::ng-deep {
+  .sales-analytics {
+    mat-form-field {
+      direction: inherit;
 
-  .bar-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    min-width: 60px;
-
-    .bar {
-      width: 100%;
-      min-height: 10px;
-      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-      border-radius: 4px 4px 0 0;
-      position: relative;
-      transition: all 0.3s ease;
-      max-height: 160px;
-
-      &:hover {
-        opacity: 0.8;
-        transform: translateY(-2px);
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
       }
 
-      .bar-label {
-        position: absolute;
-        top: -24px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 11px;
-        font-weight: 600;
-        color: #667eea;
-        white-space: nowrap;
-        background: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
       }
-    }
 
-    .bar-period {
-      font-size: 11px;
-      color: #666;
-      text-align: center;
-      white-space: nowrap;
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
     }
   }
 }
 
-// Responsive
-@media (max-width: 768px) {
-  .bar-chart {
-    height: 180px;
-    gap: 8px;
-
-    .bar-item {
-      min-width: 50px;
-
-      .bar-label {
-        font-size: 10px;
-      }
-
-      .bar-period {
-        font-size: 10px;
-      }
-    }
-  }
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

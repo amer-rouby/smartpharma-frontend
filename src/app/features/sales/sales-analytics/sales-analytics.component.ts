@@ -24,6 +24,9 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly destroy$ = new Subject<void>();
 
+  // ✅ إضافة currentLang signal
+  readonly currentLang = signal<string>(this.translate.currentLang || 'ar');
+
   readonly state = signal<{
     analytics: SalesAnalytics | null;
     topProducts: ProductSales[];
@@ -68,6 +71,14 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initialize();
+    this.setupLanguageSubscription();
+  }
+
+  // ✅ دالة لمتابعة تغيير اللغة
+  private setupLanguageSubscription(): void {
+    this.translate.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(event => {
+      this.currentLang.set(event.lang);
+    });
   }
 
   private initialize(): void {
@@ -157,7 +168,7 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('ar-EG', {
+    return new Intl.NumberFormat(this.currentLang() === 'ar' ? 'ar-EG' : 'en-US', {
       style: 'currency',
       currency: 'EGP',
       minimumFractionDigits: 0,

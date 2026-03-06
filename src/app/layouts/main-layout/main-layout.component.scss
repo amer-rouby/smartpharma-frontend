@@ -1,87 +1,88 @@
 .app-container {
   display: flex;
   flex-direction: column;
-min-height: 100vh;
-  /* مهم */
+  min-height: 100vh;
 }
-
-/* ================= HEADER ================= */
 
 .main-header {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
   height: 64px;
   z-index: 1000;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* ================= CONTENT AREA ================= */
-
 .content-area {
   display: flex;
   flex: 1;
-  padding-top: 64px;
+  margin-top: 64px;
 }
-/* ================= SIDEBAR ================= */
 
 .sidebar-wrapper {
   width: 280px;
   position: fixed;
   top: 64px;
-  right: 0;
+  inset-inline-start: 0;
   bottom: 0;
   z-index: 999;
   overflow-y: auto;
-  transition: width 0.3s ease;
+  transition: width 0.3s ease, inset-inline-start 0.3s ease;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  direction: inherit;
 
   &.collapsed {
     width: 70px;
   }
-}
 
-/* ================= MAIN CONTENT ================= */
+  @media (max-width: 768px) {
+    inset-inline-start: -280px;
+
+    &.mobile-open {
+      inset-inline-start: 0;
+    }
+  }
+}
 
 .main-content {
   flex: 1;
-  margin-right: 280px;
+  margin-inline-start: 280px;
+  margin-inline-end: 0;
   padding: 24px;
   overflow-y: auto;
   min-height: calc(100vh - 64px);
-}
+  transition: margin-inline-start 0.3s ease;
+  direction: inherit;
+  text-align: start;
 
-/* ================= FOOTER ================= */
+  @media (max-width: 768px) {
+    margin-inline-start: 0;
+  }
+}
 
 .main-footer {
-  margin-right: 280px;
+  margin-inline-start: 280px;
+  margin-inline-end: 0;
   background: white;
   border-top: 1px solid #e2e8f0;
-  transition: margin-right 0.3s ease;
+  transition: margin-inline-start 0.3s ease;
+  direction: inherit;
 
-  &.expanded {
-    margin-right: 70px;
+  &.collapsed {
+    margin-inline-start: 70px;
+  }
+
+  @media (max-width: 768px) {
+    margin-inline-start: 0;
   }
 }
 
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 768px) {
-
-  .sidebar-wrapper {
-    right: -280px;
-
-    &.mobile-open {
-      right: 0;
-    }
-  }
-
-  .main-content {
-    margin-right: 0;
-  }
-
-  .main-footer {
-    margin-right: 0;
-  }
+app-loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
 }

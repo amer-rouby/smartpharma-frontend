@@ -1,19 +1,18 @@
 .sidebar {
   width: 280px;
-  height: 100vh;
+  height: 100%;
   background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
   color: white;
-  transition: all 0.3s ease;
+  transition: width 0.3s ease;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  direction: rtl;
-  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
   position: relative;
+  direction: inherit;
 
   &.collapsed {
-    width: 80px;
+    width: 70px;
 
     .sidebar-logo span,
     .menu-text,
@@ -43,36 +42,57 @@
   padding: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
 
-  mat-icon {
-    font-size: 32px;
-    color: white !important;
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: white;
+    }
   }
 
   .logo-text {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    color: white !important;
+    color: white;
+    white-space: nowrap;
   }
 }
 
 .sidebar-menu {
   flex: 1;
   padding: 16px 12px;
+
   .mat-list-item {
     height: 56px;
     margin: 6px 0;
     border-radius: 14px;
     transition: all 0.3s ease;
     cursor: pointer;
+
     mat-icon {
-      color: white !important;
-      margin-left: 16px;
+      color: white;
+      margin-inline-end: 16px;
     }
 
     .mat-line,
     span {
-      color: white !important;
+      color: white;
       font-size: 15px;
       font-weight: 500;
     }
@@ -81,7 +101,7 @@
       background: rgba(255, 255, 255, 0.2);
 
       mat-icon {
-        color: white !important;
+        color: white;
       }
     }
 
@@ -91,14 +111,15 @@
       mat-icon,
       span,
       .mat-line {
-        color: white !important;
+        color: white;
         font-weight: 700;
       }
     }
   }
+
   .sidebar-expansion {
-    background: transparent !important;
-    box-shadow: none !important;
+    background: transparent;
+    box-shadow: none;
     margin: 6px 0;
     border-radius: 14px;
 
@@ -107,26 +128,30 @@
         height: 56px;
         padding: 0 16px;
         border-radius: 14px;
-        background: transparent !important;
+        background: transparent;
+
         .mat-expansion-panel-header-title {
-          color: white !important;
+          color: white;
           font-size: 15px;
           font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 16px;
 
           mat-icon {
-            color: white !important;
+            color: white;
           }
         }
 
         .mat-expansion-indicator {
-          color: white !important;
+          color: white;
         }
 
         &:hover {
-          background: rgba(255, 255, 255, 0.2) !important;
+          background: rgba(255, 255, 255, 0.2);
 
           .mat-expansion-panel-header-title {
-            color: white !important;
+            color: white;
           }
         }
       }
@@ -135,6 +160,7 @@
         padding: 8px 0;
       }
     }
+
     .submenu {
       background: rgba(0, 0, 0, 0.15);
       border-radius: 12px;
@@ -143,18 +169,19 @@
 
       .mat-list-item {
         height: 48px;
-        padding-right: 56px;
+        padding-inline-start: 56px;
         margin: 4px 8px;
         border-radius: 10px;
+
         mat-icon {
-          color: white !important;
+          color: white;
           font-size: 20px;
-          margin-left: 12px;
+          margin-inline-end: 12px;
         }
 
         .mat-line,
         span {
-          color: white !important;
+          color: white;
           font-size: 14px;
           font-weight: 400;
         }
@@ -164,7 +191,7 @@
 
           mat-icon,
           span {
-            color: white !important;
+            color: white;
           }
         }
 
@@ -173,7 +200,7 @@
 
           mat-icon,
           span {
-            color: white !important;
+            color: white;
             font-weight: 700;
           }
         }
@@ -192,10 +219,10 @@
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: white !important;
+    color: white;
 
     mat-icon {
-      color: white !important;
+      color: white;
       font-size: 16px;
     }
   }
@@ -205,98 +232,12 @@
   .sidebar {
     position: fixed;
     z-index: 9999;
-    right: -280px;
+    inset-inline-start: -280px;
     top: 64px;
     height: calc(100vh - 64px);
 
-    &.open {
-      right: 0;
-    }
-
-    &.collapsed {
-      right: -80px;
-
-      &.open {
-        right: 0;
-      }
-    }
-  }
-}
-
-.sidebar {
-
-  .mat-list-item {
-    color: white !important;
-
-    mat-icon {
-      color: white !important;
-    }
-
-    span,
-    .mat-line {
-      color: white !important;
-    }
-  }
-
-  .sidebar-expansion {
-    background: transparent !important;
-
-    ::ng-deep {
-      .mat-expansion-panel-header {
-        color: white !important;
-
-        .mat-expansion-panel-header-title {
-          color: white !important;
-        }
-
-        mat-icon {
-          color: white !important;
-        }
-      }
-
-      .mat-expansion-indicator {
-        color: white !important;
-
-        &::after {
-          color: white !important;
-        }
-      }
-    }
-
-    .submenu {
-      .mat-list-item {
-        color: white !important;
-
-        mat-icon {
-          color: white !important;
-        }
-
-        span,
-        .mat-line {
-          color: white !important;
-        }
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.15) !important;
-        }
-
-        &.active {
-          background: rgba(255, 255, 255, 0.25) !important;
-
-          mat-icon,
-          span {
-            color: white !important;
-          }
-        }
-      }
-    }
-  }
-
-  .sidebar-footer {
-    color: white !important;
-
-    * {
-      color: white !important;
+    &.mobile-open {
+      inset-inline-start: 0;
     }
   }
 }

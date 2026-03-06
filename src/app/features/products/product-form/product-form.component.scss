@@ -1,6 +1,6 @@
 .product-form-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 
   mat-card {
     margin-top: 24px;
@@ -32,6 +32,36 @@
 
   mat-form-field {
     width: 100%;
+    direction: inherit;
+
+    .mat-form-field-wrapper {
+      direction: inherit;
+    }
+
+    .mat-form-field-flex {
+      direction: inherit;
+    }
+
+    .mat-form-field-label-wrapper {
+      direction: inherit;
+    }
+
+    .mat-form-field-label {
+      direction: inherit;
+      text-align: start;
+    }
+
+    input,
+    select,
+    textarea {
+      direction: inherit;
+      text-align: start;
+    }
+
+    .mat-form-field-prefix,
+    .mat-form-field-suffix {
+      direction: inherit;
+    }
 
     mat-icon {
       color: #667eea;
@@ -43,6 +73,7 @@
     padding: 20px;
     background: #f7fafc;
     border-radius: 12px;
+    direction: inherit;
 
     mat-checkbox {
       width: 100%;
@@ -113,4 +144,33 @@
     background: #ef4444 !important;
     color: white !important;
   }
+
+  .product-form-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
 }

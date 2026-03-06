@@ -1,10 +1,11 @@
 .reports-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 
   .export-buttons {
     display: flex;
     gap: 8px;
+    direction: inherit;
 
     button {
       min-width: 120px;
@@ -29,6 +30,7 @@
   .filters-card {
     margin: 24px 0;
     border-radius: 16px;
+    direction: inherit;
 
     mat-card-content {
       padding: 20px;
@@ -89,6 +91,7 @@
 
     .stat-card {
       border-radius: 16px;
+      direction: inherit;
 
       mat-card-content {
         display: flex;
@@ -140,6 +143,7 @@
 
     .chart-card {
       border-radius: 16px;
+      direction: inherit;
 
       mat-card-header {
         padding: 20px 24px;
@@ -167,4 +171,34 @@
       grid-template-columns: 1fr;
     }
   }
+}
+
+::ng-deep {
+  .reports-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

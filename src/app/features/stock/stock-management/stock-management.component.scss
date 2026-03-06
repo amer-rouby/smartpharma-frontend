@@ -1,6 +1,6 @@
 .stock-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -46,6 +46,7 @@
   .stock-table {
     width: 100%;
     min-width: 800px;
+    direction: inherit;
 
     th {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -54,11 +55,11 @@
       padding: 16px;
       font-size: 14px;
       white-space: nowrap;
-      text-align: right;
+      text-align: start;
 
       mat-icon {
         vertical-align: middle;
-        margin-left: 8px;
+        margin-inline-end: 8px;
         font-size: 18px;
       }
 
@@ -72,6 +73,7 @@
       font-size: 13px;
       vertical-align: middle;
       border-bottom: 1px solid #e9ecef;
+      text-align: start;
     }
 
     tr.stock-row {

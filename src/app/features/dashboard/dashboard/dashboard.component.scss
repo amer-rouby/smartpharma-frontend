@@ -1,10 +1,6 @@
-/* =========================================
-   📊 Dashboard Component Styles
-   ========================================= */
-
 .dashboard-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
   min-height: auto;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
 }
@@ -56,6 +52,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: white;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  direction: inherit;
 
   &:hover {
     transform: translateY(-4px);
@@ -120,6 +117,7 @@
   border-radius: 16px;
   background: white;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -182,6 +180,7 @@
   border-radius: 16px;
   background: white;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -210,10 +209,12 @@
 
 .data-table {
   width: 100%;
+  direction: inherit;
 
   th,
   td {
     padding: 16px 24px;
+    text-align: start;
   }
 
   th {
@@ -257,6 +258,8 @@
   .invoice {
     font-family: monospace;
     color: #666;
+    direction: ltr;
+    display: inline-block;
   }
 
   .amount {
@@ -307,6 +310,7 @@
   border-radius: 16px;
   background: white;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -444,6 +448,29 @@
 }
 
 ::ng-deep {
+  .dashboard-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+
   .info-snackbar {
     background: #3b82f6 !important;
     color: white !important;
@@ -453,4 +480,9 @@
     background: #ef4444 !important;
     color: white !important;
   }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

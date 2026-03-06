@@ -1,17 +1,5 @@
-/* =========================================
-   🎨 SmartPharma - Global Styles
-   📁 File: src/styles.scss
-   🔧 Refactored & Fixed
-   ========================================= */
-
-/* =========================================
-   📦 Angular Material Setup (M3 Compatible)
-   ========================================= */
 @use '@angular/material' as mat;
 
-/* =========================================
-   🌐 Global Base Styles
-   ========================================= */
 html,
 body {
   height: 100%;
@@ -20,14 +8,8 @@ body {
   font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
   background: #f5f7fa;
-  // overflow-y: hidden;
-  /* ✅ مهم جداً: overflow-x: hidden بس عشان متحصلش مشاكل في الـ layout */
-  // overflow-x: hidden;
 }
 
-/* =========================================
-   🔤 Fonts Import
-   ========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
 
 body {
@@ -35,9 +17,6 @@ body {
   background-color: #f5f7fa;
 }
 
-/* =========================================
-   🎨 Material Theme Configuration (M3)
-   ========================================= */
 @include mat.core();
 
 $theme: mat.define-theme((color: (theme-type: light,
@@ -52,9 +31,6 @@ $theme: mat.define-theme((color: (theme-type: light,
 
 @include mat.all-component-themes($theme);
 
-/* =========================================
-   🔄 Custom Scrollbar Styles
-   ========================================= */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -74,9 +50,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* =========================================
-   🧰 Utility Classes
-   ========================================= */
 .full-width {
   width: 100%;
 }
@@ -90,9 +63,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   min-height: calc(100vh - 64px);
 }
 
-/* =========================================
-   📊 Dashboard - Stats Cards
-   ========================================= */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -154,7 +124,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* ✅ Animation for Stats Cards */
 .stat-card {
   animation: fadeInUp 0.5s ease-out;
 
@@ -187,9 +156,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* =========================================
-   ⚡ Quick Actions Section
-   ========================================= */
 .quick-actions {
   margin-top: 32px;
 
@@ -242,9 +208,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* =========================================
-   ⏳ Loading & Empty States
-   ========================================= */
 .loading-state,
 .empty-state {
   display: flex;
@@ -267,9 +230,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* =========================================
-   📑 Page Header Component
-   ========================================= */
 .page-header {
   background: white;
   border-radius: 16px;
@@ -326,9 +286,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* =========================================
-   📋 Table Container Styles
-   ========================================= */
 .table-container {
   background: white;
   border-radius: 16px;
@@ -360,9 +317,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   }
 }
 
-/* =========================================
-   🏷️ Product Name & Price Styles
-   ========================================= */
 .product-name {
   display: flex;
   flex-direction: column;
@@ -385,9 +339,6 @@ $theme: mat.define-theme((color: (theme-type: light,
   font-size: 16px;
 }
 
-/* =========================================
-   💻 Code Block Styles
-   ========================================= */
 code {
   background: #edf2f7;
   padding: 4px 12px;
@@ -398,16 +349,10 @@ code {
   display: inline-block;
 }
 
-/* =========================================
-   🔍 Search Field Styles
-   ========================================= */
 .search-field {
   margin-bottom: 24px;
 }
 
-/* =========================================
-   🔔 Notification Icon Colors
-   ========================================= */
 .notification-icon-warning {
   color: #ff9800 !important;
 }
@@ -424,9 +369,6 @@ code {
   color: #4caf50 !important;
 }
 
-/* =========================================
-   📱 Responsive Design
-   ========================================= */
 @media (max-width: 768px) {
   .content {
     padding: 16px;
@@ -460,36 +402,12 @@ code {
   }
 }
 
-/* =========================================
-   🎯 Layout Fix - Scroll & Footer
-   ========================================= */
-/* ✅ ده الجزء المهم عشان الـ Scroll والفوتر يشتغلوا صح */
-
-/* منع الـ scroll على الـ body كله */
-// html,
-// body {
-//   overflow-x: hidden;
-//   overflow-y: hidden;
-//   /* ✅ السكرول هيكون على الـ content بس */
-// }
-
-// /* الـ main content هو اللي بيسكرول */
-// .main-content {
-//   overflow-y: auto !important;
-//   height: calc(100vh - 64px) !important;
-// }
-
-/* الفوتر يفضل في الآخر */
 .main-footer,
 app-footer {
   margin-top: auto !important;
   flex-shrink: 0 !important;
 }
 
-/* =========================================
-   ✨ End of File
-   ========================================= */
-// Global override for sidebar
 app-sidebar {
 
   .mat-list-item,
@@ -500,7 +418,6 @@ app-sidebar {
     color: white !important;
   }
 
-  // Force all text elements
   span,
   div,
   a {
@@ -508,11 +425,6 @@ app-sidebar {
   }
 }
 
-/* =========================================
-   🎨 Snackbar Styles
-   ========================================= */
-
-/* Success Snackbar */
 .success-snackbar {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: white !important;
@@ -526,7 +438,6 @@ app-sidebar {
   }
 }
 
-/* Error Snackbar */
 .error-snackbar {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
   color: white !important;
@@ -540,7 +451,6 @@ app-sidebar {
   }
 }
 
-/* Success Snackbar */
 .mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   border-radius: 8px !important;
@@ -555,4 +465,415 @@ app-sidebar {
 .success-snackbar .mat-mdc-snack-bar-action {
   color: white !important;
   font-weight: 600 !important;
+}
+
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+
+  body {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+
+  body {
+    direction: ltr;
+    text-align: left;
+  }
+}
+
+body.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+body.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="rtl"] {
+  .mat-mdc-paginator {
+    direction: rtl;
+
+    .mat-mdc-paginator-range-label {
+      margin-right: 8px;
+      margin-left: 0;
+    }
+  }
+
+  .mat-mdc-table {
+    direction: rtl;
+  }
+
+  .mat-mdc-menu-panel {
+    direction: rtl;
+  }
+
+  .mat-mdc-dialog-container {
+    direction: rtl;
+  }
+
+  .mat-mdc-form-field {
+    direction: rtl;
+  }
+}
+
+html[dir="ltr"] {
+  .mat-mdc-paginator {
+    direction: ltr;
+
+    .mat-mdc-paginator-range-label {
+      margin-left: 8px;
+      margin-right: 0;
+    }
+  }
+
+  .mat-mdc-table {
+    direction: ltr;
+  }
+
+  .mat-mdc-menu-panel {
+    direction: ltr;
+  }
+
+  .mat-mdc-dialog-container {
+    direction: ltr;
+  }
+
+  .mat-mdc-form-field {
+    direction: ltr;
+  }
+}
+
+html[dir="rtl"] {
+  .flip-rtl {
+    transform: scaleX(-1);
+  }
+
+  .mat-icon.arrow-back,
+  .mat-icon.chevron-right,
+  .mat-icon.navigate-next {
+    transform: scaleX(-1);
+  }
+}
+
+html[dir="ltr"] {
+  .flip-rtl {
+    transform: scaleX(1);
+  }
+}
+
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transition: all 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  direction: rtl;
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+
+  &.collapsed {
+    width: 80px;
+
+    .sidebar-logo span,
+    .menu-text,
+    .version-info {
+      display: none;
+    }
+
+    .sidebar-logo {
+      justify-content: center;
+    }
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+
+  mat-icon {
+    font-size: 32px;
+    color: white !important;
+  }
+
+  .logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: white !important;
+  }
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 16px 12px;
+
+  .mat-list-item {
+    height: 56px;
+    margin: 6px 0;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    mat-icon {
+      color: white !important;
+      margin-left: 16px;
+    }
+
+    .mat-line,
+    span {
+      color: white !important;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+
+      mat-icon {
+        color: white !important;
+      }
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.3);
+
+      mat-icon,
+      span,
+      .mat-line {
+        color: white !important;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .sidebar-expansion {
+    background: transparent !important;
+    box-shadow: none !important;
+    margin: 6px 0;
+    border-radius: 14px;
+
+    ::ng-deep {
+      .mat-expansion-panel-header {
+        height: 56px;
+        padding: 0 16px;
+        border-radius: 14px;
+        background: transparent !important;
+
+        .mat-expansion-panel-header-title {
+          color: white !important;
+          font-size: 15px;
+          font-weight: 500;
+
+          mat-icon {
+            color: white !important;
+          }
+        }
+
+        .mat-expansion-indicator {
+          color: white !important;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2) !important;
+
+          .mat-expansion-panel-header-title {
+            color: white !important;
+          }
+        }
+      }
+
+      .mat-content {
+        padding: 8px 0;
+      }
+    }
+
+    .submenu {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      margin: 8px 12px;
+      padding: 8px 0;
+
+      .mat-list-item {
+        height: 48px;
+        padding-right: 56px;
+        margin: 4px 8px;
+        border-radius: 10px;
+
+        mat-icon {
+          color: white !important;
+          font-size: 20px;
+          margin-left: 12px;
+        }
+
+        .mat-line,
+        span {
+          color: white !important;
+          font-size: 14px;
+          font-weight: 400;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+
+          mat-icon,
+          span {
+            color: white !important;
+          }
+        }
+
+        &.active {
+          background: rgba(255, 255, 255, 0.25);
+
+          mat-icon,
+          span {
+            color: white !important;
+            font-weight: 700;
+          }
+        }
+      }
+    }
+  }
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.1);
+
+  .version-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: white !important;
+
+    mat-icon {
+      color: white !important;
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 9999;
+    right: -280px;
+    top: 64px;
+    height: calc(100vh - 64px);
+
+    &.open {
+      right: 0;
+    }
+
+    &.collapsed {
+      right: -80px;
+
+      &.open {
+        right: 0;
+      }
+    }
+  }
+}
+
+.sidebar {
+
+  .mat-list-item {
+    color: white !important;
+
+    mat-icon {
+      color: white !important;
+    }
+
+    span,
+    .mat-line {
+      color: white !important;
+    }
+  }
+
+  .sidebar-expansion {
+    background: transparent !important;
+
+    ::ng-deep {
+      .mat-expansion-panel-header {
+        color: white !important;
+
+        .mat-expansion-panel-header-title {
+          color: white !important;
+        }
+
+        mat-icon {
+          color: white !important;
+        }
+      }
+
+      .mat-expansion-indicator {
+        color: white !important;
+
+        &::after {
+          color: white !important;
+        }
+      }
+    }
+
+    .submenu {
+      .mat-list-item {
+        color: white !important;
+
+        mat-icon {
+          color: white !important;
+        }
+
+        span,
+        .mat-line {
+          color: white !important;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        &.active {
+          background: rgba(255, 255, 255, 0.25) !important;
+
+          mat-icon,
+          span {
+            color: white !important;
+          }
+        }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    color: white !important;
+
+    * {
+      color: white !important;
+    }
+  }
 }

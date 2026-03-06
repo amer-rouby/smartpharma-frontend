@@ -1,6 +1,7 @@
 .dialog-container {
   min-width: 400px;
   max-width: 500px;
+  direction: inherit;
 }
 
 .dialog-header {
@@ -42,6 +43,7 @@ mat-dialog-actions {
   padding: 12px 24px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   gap: 8px;
+  justify-content: flex-end;
 }
 
 [type="color"] {

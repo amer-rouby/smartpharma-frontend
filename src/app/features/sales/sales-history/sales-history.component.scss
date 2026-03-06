@@ -1,6 +1,6 @@
 .sales-history-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 
   .search-field {
     width: 100%;
@@ -30,6 +30,7 @@
 
     .data-table {
       width: 100%;
+      direction: inherit;
 
       th {
         font-weight: 600;
@@ -38,6 +39,7 @@
         padding: 12px 16px;
         font-size: 13px;
         white-space: nowrap;
+        text-align: start;
       }
 
       td {
@@ -45,6 +47,7 @@
         font-size: 13px;
         vertical-align: middle;
         color: #4a5568;
+        text-align: start;
       }
 
       tr:hover {
@@ -60,6 +63,7 @@
         direction: ltr;
         display: inline-block;
         font-family: 'Courier New', monospace;
+        text-align: left;
       }
 
       strong {
@@ -82,6 +86,7 @@
       .action-buttons {
         display: flex;
         gap: 4px;
+        direction: ltr;
 
         button {
           width: 32px;
@@ -100,10 +105,19 @@
       margin-top: 16px;
       border-top: 1px solid #e2e8f0;
       padding-top: 16px;
+      direction: inherit;
 
       ::ng-deep {
         .mat-mdc-paginator {
-          direction: rtl;
+          direction: inherit;
+        }
+
+        .mat-mdc-paginator-range-label {
+          margin-inline-start: 8px;
+        }
+
+        .mat-mdc-paginator-page-size-label {
+          margin-inline-end: 8px;
         }
       }
     }
@@ -160,4 +174,27 @@
     background: #ef4444 !important;
     color: white !important;
   }
+
+  .sales-history-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }
