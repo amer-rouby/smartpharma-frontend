@@ -1,8 +1,8 @@
-import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -19,7 +19,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
   templateUrl: './purchase-orders.component.html',
   styleUrl: './purchase-orders.component.scss'
 })
-export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
+export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly purchaseService = inject(PurchaseOrderService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -29,6 +29,9 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
 
   readonly loading = signal(false);
   readonly stats = signal<any>(null);
+  readonly totalElements = signal(0);
+  readonly pageSize = signal(10);
+  readonly pageIndex = signal(0);
 
   displayedColumns: string[] = ['orderNumber', 'supplier', 'orderDate', 'totalAmount', 'status', 'priority', 'actions'];
   dataSource = new MatTableDataSource<PurchaseOrder>([]);
@@ -36,19 +39,32 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit(): void {
-    this.loadOrders();
     this.loadStats();
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+    setTimeout(() => {
+      this.loadOrders(0, 10);
+    }, 0);
   }
 
-  loadOrders(): void {
+  ngOnDestroy(): void {
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.loadOrders(event.pageIndex, event.pageSize);
+  }
+
+  loadOrders(pageIndex: number = 0, pageSize: number = 10): void {
     this.loading.set(true);
-    this.purchaseService.getOrders(0, 10).subscribe({
-      next: (data) => {
-        this.dataSource.data = data.content || [];
+    this.purchaseService.getOrders(pageIndex, pageSize).subscribe({
+      next: (response: any) => {
+        const content = response?.data?.content || response?.content || [];
+        const total = response?.data?.totalElements || response?.totalElements || content.length;
+        this.dataSource.data = content;
+        this.totalElements.set(total);
         this.loading.set(false);
       },
       error: (err) => {
@@ -99,7 +115,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
         this.purchaseService.deleteOrder(order.id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('PURCHASES.DELETED');
-            this.loadOrders();
+            this.loadOrders(this.pageIndex(), this.pageSize());
             this.loadStats();
           },
           error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.DELETE_ERROR')
@@ -125,7 +141,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
         this.purchaseService.approveOrder(order.id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('PURCHASES.APPROVED');
-            this.loadOrders();
+            this.loadOrders(this.pageIndex(), this.pageSize());
             this.loadStats();
           },
           error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.APPROVE_ERROR')
@@ -151,7 +167,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit {
         this.purchaseService.receiveOrder(order.id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('PURCHASES.RECEIVED');
-            this.loadOrders();
+            this.loadOrders(this.pageIndex(), this.pageSize());
             this.loadStats();
           },
           error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.RECEIVE_ERROR')

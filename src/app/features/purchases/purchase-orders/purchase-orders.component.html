@@ -63,7 +63,7 @@
         <mat-icon>shopping_cart</mat-icon>
         {{'PURCHASES.ORDERS_LIST' | translate}}
       </mat-card-title>
-      <mat-card-subtitle>{{dataSource.data.length}} {{'PURCHASES.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{totalElements()}} {{'PURCHASES.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
@@ -156,8 +156,11 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="order-row"></tr>
         </table>
 
-        <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons aria-label="Select page">
-        </mat-paginator>
+        <div class="pagination-container">
+          <mat-paginator [length]="totalElements()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
+            [pageSizeOptions]="[5, 10, 20, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+          </mat-paginator>
+        </div>
       </div>
     </mat-card-content>
   </mat-card>

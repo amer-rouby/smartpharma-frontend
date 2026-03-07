@@ -40,13 +40,18 @@ export class StockAdjustmentHistoryComponent implements OnInit {
     const pharmacyId = this.data.batch.pharmacyId || this.authService.getPharmacyId();
 
     this.stockService.getAdjustmentHistory(this.data.batch.id, pharmacyId).subscribe({
-      next: (data) => {
-        this.history.set(data);
+      next: (response: any) => {
+        if (response && response.data) {
+          this.history.set(response.data);
+        } else {
+          this.history.set([]);
+        }
         this.loading.set(false);
       },
       error: (err) => {
         console.error('Failed to load adjustment history:', err);
         this.loading.set(false);
+        this.history.set([]);
       }
     });
   }
