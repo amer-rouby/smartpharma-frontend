@@ -33,6 +33,11 @@ export const routes: Routes = [
             .then(m => m.PRODUCTS_ROUTES)
       },
       {
+        path: 'payments',
+        loadChildren: () => import('./features/payment/payment.routes').then(m => m.PAYMENT_ROUTES),
+        canActivate: [authGuard]
+      },
+      {
         path: 'stock',
         loadChildren: () =>
           import('./features/stock/stock.routes')

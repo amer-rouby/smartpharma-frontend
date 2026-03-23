@@ -92,6 +92,16 @@ export class SidebarComponent {
     },
     {
       icon: 'payments',
+      label: 'NAV.PAYMENTS',
+      children: [
+        { icon: 'add_card', label: 'NAV.PAYMENT_FORM', route: '/payments/form' },
+        { icon: 'history', label: 'NAV.PAYMENT_HISTORY', route: '/payments/history' },
+        { icon: 'query_stats', label: 'NAV.PAYMENT_STATS', route: '/payments/stats' }
+      ],
+      roles: ['ADMIN', 'MANAGER']
+    },
+    {
+      icon: 'payments',
       label: 'NAV.EXPENSES',
       route: '/expenses',
       roles: ['ADMIN', 'MANAGER']
@@ -107,7 +117,7 @@ export class SidebarComponent {
       label: 'NAV.SETTINGS',
       route: '/settings',
       roles: ['ADMIN', 'MANAGER']
-    }
+    },
   ];
 
   readonly expandedPanels = signal<Set<number>>(new Set());

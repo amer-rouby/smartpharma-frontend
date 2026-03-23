@@ -8,8 +8,11 @@ import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
 import { SalesService } from '../../../core/services/sales.service';
+import { PaymentService } from '../../../core/services/payment.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../core/models/product.model';
+import { PaymentMethod, PaymentRequest, PaymentResponse } from '../../../core/models/payment.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 
@@ -43,10 +46,12 @@ interface SaleRequest {
 export class SalesFormComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly salesService = inject(SalesService);
+  private readonly paymentService = inject(PaymentService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
@@ -54,7 +59,7 @@ export class SalesFormComponent implements OnInit {
   readonly productControl = new FormControl();
   readonly products = signal<Product[]>([]);
   readonly customerPhone = signal('');
-  readonly paymentMethod = signal('CASH');
+  readonly paymentMethod = signal<PaymentMethod>(PaymentMethod.CASH);
   readonly discount = signal(0);
   readonly loading = signal(false);
 
@@ -84,6 +89,16 @@ export class SalesFormComponent implements OnInit {
   readonly isSubmitDisabled = computed(() =>
     this.loading() || this.isCartEmpty() || this.totalAmount() <= 0
   );
+
+  readonly PaymentMethod = PaymentMethod;
+  readonly paymentMethods = [
+    { value: PaymentMethod.CASH, label: 'PAYMENTS.CASH', icon: 'payments' },
+    { value: PaymentMethod.VISA, label: 'PAYMENTS.VISA', icon: 'credit_card' },
+    { value: PaymentMethod.INSTAPAY, label: 'PAYMENTS.INSTAPAY', icon: 'account_balance' },
+    { value: PaymentMethod.FAWRY, label: 'PAYMENTS.FAWRY', icon: 'store' },
+    { value: PaymentMethod.WALLET, label: 'PAYMENTS.WALLET', icon: 'account_balance_wallet' },
+    { value: PaymentMethod.BANK_TRANSFER, label: 'PAYMENTS.BANK_TRANSFER', icon: 'transfer_within_a_station' }
+  ];
 
   ngOnInit(): void {
     this.loadProducts();
@@ -197,18 +212,75 @@ export class SalesFormComponent implements OnInit {
     this.productControl.setValue('');
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (!this.validateSale()) return;
 
     this.loading.set(true);
     const saleRequest = this.mapCartToSaleRequest();
-    this.salesService.createSale(saleRequest).subscribe({
-      next: (response) => this.handleSaleSuccess(response),
-      error: (error) => this.errorHandler.handleHttpError(error, 'SALES.CREATE_ERROR')
+
+    try {
+      if (this.paymentMethod() !== PaymentMethod.CASH) {
+        const paymentResponse = await this.processPayment(saleRequest.totalAmount);
+
+        if (paymentResponse.status === 'FAILED') {
+          this.errorHandler.showError('PAYMENT.FAILED');
+          this.loading.set(false);
+          return;
+        }
+
+        if (paymentResponse.status === 'PENDING') {
+          await this.handlePendingPayment(paymentResponse);
+        }
+      }
+
+      const saleResponse = await this.createSale(saleRequest);
+      this.handleSaleSuccess(saleResponse);
+    } catch (error: any) {
+      console.error('Sale submission error:', error);
+      this.errorHandler.showError(error.message || 'SALES.CREATE_ERROR');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  private async handlePendingPayment(paymentResponse: PaymentResponse): Promise<void> {
+    await Swal.fire({
+      icon: 'info',
+      title: this.translate.instant('PAYMENTS.PENDING_TITLE'),
+      text: paymentResponse.message || this.translate.instant('PAYMENTS.PENDING_MESSAGE'),
+      confirmButtonText: this.translate.instant('COMMON.OK'),
+      confirmButtonColor: '#f59e0b'
     });
   }
 
-  /** 1. Validation Logic **/
+  private async processPayment(amount: number): Promise<PaymentResponse> {
+    const request: PaymentRequest = {
+      pharmacyId: this.authService.getPharmacyId() || 1,
+      amount,
+      paymentMethod: this.paymentMethod(),
+      customerName: '',
+      customerPhone: this.customerPhone(),
+      customerEmail: '',
+      description: `Sale - ${new Date().toLocaleDateString('ar-EG')}`
+    };
+
+    return new Promise((resolve, reject) => {
+      this.paymentService.processPayment(request).subscribe({
+        next: (response) => resolve(response),
+        error: (error) => reject(error)
+      });
+    });
+  }
+
+  private async createSale(saleRequest: SaleRequest): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.salesService.createSale(saleRequest).subscribe({
+        next: (response) => resolve(response),
+        error: (error) => reject(error)
+      });
+    });
+  }
+
   private validateSale(): boolean {
     if (this.isCartEmpty()) {
       this.errorHandler.showWarning('SALES.EMPTY_CART');
@@ -221,7 +293,6 @@ export class SalesFormComponent implements OnInit {
     return true;
   }
 
-  /** 2. Data Mapping Logic **/
   private mapCartToSaleRequest(): SaleRequest {
     return {
       items: this.cartItems().map(item => ({
@@ -237,12 +308,9 @@ export class SalesFormComponent implements OnInit {
     };
   }
 
-  /** 3. Success Handling & UI **/
   private handleSaleSuccess(response: any): void {
-    this.loading.set(false);
-
-    const invoiceNumber = response.invoiceNumber || response.data?.invoiceNumber || 'N/A';
-    const totalAmount = response.totalAmount || this.totalAmount();
+    const invoiceNumber = response?.invoiceNumber || response?.data?.invoiceNumber || `INV-${Date.now()}`;
+    const totalAmount = response?.totalAmount || this.totalAmount();
 
     Swal.fire({
       icon: 'success',
@@ -254,13 +322,16 @@ export class SalesFormComponent implements OnInit {
       timer: 10000,
       timerProgressBar: true,
       didOpen: () => this.setupCopyFunction(),
-      willClose: () => { delete (window as any).copyInvoiceNumber; }
-    }).then((result) => {
+      willClose: () => {
+        if ((window as any).copyInvoiceNumber) {
+          delete (window as any).copyInvoiceNumber;
+        }
+      }
+    }).then(() => {
       this.finalizeSale();
     });
   }
 
-  /** 4. Helper for HTML Template **/
   private getSuccessAlertHtml(invoiceNumber: string, totalAmount: number): string {
     return `
     <div style="text-align: center; padding: 10px;">
@@ -285,6 +356,9 @@ export class SalesFormComponent implements OnInit {
         </p>
         <strong style="color: #10b981; font-size: 22px;">${this.formatCurrency(totalAmount)}</strong>
       </div>
+      <div style="margin-top: 10px; font-size: 13px; color: #667eea;">
+        <strong>${this.getPaymentMethodLabel(this.paymentMethod())}</strong>
+      </div>
     </div>`;
   }
 
@@ -304,11 +378,6 @@ export class SalesFormComponent implements OnInit {
         }
       });
     };
-  }
-
-  private handleSaleError(error: any): void {
-    this.loading.set(false);
-    this.errorHandler.handleHttpError(error, 'SALES.CREATE_ERROR');
   }
 
   private finalizeSale(): void {
@@ -347,7 +416,7 @@ export class SalesFormComponent implements OnInit {
   }
 
   getPaymentMethodLabel(method: string): string {
-    return this.translate.instant(`COMMON.PAYMENT_METHODS.${method}`);
+    return this.translate.instant(`PAYMENTS.${method}`);
   }
 
   getStockLabel(stock: number): string {
