@@ -14,50 +14,8 @@ export interface UpdatePredictionDTO {
   selector: 'app-edit-prediction-dialog',
   standalone: true,
   imports: [MaterialModule, FormsModule],
-  template: `
-    <div class="edit-dialog">
-      <h2 mat-dialog-title>{{ 'PREDICTIONS.EDIT_PREDICTION' | translate }}</h2>
-
-      <mat-dialog-content>
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'PREDICTIONS.COLUMN.PREDICTED' | translate }}</mat-label>
-            <input matInput type="number" [(ngModel)]="data.prediction.predictedQuantity">
-          </mat-form-field>
-        </div>
-
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'PREDICTIONS.COLUMN.CONFIDENCE' | translate }}</mat-label>
-            <input matInput type="number" min="0" max="1" step="0.01"
-                   [(ngModel)]="data.prediction.confidenceLevel">
-            <mat-hint>{{ 'PREDICTIONS.CONFIDENCE_HINT' | translate }}</mat-hint>
-          </mat-form-field>
-        </div>
-
-        <div class="form-group">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'PREDICTIONS.RECOMMENDATION' | translate }}</mat-label>
-            <textarea matInput rows="3" [(ngModel)]="data.prediction.recommendation"></textarea>
-          </mat-form-field>
-        </div>
-      </mat-dialog-content>
-
-      <mat-dialog-actions align="end">
-        <button mat-button (click)="onCancel()">
-          {{ 'COMMON.CANCEL' | translate }}
-        </button>
-        <button mat-raised-button color="primary" (click)="onSave()">
-          {{ 'COMMON.SAVE' | translate }}
-        </button>
-      </mat-dialog-actions>
-    </div>
-  `,
-  styles: [`
-    .edit-dialog { padding: 20px; }
-    .form-group { margin-bottom: 16px; }
-    .full-width { width: 100%; }
-  `]
+  templateUrl: "./edit-prediction-dialog.component.html",
+  styleUrl: "./edit-prediction-dialog.component.scss"
 })
 export class EditPredictionDialogComponent {
   readonly dialogRef = inject(MatDialogRef<EditPredictionDialogComponent>);

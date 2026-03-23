@@ -1,6 +1,6 @@
 .stock-movements-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 .stats-grid {
@@ -83,7 +83,6 @@
   }
 }
 
-
 .filters-card {
   margin-bottom: 24px;
   border-radius: 16px;
@@ -138,6 +137,7 @@
 
 .movements-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -145,6 +145,7 @@
     color: var(--mat-sys-on-surface-variant);
     padding: 16px 24px;
     background: var(--mat-sys-surface-variant);
+    text-align: start;
   }
 
   td.mat-cell {
@@ -152,6 +153,7 @@
     font-size: 14px;
     color: var(--mat-sys-on-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: start;
   }
 
   .type-chip {
@@ -164,7 +166,7 @@
       font-size: 18px;
       width: 18px;
       height: 18px;
-      margin-left: 4px;
+      margin-inline-end: 4px;
     }
   }
 

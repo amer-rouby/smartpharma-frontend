@@ -1,11 +1,12 @@
 .help-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 .search-card {
   margin-bottom: 24px;
   border-radius: 16px;
+  direction: inherit;
 
   .search-field {
     width: 100%;
@@ -19,6 +20,7 @@
 .help-tabs {
   border-radius: 16px;
   overflow: hidden;
+  direction: inherit;
 
   .tab-content {
     padding: 24px;
@@ -30,6 +32,7 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+  direction: inherit;
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -51,8 +54,7 @@
       }
 
       .expand-icon {
-        margin-right: auto;
-        margin-left: 0;
+        margin-inline-start: auto;
       }
     }
   }
@@ -72,6 +74,7 @@
 .guide-section {
   margin-bottom: 24px;
   border-radius: 12px;
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -118,7 +121,7 @@
       background: rgba(102, 126, 234, 0.05);
       padding: 16px 24px;
       border-radius: 8px;
-      border-right: 4px solid var(--mat-sys-primary);
+      border-inline-start: 4px solid var(--mat-sys-primary);
 
       h5 {
         margin: 0 0 12px;
@@ -129,7 +132,7 @@
 
       ol {
         margin: 0;
-        padding-right: 20px;
+        padding-inline-start: 20px;
 
         li {
           margin-bottom: 8px;
@@ -147,6 +150,7 @@
 
 .shortcuts-card {
   border-radius: 12px;
+  direction: inherit;
 
   .shortcuts-grid {
     display: grid;
@@ -172,6 +176,8 @@
       font-weight: 600;
       color: var(--mat-sys-primary);
       white-space: nowrap;
+      direction: ltr;
+      text-align: left;
     }
 
     span {
@@ -185,6 +191,7 @@
   max-width: 800px;
   margin: 0 auto;
   border-radius: 12px;
+  direction: inherit;
 
   mat-card-header {
     padding: 24px;
@@ -292,4 +299,34 @@
   .shortcuts-grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+::ng-deep {
+  .help-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

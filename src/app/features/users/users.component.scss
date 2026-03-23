@@ -1,10 +1,11 @@
 .users-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 .filters-card {
   margin-bottom: 24px;
+  direction: inherit;
 
   .filters-grid {
     display: flex;
@@ -36,6 +37,7 @@
 
 .table-card {
   border-radius: 16px;
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -53,6 +55,7 @@
 
 .data-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -60,6 +63,7 @@
     color: var(--mat-sys-on-surface-variant);
     padding: 16px 24px;
     background: var(--mat-sys-surface-variant);
+    text-align: start;
   }
 
   td.mat-cell {
@@ -67,6 +71,7 @@
     font-size: 14px;
     color: var(--mat-sys-on-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: start;
   }
 
   .text-muted {
@@ -112,12 +117,14 @@
 
   mat-slide-toggle {
     ::ng-deep .mat-mdc-slide-toggle-label {
-      margin-right: 8px;
+      margin-inline-start: 8px;
       font-size: 13px;
     }
   }
+
   button[mat-icon-button] {
-    margin: 0 4px;
+    margin-inline-start: 4px;
+    margin-inline-end: 4px;
   }
 }
 
@@ -186,4 +193,34 @@
       align-items: flex-start;
     }
   }
+}
+
+::ng-deep {
+  .users-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

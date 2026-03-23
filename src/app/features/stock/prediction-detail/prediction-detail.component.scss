@@ -1,6 +1,6 @@
 .prediction-detail-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -138,6 +138,7 @@ mat-card {
 
 .sales-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -145,6 +146,7 @@ mat-card {
     color: var(--mat-sys-on-surface-variant);
     padding: 16px 24px;
     background: var(--mat-sys-surface-variant);
+    text-align: start;
   }
 
   td.mat-cell {
@@ -152,6 +154,7 @@ mat-card {
     font-size: 14px;
     color: var(--mat-sys-on-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: start;
   }
 }
 
@@ -197,7 +200,7 @@ mat-card {
 
   ul {
     margin: 0;
-    padding-right: 24px;
+    padding-inline-start: 24px;
 
     li {
       margin-bottom: 8px;

@@ -1,11 +1,12 @@
 .settings-page {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 mat-card {
   margin-top: 24px;
   border-radius: 16px;
+  direction: inherit;
 }
 
 .loading-state {
@@ -43,8 +44,8 @@ mat-card {
   font-weight: 600;
   color: var(--mat-sys-on-surface);
   margin: 0 0 16px;
-  padding-right: 8px;
-  border-right: 4px solid #667eea;
+  padding-inline-start: 8px;
+  border-inline-start: 4px solid #667eea;
 }
 
 .form-grid {
@@ -91,4 +92,34 @@ mat-card {
       width: 100%;
     }
   }
+}
+
+::ng-deep {
+  .settings-page {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

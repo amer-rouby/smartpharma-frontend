@@ -1,6 +1,6 @@
 .backup-settings-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 .create-backup-card,
@@ -8,6 +8,7 @@
   margin-bottom: 24px;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  direction: inherit;
 
   mat-card-header {
     padding: 20px 24px;
@@ -78,6 +79,7 @@
 
 .backups-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -85,6 +87,7 @@
     color: var(--mat-sys-on-surface-variant);
     padding: 16px 24px;
     background: var(--mat-sys-surface-variant);
+    text-align: start;
   }
 
   td.mat-cell {
@@ -92,6 +95,7 @@
     font-size: 14px;
     color: var(--mat-sys-on-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: start;
   }
 
   .backup-name {
@@ -111,6 +115,12 @@
     font-weight: 500;
     height: 28px;
     font-size: 12px;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+    direction: ltr;
   }
 }
 
@@ -139,4 +149,34 @@
       padding: 12px 16px;
     }
   }
+}
+
+::ng-deep {
+  .backup-settings-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

@@ -1,6 +1,6 @@
 .sales-form-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 
   .sales-content {
     display: grid;
@@ -48,6 +48,7 @@
 
         .data-table {
           width: 100%;
+          direction: inherit;
 
           th {
             background: #f7fafc;
@@ -56,12 +57,14 @@
             padding: 12px 16px;
             font-size: 13px;
             white-space: nowrap;
+            text-align: start;
           }
 
           td {
             padding: 12px 16px;
             font-size: 13px;
             vertical-align: middle;
+            text-align: start;
           }
 
           .cart-product-info {
@@ -86,6 +89,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            direction: ltr;
 
             .quantity-input {
               width: 50px;
@@ -162,6 +166,7 @@
     height: fit-content;
     position: sticky;
     top: 100px;
+    direction: inherit;
 
     mat-card-header {
       padding: 20px 24px;
@@ -256,6 +261,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 4px 0;
+  direction: inherit;
 
   .product-name {
     font-weight: 600;
@@ -327,4 +333,27 @@
     background: #10b981 !important;
     color: white !important;
   }
+
+  .sales-form-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

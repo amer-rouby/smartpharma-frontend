@@ -1,6 +1,6 @@
 .purchase-form-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -18,10 +18,12 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  direction: inherit;
 }
 
 .form-section {
   border-radius: 12px;
+  direction: inherit;
 
   mat-card-header {
     padding: 16px 24px;
@@ -61,6 +63,7 @@
   border-radius: 8px;
   margin-bottom: 12px;
   background: var(--mat-sys-surface-variant);
+  direction: inherit;
 
   .product-field {
     grid-column: 1 / -2;
@@ -97,6 +100,7 @@
   padding: 16px 24px;
   border-top: 2px solid var(--mat-sys-outline-variant);
   margin-top: 16px;
+  direction: inherit;
 
   .amount {
     font-size: 24px;
@@ -132,4 +136,34 @@
       width: 100%;
     }
   }
+}
+
+::ng-deep {
+  .purchase-form-container {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
 }

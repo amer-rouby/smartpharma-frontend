@@ -1,6 +1,5 @@
 <mat-toolbar color="primary" class="header-toolbar">
 
-  <!-- Right Side -->
   <div class="header-right">
     <button mat-icon-button (click)="toggleSidebar.emit()" class="toggle-sidebar-btn"
       [matTooltip]="'HEADER.MENU' | translate">
@@ -18,7 +17,6 @@
     </div>
   </div>
 
-  <!-- Center: Search -->
   <div class="header-center">
     <div class="search-wrapper">
       <mat-form-field appearance="outline" class="search-field">
@@ -37,10 +35,8 @@
     </div>
   </div>
 
-  <!-- Left Side: Actions -->
   <div class="header-left">
 
-    <!-- Quick Add -->
     <button mat-stroked-button class="quick-add-btn" [matMenuTriggerFor]="quickActionsMenu"
       [matTooltip]="'HEADER.NEW' | translate">
       <mat-icon>add</mat-icon>
@@ -61,14 +57,11 @@
       </button>
     </mat-menu>
 
-    <!-- ✅ Notifications - Separated Component -->
-
     <app-notification-panel [notifications]="notifications()" [unreadCount]="unreadCount()"
       (onRefreshRequired)="loadNotifications()" (markAllRead)="onMarkAllAsRead()"
       (notificationClick)="onNotificationClick($event)" (viewAll)="onViewAllNotifications()">
     </app-notification-panel>
 
-    <!-- User Profile -->
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile-btn"
       [matTooltip]="'HEADER.PROFILE' | translate">
       <div class="user-info-mini">
@@ -123,11 +116,10 @@
       </button>
     </mat-menu>
 
-    <!-- Language Submenu -->
     <mat-menu #languageMenu="matMenu" xPosition="before">
       <button mat-menu-item (click)="changeLanguage('ar')" [class.active]="currentLang() === 'ar'">
         <mat-icon>translate</mat-icon>
-        <span>العربية</span>
+        <span>{{'LANGUAGE.ARABIC' | translate}}</span>
         @if (currentLang() === 'ar') {
         <mat-icon color="accent">check</mat-icon>
         }
@@ -135,7 +127,7 @@
 
       <button mat-menu-item (click)="changeLanguage('en')" [class.active]="currentLang() === 'en'">
         <mat-icon>translate</mat-icon>
-        <span>English</span>
+        <span>{{'LANGUAGE.ENGLISH' | translate}}</span>
         @if (currentLang() === 'en') {
         <mat-icon color="accent">check</mat-icon>
         }

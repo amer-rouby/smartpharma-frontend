@@ -8,7 +8,9 @@
       <a mat-list-item [routerLink]="item.route" class="settings-item">
         <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
         <span matListItemTitle>{{getLabel(item.labelKey)}}</span>
-        <mat-icon matListItemMeta>chevron_left</mat-icon>
+        <mat-icon matListItemMeta>
+          {{getCurrentLang() === 'ar' ? 'chevron_left' : 'chevron_right'}}
+        </mat-icon>
       </a>
       }
     </mat-nav-list>

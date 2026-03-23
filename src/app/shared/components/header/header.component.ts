@@ -1,18 +1,16 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, output } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { timer, switchMap, catchError, of } from 'rxjs';
-
+import { timer, switchMap, catchError, of, Subscription } from 'rxjs';
 import { MaterialModule } from '../../material.module';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
-
-import { output } from '@angular/core';
+import { LanguageService } from '../../../core/services/language.service';
+import { AudioService } from '../../../core/services/audio.service';
 import { NotificationModel } from '../../../core/models/Notification.model';
 import { NotificationPanelComponent } from '../../../features/notification-bell/notification-panel/notification-panel.component';
-import { AudioService } from '../../../core/services/audio.service';
 
 @Component({
   selector: 'app-header',
@@ -27,20 +25,24 @@ import { AudioService } from '../../../core/services/audio.service';
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
-   readonly notificationService = inject(NotificationService);
-  private audioService = inject(AudioService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly audioService = inject(AudioService);
   private readonly translate = inject(TranslateService);
+  private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
 
   readonly toggleSidebar = output<void>();
   readonly searchQuery = signal<string>('');
-  readonly currentLang = signal<string>(localStorage.getItem('language') || 'ar');
+  readonly currentLang = signal<string>(this.languageService.getCurrentLanguage());
   readonly notifications = signal<NotificationModel[]>([]);
   readonly totalCount = signal(0);
   readonly unreadCount = signal(0);
   readonly currentUser = toSignal(this.authService.currentUser$);
+
+  private langSubscription?: Subscription;
+  private lastUnreadCount = 0;
 
   readonly userDisplayName = computed(() => this.currentUser()?.fullName ?? 'مستخدم');
   readonly userDisplayRole = computed(() => this.currentUser()?.role ?? 'دور');
@@ -55,6 +57,10 @@ export class HeaderComponent implements OnInit {
     this.initLanguage();
     this.loadNotifications();
     this.setupNotificationPolling();
+
+    this.langSubscription = this.languageService.currentLang$.subscribe(lang => {
+      this.currentLang.set(lang);
+    });
   }
 
   loadNotifications(): void {
@@ -73,11 +79,9 @@ export class HeaderComponent implements OnInit {
   }
 
   private initLanguage(): void {
-    const lang = this.currentLang() as 'ar' | 'en';
-    this.changeLanguage(lang);
+    const lang = this.languageService.getCurrentLanguage() as 'ar' | 'en';
+    this.currentLang.set(lang);
   }
-
-  private lastUnreadCount = 0;
 
   private setupNotificationPolling(): void {
     timer(0, 30000).pipe(
@@ -127,11 +131,8 @@ export class HeaderComponent implements OnInit {
   }
 
   changeLanguage(lang: 'ar' | 'en'): void {
+    this.languageService.setLanguage(lang);
     this.currentLang.set(lang);
-    this.translate.use(lang);
-    localStorage.setItem('language', lang);
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
   }
 
   logout(): void {
@@ -139,4 +140,7 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/auth/login']);
   }
 
+  ngOnDestroy(): void {
+    this.langSubscription?.unsubscribe();
+  }
 }

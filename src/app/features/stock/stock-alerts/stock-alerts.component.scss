@@ -1,6 +1,6 @@
 .stock-alerts-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 .stats-grid {
@@ -149,6 +149,7 @@
 
 .alerts-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -156,6 +157,7 @@
     color: var(--mat-sys-on-surface-variant);
     padding: 16px 24px;
     background: var(--mat-sys-surface-variant);
+    text-align: start;
   }
 
   td.mat-cell {
@@ -163,6 +165,7 @@
     font-size: 14px;
     color: var(--mat-sys-on-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: start;
   }
 
   .type-chip,
@@ -177,7 +180,7 @@
       font-size: 18px;
       width: 18px;
       height: 18px;
-      margin-left: 4px;
+      margin-inline-end: 4px;
     }
   }
 
@@ -213,7 +216,8 @@
   }
 
   button[mat-icon-button] {
-    margin: 0 4px;
+    margin-inline-start: 4px;
+    margin-inline-end: 4px;
   }
 }
 
@@ -226,7 +230,7 @@
 
   &.unread {
     background: rgba(59, 130, 246, 0.05);
-    border-right: 4px solid #3b82f6;
+    border-inline-start: 4px solid #3b82f6;
   }
 
   &.resolved {

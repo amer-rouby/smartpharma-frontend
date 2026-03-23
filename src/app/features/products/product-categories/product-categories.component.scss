@@ -1,6 +1,6 @@
 .categories-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 .filters-card {
@@ -53,6 +53,7 @@
 
 .data-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -60,6 +61,7 @@
     color: var(--mat-sys-on-surface-variant);
     padding: 16px 24px;
     background: var(--mat-sys-surface-variant);
+    text-align: start;
   }
 
   td.mat-cell {
@@ -67,6 +69,7 @@
     font-size: 14px;
     color: var(--mat-sys-on-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: start;
   }
 
   mat-icon {
@@ -82,13 +85,14 @@
 
   mat-slide-toggle {
     ::ng-deep .mat-mdc-slide-toggle-label {
-      margin-right: 8px;
+      margin-inline-start: 8px;
       font-size: 13px;
     }
   }
 
   button[mat-icon-button] {
-    margin: 0 4px;
+    margin-inline-start: 4px;
+    margin-inline-end: 4px;
   }
 }
 

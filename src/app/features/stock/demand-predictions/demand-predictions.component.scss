@@ -1,6 +1,6 @@
 .predictions-container {
   padding: 24px;
-  direction: rtl;
+  direction: inherit;
 }
 
 .stats-grid {
@@ -122,6 +122,7 @@
 
 .predictions-table {
   width: 100%;
+  direction: inherit;
 
   th.mat-header-cell {
     font-weight: 600;
@@ -129,6 +130,7 @@
     color: var(--mat-sys-on-surface-variant);
     padding: 16px 24px;
     background: var(--mat-sys-surface-variant);
+    text-align: start;
   }
 
   td.mat-cell {
@@ -136,6 +138,7 @@
     font-size: 14px;
     color: var(--mat-sys-on-surface);
     border-bottom: 1px solid var(--mat-sys-outline-variant);
+    text-align: start;
   }
 
   .product-info {
@@ -218,17 +221,23 @@
     }
   }
 
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+    direction: ltr;
+  }
+
   button[mat-icon-button] {
-    margin: 0 4px;
+    margin-inline-start: 4px;
+    margin-inline-end: 4px;
   }
 }
 
-// ✅ Paginator Styling
 .predictions-paginator {
   border-top: 1px solid var(--mat-sys-outline-variant);
   padding: 16px 24px;
   background: var(--mat-sys-surface);
-  direction: ltr; // Paginator works better in LTR
+  direction: ltr;
 
   ::ng-deep {
     .mat-paginator-range-label {
@@ -238,7 +247,7 @@
 
     .mat-paginator-page-size-label {
       color: var(--mat-sys-on-surface-variant);
-      margin-right: 8px;
+      margin-inline-end: 8px;
     }
 
     .mat-paginator-page-size-select {

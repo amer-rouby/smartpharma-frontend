@@ -1,4 +1,4 @@
-<div class="sales-analytics" dir="rtl">
+<div class="sales-analytics" [attr.dir]="currentLang() === 'ar' ? 'rtl' : 'ltr'">
 
   <!-- 📰 Header -->
   <header class="page-header">
@@ -104,36 +104,36 @@
     <!-- 📊 Charts Section -->
     <div class="charts-grid">
 
-<!-- Sales Trend Chart -->
-<!-- Sales Trend Chart -->
-<mat-card class="chart-card">
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon>trending_up</mat-icon>
-      {{ 'REPORTS.SALES_TREND' | translate }}
-    </mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    @if (trendData() && trendData().length > 0) {
-    <div class="bar-chart">
-      @for (item of trendData(); track item.date) {
-      <div class="bar-item">
-        <div class="bar" [style.height.%]="calculateBarHeight(item.revenue)">
-          <span class="bar-label">{{ formatCurrency(item.revenue) }}</span>
-        </div>
-        <span class="bar-period">{{ item.label ?? item.date }}</span>
-      </div>
-      }
-    </div>
-    } @else {
-    <div class="empty-chart-state">
-      <mat-icon>show_chart</mat-icon>
-      <p>{{ 'REPORTS.NO_TREND_DATA' | translate }}</p>
-      <small>لا توجد بيانات للمبيعات في الفترة المحددة</small>
-    </div>
-    }
-  </mat-card-content>
-</mat-card>
+      <!-- Sales Trend Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>trending_up</mat-icon>
+            {{ 'REPORTS.SALES_TREND' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (trendData() && trendData().length > 0) {
+          <div class="bar-chart">
+            @for (item of trendData(); track item.date) {
+            <div class="bar-item">
+              <div class="bar" [style.height.%]="calculateBarHeight(item.revenue)">
+                <span class="bar-label">{{ formatCurrency(item.revenue) }}</span>
+              </div>
+              <span class="bar-period">{{ item.label ?? item.date }}</span>
+            </div>
+            }
+          </div>
+          } @else {
+          <div class="empty-chart-state">
+            <mat-icon>show_chart</mat-icon>
+            <p>{{ 'REPORTS.NO_TREND_DATA' | translate }}</p>
+            <small>{{ 'REPORTS.NO_TREND_DATA_DESC' | translate }}</small>
+          </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
       <!-- Payment Methods -->
       <mat-card class="chart-card">
         <mat-card-header>

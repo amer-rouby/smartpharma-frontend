@@ -1,6 +1,8 @@
+// src/app/shared/components/language-switcher/language-switcher.component.ts
 import { Component, inject, signal } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../material.module';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-language-switcher',
@@ -21,7 +23,7 @@ import { MaterialModule } from '../../material.module';
               (click)="changeLanguage('ar')"
               [class.active]="currentLang() === 'ar'">
         <mat-icon>translate</mat-icon>
-        <span>العربية</span>
+        <span>{{'LANGUAGE.ARABIC' | translate}}</span>
         @if (currentLang() === 'ar') {
           <mat-icon color="accent">check</mat-icon>
         }
@@ -31,7 +33,7 @@ import { MaterialModule } from '../../material.module';
               (click)="changeLanguage('en')"
               [class.active]="currentLang() === 'en'">
         <mat-icon>translate</mat-icon>
-        <span>English</span>
+        <span>{{'LANGUAGE.ENGLISH' | translate}}</span>
         @if (currentLang() === 'en') {
           <mat-icon color="accent">check</mat-icon>
         }
@@ -62,12 +64,13 @@ import { MaterialModule } from '../../material.module';
     }
 
     button.active mat-icon:last-child {
-      margin-right: auto;
+      margin-inline-start: auto;
     }
   `]
 })
 export class LanguageSwitcherComponent {
   private readonly translate = inject(TranslateService);
+  private readonly languageService = inject(LanguageService);
 
   readonly currentLang = signal<string>('ar');
 
@@ -79,10 +82,8 @@ export class LanguageSwitcherComponent {
   }
 
   changeLanguage(lang: 'ar' | 'en'): void {
+    // ✅ استخدام LanguageService لتغيير اللغة والاتجاه
+    this.languageService.setLanguage(lang);
     this.currentLang.set(lang);
-    this.translate.use(lang);
-    localStorage.setItem('language', lang);
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
   }
 }
