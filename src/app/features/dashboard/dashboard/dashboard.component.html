@@ -201,7 +201,7 @@
             </ng-container>
 
             <ng-container matColumnDef="paymentMethod">
-              <th mat-header-cell *matHeaderCellDef>{{'SALES.PAYMENT_METHODS' | translate}}</th>
+              <th mat-header-cell *matHeaderCellDef>{{'SALES.PAYMENT_METHOD' | translate}}</th>
               <td mat-cell *matCellDef="let element">
                 <mat-chip class="payment-chip" [color]="getPaymentChipColor(element.paymentMethod)">
                   {{getPaymentMethodArabic(element.paymentMethod)}}

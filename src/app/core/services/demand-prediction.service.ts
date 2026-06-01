@@ -50,7 +50,7 @@ export interface UpdatePredictionDTO {
 export class DemandPredictionService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/predictions';
+  private readonly apiUrl = 'http://localhost:8081/api/predictions';
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

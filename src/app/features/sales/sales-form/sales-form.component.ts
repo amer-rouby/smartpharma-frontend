@@ -92,12 +92,12 @@ export class SalesFormComponent implements OnInit {
 
   readonly PaymentMethod = PaymentMethod;
   readonly paymentMethods = [
-    { value: PaymentMethod.CASH, label: 'PAYMENTS.CASH', icon: 'payments' },
-    { value: PaymentMethod.VISA, label: 'PAYMENTS.VISA', icon: 'credit_card' },
-    { value: PaymentMethod.INSTAPAY, label: 'PAYMENTS.INSTAPAY', icon: 'account_balance' },
-    { value: PaymentMethod.FAWRY, label: 'PAYMENTS.FAWRY', icon: 'store' },
-    { value: PaymentMethod.WALLET, label: 'PAYMENTS.WALLET', icon: 'account_balance_wallet' },
-    { value: PaymentMethod.BANK_TRANSFER, label: 'PAYMENTS.BANK_TRANSFER', icon: 'transfer_within_a_station' }
+    { value: PaymentMethod.CASH, label: 'SALES.CASH', icon: 'payments' },
+    { value: PaymentMethod.VISA, label: 'SALES.VISA', icon: 'credit_card' },
+    { value: PaymentMethod.INSTAPAY, label: 'SALES.INSTAPAY', icon: 'account_balance' },
+    { value: PaymentMethod.FAWRY, label: 'SALES.FAWRY', icon: 'store' },
+    { value: PaymentMethod.WALLET, label: 'SALES.WALLET', icon: 'account_balance_wallet' },
+    { value: PaymentMethod.BANK_TRANSFER, label: 'SALES.BANK_TRANSFER', icon: 'transfer_within_a_station' }
   ];
 
   ngOnInit(): void {

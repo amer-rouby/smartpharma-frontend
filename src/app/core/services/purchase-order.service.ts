@@ -15,7 +15,7 @@ import { PurchaseOrderRequest } from '../models/purchase-request.model';
 export class PurchaseOrderService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/purchase-orders';
+  private readonly apiUrl = 'http://localhost:8081/api/purchase-orders';
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

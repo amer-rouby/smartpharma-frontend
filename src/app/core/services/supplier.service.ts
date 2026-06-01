@@ -11,7 +11,7 @@ import { SupplierRequest } from '../models/purchase-request.model';
 export class SupplierService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/suppliers';
+  private readonly apiUrl = 'http://localhost:8081/api/suppliers';
 
   private getPharmacyId(): number {
     return this.authService.getPharmacyId() || 1;

@@ -93,11 +93,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   getPaymentMethodArabic(method: string): string {
     const methods: Record<string, string> = {
-      'CASH': this.translate.instant('SALES.CASH'),
-      'VISA': this.translate.instant('SALES.VISA'),
-      'INSTAPAY': this.translate.instant('SALES.INSTAPAY'),
-      'WALLET': this.translate.instant('SALES.WALLET'),
-      'CREDIT': this.translate.instant('SALES.CREDIT')
+      'CASH': this.translate.instant('SALES.PAYMENT_METHOD.CASH'),
+      'VISA': this.translate.instant('SALES.PAYMENT_METHOD.VISA'),
+      'INSTAPAY': this.translate.instant('SALES.PAYMENT_METHOD.INSTAPAY'),
+      'WALLET': this.translate.instant('SALES.PAYMENT_METHOD.WALLET'),
+      'CREDIT': this.translate.instant('SALES.PAYMENT_METHOD.CREDIT'),
+      'FAWRY': this.translate.instant('SALES.PAYMENT_METHOD.FAWRY'),
+      'BANK_TRANSFER': this.translate.instant('SALES.PAYMENT_METHOD.BANK_TRANSFER'),
     };
     return methods[method] || method;
   }
@@ -107,6 +109,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       'CASH': 'primary',
       'VISA': 'accent',
       'INSTAPAY': 'accent',
+      'FAWRY': 'accent',
+      'BANK_TRANSFER': 'accent',
       'WALLET': 'primary',
       'CREDIT': 'warn'
     };

@@ -241,6 +241,8 @@
     "VISA": "بطاقة ائتمان",
     "INSTAPAY": "إنستا باي",
     "WALLET": "محفظة إلكترونية",
+    "FAWRY": "فوري",
+    "BANK_TRANSFER": "تحويل بنكي",
     "CREDIT": "آجل",
     "CUSTOMER": "العميل",
     "CUSTOMER_PHONE": "هاتف العميل",

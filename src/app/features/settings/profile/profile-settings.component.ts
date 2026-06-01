@@ -278,7 +278,7 @@ export class ProfileSettingsComponent implements OnInit {
   getProfileImageUrl(): string {
     const imageUrl = this.profile()?.profileImageUrl;
     if (!imageUrl) return 'assets/default-avatar.png';
-    if (imageUrl.startsWith('/api/')) return 'http://localhost:8080' + imageUrl;
+    if (imageUrl.startsWith('/api/')) return 'http://localhost:8081' + imageUrl;
     return imageUrl;
   }
 }

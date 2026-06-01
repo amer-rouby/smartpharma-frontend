@@ -26,7 +26,7 @@ export interface PaymentsResponse {
 export class PaymentService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8080/api/payments';
+  private readonly apiUrl = 'http://localhost:8081/api/payments';
 
   private getHeaders(): HttpHeaders {
     const token = this.authService.getToken();
