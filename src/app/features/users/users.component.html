@@ -34,10 +34,7 @@
 
   <!-- Loading State -->
   @if (loading()) {
-  <div class="loading-overlay">
-    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-    <p>{{'COMMON.LOADING' | translate}}</p>
-  </div>
+  <app-table-loading />
   }
 
   <!-- Users Table -->
@@ -142,12 +139,10 @@
 
   <!-- Empty State -->
   @if (!loading() && !users().length) {
-  <div class="empty-state">
-    <mat-icon class="empty-icon">people_outline</mat-icon>
-    <p>{{'USERS.NO_USERS' | translate}}</p>
-    <button mat-raised-button color="primary" (click)="onAdd()">
-      {{'USERS.ADD_FIRST' | translate}}
-    </button>
-  </div>
+  <app-empty-state
+    icon="people_outline"
+    message="USERS.NO_USERS"
+    actionLabel="USERS.ADD_FIRST"
+    (action)="onAdd()" />
   }
 </div>

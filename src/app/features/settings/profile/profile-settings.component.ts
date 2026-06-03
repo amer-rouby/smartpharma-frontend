@@ -9,6 +9,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { ProfileService } from '../../../core/services/settings/profile.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { PharmacyContextService } from '../../../core/services/pharmacy-context.service';
 import { PasswordChangeRequest, Profile, ProfileUpdateRequest } from '../../../core/models/settings/profile.model';
 import { environment } from '../../../../environments/environment';
 
@@ -27,6 +28,7 @@ export class ProfileSettingsComponent implements OnInit {
   private readonly profileService = inject(ProfileService);
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly pharmacyContext = inject(PharmacyContextService);
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -278,7 +280,9 @@ export class ProfileSettingsComponent implements OnInit {
   getProfileImageUrl(): string {
     const imageUrl = this.profile()?.profileImageUrl;
     if (!imageUrl) return 'assets/default-avatar.png';
-    if (imageUrl.startsWith('/api/')) return 'http://localhost:8081' + imageUrl;
+    if (imageUrl.startsWith('/api/') || imageUrl.startsWith('/')) {
+      return this.pharmacyContext.resolveAssetUrl(imageUrl);
+    }
     return imageUrl;
   }
 }

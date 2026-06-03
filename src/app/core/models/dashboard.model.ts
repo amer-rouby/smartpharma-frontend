@@ -25,12 +25,7 @@ export interface RecentSale {
   transactionDate: string;
   paymentMethod: string;
 }
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  statusCode?: number;
-}
+export type { ApiResponse } from './api-response.model';
 
 export interface SaleSummary {
   id: number;

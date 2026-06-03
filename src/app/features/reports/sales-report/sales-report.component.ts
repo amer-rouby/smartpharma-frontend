@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { TopProductsTableComponent } from '../../../shared/components/top-products-table/top-products-table.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
@@ -22,6 +24,8 @@ import { DailySalesRow, ReportRequest, SalesReportData, TopProductRow } from '..
     TranslateModule,
     MaterialModule,
     PageHeaderComponent,
+    TopProductsTableComponent,
+    EmptyStateComponent,
     BaseChartDirective
   ],
   templateUrl: './sales-report.component.html',
@@ -46,7 +50,6 @@ export class SalesReportComponent implements OnInit {
   readonly dailySalesTableData = signal<DailySalesRow[]>([]);
   readonly topProductsTableData = signal<TopProductRow[]>([]);
   readonly dailySalesColumns = ['date', 'revenue', 'orders'];
-  readonly topProductsColumns = ['rank', 'productName', 'quantitySold', 'totalRevenue'];
   readonly activeTable = signal<'daily' | 'products'>('daily');
 
   readonly lineChartData: ChartConfiguration<'line'>['data'] = {

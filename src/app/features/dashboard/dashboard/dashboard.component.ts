@@ -4,7 +4,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { TopProductsTableComponent } from '../../../shared/components/top-products-table/top-products-table.component';
 import { MaterialModule } from '../../../shared/material.module';
+import { formatCurrency as formatCurrencyAmount, formatDateTime } from '../../../core/utils/format.util';
 import { DashboardService } from '../../../core/services/dashboard.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { DashboardStats } from '../../../core/models/dashboard.model';
@@ -13,7 +16,14 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, MaterialModule, MatSnackBarModule, PageHeaderComponent],
+  imports: [
+    RouterLink,
+    MaterialModule,
+    MatSnackBarModule,
+    PageHeaderComponent,
+    EmptyStateComponent,
+    TopProductsTableComponent
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -35,7 +45,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly hasTopProducts = computed(() => this.showStats() && (this.stats()?.topProducts?.length ?? 0) > 0);
   readonly hasRecentSales = computed(() => this.showStats() && (this.stats()?.recentSales?.length ?? 0) > 0);
 
-  readonly topProductsColumns = ['rank', 'productName', 'quantitySold', 'totalRevenue'];
   readonly recentSalesColumns = ['invoiceNumber', 'totalAmount', 'transactionDate', 'paymentMethod'];
 
   ngOnInit(): void {
@@ -72,23 +81,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return formatCurrencyAmount(amount, this.languageService.getCurrentLanguage());
   }
 
   formatDate(dateString: string): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Date(dateString).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatDateTime(dateString, this.languageService.getCurrentLanguage());
   }
 
   getPaymentMethodArabic(method: string): string {
