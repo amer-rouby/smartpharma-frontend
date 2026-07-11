@@ -78,6 +78,11 @@ export class ProductFormComponent implements OnInit {
         this.generateUniqueBarcode();
       }
     });
+
+    // Reload categories when language changes
+    this.languageService.currentLang$.subscribe(() => {
+      this.loadCategories();
+    });
   }
 
   loadCategories(): void {
@@ -195,6 +200,41 @@ export class ProductFormComponent implements OnInit {
   }
 
   getCategoryName(category: Category): string {
+    const currentLang = this.languageService.getCurrentLanguage();
+
+    // Bidirectional mapping: English <-> Arabic <-> Translation Key
+    const categoryKeyMap: Record<string, string> = {
+      // English names
+      'Painkillers': 'CATEGORIES.PAINKILLERS',
+      'Antibiotics': 'CATEGORIES.ANTIBIOTICS',
+      'Cardiovascular': 'CATEGORIES.CARDIO',
+      'Digestive': 'CATEGORIES.DIGESTIVE',
+      'Allergy': 'CATEGORIES.ALLERGY',
+      'Vitamins': 'CATEGORIES.VITAMINS',
+      'Cosmetics': 'CATEGORIES.COSMETICS',
+      'Other': 'CATEGORIES.OTHER',
+      // Arabic names
+      'مسكنات': 'CATEGORIES.PAINKILLERS',
+      'مضادات حيوية': 'CATEGORIES.ANTIBIOTICS',
+      'قلب وأوعية': 'CATEGORIES.CARDIO',
+      'معدة': 'CATEGORIES.DIGESTIVE',
+      'حساسية': 'CATEGORIES.ALLERGY',
+      'فيتامينات': 'CATEGORIES.VITAMINS',
+      'مستحضرات تجميل': 'CATEGORIES.COSMETICS',
+      'أخرى': 'CATEGORIES.OTHER'
+    };
+
+    const translationKey = categoryKeyMap[category.name];
+    if (translationKey) {
+      // Always return the translation for the current language
+      const translated = this.translate.instant(translationKey);
+      // If translation exists and is different from the key, use it
+      if (translated && translated !== translationKey) {
+        return translated;
+      }
+    }
+
+    // If no translation found, return the original name
     return category.name;
   }
 

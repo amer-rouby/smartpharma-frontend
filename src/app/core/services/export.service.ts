@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -21,6 +22,7 @@ export class ExportService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly translate = inject(TranslateService);
   private readonly baseUrl = `${environment.apiUrl}/reports/export`;
 
   private getAuthHeaders(): HttpHeaders {
@@ -47,32 +49,31 @@ export class ExportService {
     return this.http.get(url, { headers, params, responseType: 'blob' }).pipe(
       tap(blob => {
         if (options.preview) {
-          this.openBlobInNewTab(blob, options.fileType);
-          this.snackBar.open(`تم فتح ${options.fileType.toUpperCase()} في نافذة جديدة`, 'إغلاق', { duration: 3000 });
+          this.downloadBlob(blob, options.fileName);
+          this.snackBar.open(
+            this.translate.instant('REPORTS.OPENED_IN_NEW_TAB', { type: options.fileType.toUpperCase() }),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 3000 }
+          );
         } else if (!options.onSuccess) {
           this.downloadBlob(blob, options.fileName);
-          this.snackBar.open(`تم تحميل ${options.fileType.toUpperCase()} بنجاح`, 'إغلاق', { duration: 3000 });
+          this.snackBar.open(
+            this.translate.instant('REPORTS.DOWNLOADED_SUCCESS', { type: options.fileType.toUpperCase() }),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 3000 }
+          );
         }
         if (options.onSuccess) options.onSuccess();
       }),
       catchError(error => {
-        const msg = options.onError ? null : `فشل تحميل ملف ${options.fileType.toUpperCase()}`;
-        if (msg) this.snackBar.open(msg, 'إغلاق', { duration: 3000 });
+        const msg = this.translate.instant('REPORTS.DOWNLOAD_ERROR', { type: options.fileType.toUpperCase() });
+        if (!options.onError) {
+          this.snackBar.open(msg, this.translate.instant('COMMON.CLOSE'), { duration: 3000 });
+        }
         if (options.onError) options.onError(error);
         return throwError(() => error);
       })
     );
-  }
-
-  private openBlobInNewTab(blob: Blob, fileType: 'pdf' | 'excel'): void {
-    const blobUrl = window.URL.createObjectURL(blob);
-    const newTab = window.open(blobUrl, '_blank');
-    if (!newTab) {
-      this.snackBar.open('يرجى السماح بالنوافذ المنبثقة', 'إغلاق', { duration: 5000 });
-      window.URL.revokeObjectURL(blobUrl);
-      return;
-    }
-    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 300000);
   }
 
   private downloadBlob(blob: Blob, fileName: string): void {
@@ -83,32 +84,33 @@ export class ExportService {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    // Revoke after a short delay to ensure the download starts
+    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
   }
 
-  // === طرق مختصرة للتصدير ===
+  // === Shortcut export methods ===
 
-  exportExpensesPdf(pharmacyId: number, page = 0, size = 100, preview = true): Observable<Blob> {
+  exportExpensesPdf(pharmacyId: number, page = 0, size = 100): Observable<Blob> {
     return this.exportReport({
       fileName: `expenses_${new Date().toISOString().split('T')[0]}.pdf`,
       fileType: 'pdf',
       endpoint: '/expenses/pdf',
       params: { pharmacyId, page, size },
-      preview
+      preview: false
     });
   }
 
-  exportExpensesExcel(pharmacyId: number, page = 0, size = 100, preview = false): Observable<Blob> {
+  exportExpensesExcel(pharmacyId: number, page = 0, size = 100): Observable<Blob> {
     return this.exportReport({
       fileName: `expenses_${new Date().toISOString().split('T')[0]}.xlsx`,
       fileType: 'excel',
       endpoint: '/expenses/excel',
       params: { pharmacyId, page, size },
-      preview
+      preview: false
     });
   }
 
-  exportFinancialExcel(pharmacyId: number, startDate?: string, endDate?: string, preview = false): Observable<Blob> {
+  exportFinancialExcel(pharmacyId: number, startDate?: string, endDate?: string): Observable<Blob> {
     const params: Record<string, any> = { pharmacyId };
     if (startDate) params['startDate'] = startDate;
     if (endDate) params['endDate'] = endDate;
@@ -117,47 +119,47 @@ export class ExportService {
       fileType: 'excel',
       endpoint: '/financial/excel',
       params,
-      preview
+      preview: false
     });
   }
 
-  exportSalesPdf(pharmacyId: number, startDate: string, endDate: string, preview = false): Observable<Blob> {
+  exportSalesPdf(pharmacyId: number, startDate: string, endDate: string): Observable<Blob> {
     return this.exportReport({
       fileName: `sales_${startDate}_to_${endDate}.pdf`,
       fileType: 'pdf',
       endpoint: '/sales/pdf',
       params: { pharmacyId, startDate, endDate },
-      preview
+      preview: false
     });
   }
 
-  exportSalesExcel(pharmacyId: number, startDate: string, endDate: string, preview = false): Observable<Blob> {
+  exportSalesExcel(pharmacyId: number, startDate: string, endDate: string): Observable<Blob> {
     return this.exportReport({
       fileName: `sales_${startDate}_to_${endDate}.xlsx`,
       fileType: 'excel',
       endpoint: '/sales/excel',
       params: { pharmacyId, startDate, endDate },
-      preview
+      preview: false
     });
   }
 
-  exportExpiryPdf(pharmacyId: number, preview = false): Observable<Blob> {
+  exportExpiryPdf(pharmacyId: number): Observable<Blob> {
     return this.exportReport({
       fileName: `expiry_${new Date().toISOString().split('T')[0]}.pdf`,
       fileType: 'pdf',
       endpoint: '/expiry/pdf',
       params: { pharmacyId },
-      preview
+      preview: false
     });
   }
 
-  exportExpiryExcel(pharmacyId: number, preview = false): Observable<Blob> {
+  exportExpiryExcel(pharmacyId: number): Observable<Blob> {
     return this.exportReport({
       fileName: `expiry_${new Date().toISOString().split('T')[0]}.xlsx`,
       fileType: 'excel',
       endpoint: '/expiry/excel',
       params: { pharmacyId },
-      preview
+      preview: false
     });
   }
 }

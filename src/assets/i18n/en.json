@@ -465,6 +465,9 @@
     "EXPORT_SUCCESS": "Report exported successfully",
     "EXPORT_ERROR": "Failed to export report",
     "EXPORT_NOT_SUPPORTED": "Export not available currently",
+    "DOWNLOADED_SUCCESS": "{{type}} file downloaded successfully",
+    "DOWNLOAD_ERROR": "Failed to download {{type}} file",
+    "OPENED_IN_NEW_TAB": "{{type}} file opened",
     "LOAD_ERROR": "Failed to load report, please try again",
     "NO_DATA": "No data for selected period",
     "SELECT_FILTERS": "Select a time period and click Generate Report",
@@ -492,7 +495,11 @@
     "CATEGORY": "Category",
     "PERCENTAGE": "Percentage",
     "PRODUCT": "Product",
-    "QUANTITY": "Quantity"
+    "QUANTITY": "Quantity",
+    "SUMMARY": "Summary",
+    "GENERATED": "Generated",
+    "PRINT_SUCCESS": "Report printed successfully",
+    "PRINT_ERROR": "Failed to print report"
   },
   "USERS": {
     "TITLE": "Users",

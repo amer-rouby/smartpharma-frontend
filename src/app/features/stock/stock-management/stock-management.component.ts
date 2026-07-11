@@ -57,6 +57,11 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadStockBatches();
+
+    // Reload data when language changes
+    this.languageService.currentLang$.subscribe(() => {
+      this.loadStockBatches();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -111,7 +116,9 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   getStatusLabel(status: string): string {
-    return this.translate.instant(`STOCK.STATUS.${status?.toUpperCase()}`);
+    const statusKey = status?.toUpperCase() || 'GOOD';
+    const translated = this.translate.instant(`STOCK.STATUS.${statusKey}`);
+    return translated !== `STOCK.STATUS.${statusKey}` ? translated : status;
   }
 
   getStatusChipColor(status: string): 'primary' | 'accent' | 'warn' | '' {

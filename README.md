@@ -5,11 +5,13 @@
 ![Angular](https://img.shields.io/badge/Angular-21.1-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![RxJS](https://img.shields.io/badge/RxJS-7.8-B7178C?style=for-the-badge&logo=reactivex&logoColor=white)
-![Material](https://img.shields.io/badge/Material-UI-0081CB?style=for-the-badge&logo=mui&logoColor=white)
+![Material](https://img.shields.io/badge/Material_UI-21.1-0081CB?style=for-the-badge&logo=mui&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-4.5-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT_Auth-4.0-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
-![i18n](https://img.shields.io/badge/i18n-RTL_|_LTR-8b5cf6?style=for-the-badge)
+![i18n](https://img.shields.io/badge/i18n-RTL_%7C_LTR-8b5cf6?style=for-the-badge)
+![Standalone](https://img.shields.io/badge/Angular_Standalone-100%25-0FAAFF?style=for-the-badge)
+![Lazy Loaded](https://img.shields.io/badge/Lazy_Loaded-100%25-22c55e?style=for-the-badge)
 
 </div>
 
@@ -17,7 +19,8 @@
 
 ## 📑 Table of Contents
 
-- [Overview](#-overview)
+- [Project Overview](#-project-overview)
+- [Why This Project Stands Out for Your CV](#-why-this-project-stands-out-for-your-cv)
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture)
@@ -31,127 +34,172 @@
 - [Prerequisites](#-prerequisites)
 - [Installation & Setup](#-installation--setup)
 - [Available Scripts](#-available-scripts)
+- [Environment Configuration](#-environment-configuration)
 - [Folder Structure](#-folder-structure)
-- [Important Technical Notes](#-important-technical-notes)
+- [Design Token Palette](#-design-token-palette)
 - [Contributing](#-contributing)
 - [License](#-license)
 
 ---
 
-## 📖 Overview
+## 📖 Project Overview
 
-**SmartPharma** is a comprehensive, production-grade **Pharmacy Management System** built with cutting-edge web technologies. It delivers an end-to-end solution for pharmacy owners and managers to handle every aspect of pharmaceutical operations from a single, unified platform — complete with full **Arabic RTL** and **English LTR** support.
+**SmartPharma** is a **production-grade, enterprise-level Pharmacy Management System** — a comprehensive full-stack application that demonstrates **advanced Angular development**, **enterprise architecture patterns**, and **complex business domain modeling**. This project showcases the ability to build **scalable, maintainable, and performant web applications** using the latest web technologies.
 
-The system is architected for **high performance, security, and scalability**, leveraging **Angular v21** with the modern **Standalone Components** pattern that eliminates the need for traditional `NgModule`s — making it future-proof and aligned with 2025+ web development standards.
+### 🎯 Purpose
 
-> 💡 **Ideal for your resume/CV** — this project demonstrates advanced expertise in Angular, TypeScript, reactive state management, enterprise architecture patterns, and complex business-domain modeling.
+Built to serve as a complete solution for **pharmacy owners and managers**, SmartPharma handles every aspect of pharmaceutical operations — from **point-of-sale (POS)** and **inventory management** to **AI-powered demand prediction**, **financial reporting**, and **multi-language support** — all within a single, unified platform.
+
+> 💡 **Perfect for your CV/Resume** — this project demonstrates **production-level expertise** in Angular 21, TypeScript, reactive programming, enterprise architecture, and complex business logic implementation.
+
+---
+
+## 🏆 Why This Project Stands Out for Your CV
+
+### Technical Excellence
+
+| CV Highlight | What It Demonstrates |
+|:------------|:---------------------|
+| **Angular 21 Standalone Components** | Zero `NgModule`s — 100% modern, future-proof Angular architecture. No legacy patterns. |
+| **18+ Business Services** | Comprehensive service layer — shows mastery of **Dependency Injection**, **Separation of Concerns**, and **business logic abstraction**. |
+| **20+ TypeScript Models** | Rich domain modeling — **interfaces**, **enums**, **union types**, and **type safety** across the entire codebase. |
+| **Advanced Lazy Loading** | Every feature module loads **independently on demand** — demonstrates **performance optimization** and **code splitting** expertise. |
+| **Full RBAC System** | Multi-layered **Route Guards** + **HTTP Interceptors** for enterprise-grade authentication and authorization. |
+| **Angular Signals + RxJS** | Modern **reactive state management** combining **Signals API** with **RxJS observables** for optimal reactivity. |
+| **Complete i18n (Arabic + English)** | Full **RTL/LTR** support with instant switching — demonstrates **internationalization** expertise. |
+| **AI-Powered Features** | **Demand prediction engine** with trend analysis, confidence scoring, and seasonality — shows **data science integration**. |
+| **Multi-Gateway Payments** | 6 payment methods with **full refund lifecycle** — demonstrates **complex financial domain modeling**. |
+| **Centralized Error Handling** | **Error Interceptor** + **Error Handler Service** pipeline — shows **error resilience** best practices. |
+| **Responsive Design** | Works seamlessly on **mobile, tablet, and desktop** — demonstrates **responsive UI/UX** skills. |
+| **Unit Testing with Vitest** | Modern test runner with **JSDOM** — shows commitment to **code quality** and **test-driven development**. |
+| **Reusable Pagination** | Unified pagination patterns across all list views — demonstrates **code reuse** and **DRY principles**. |
+| **Clean Code Architecture** | Strict **core / features / shared / layouts** separation — shows **enterprise-grade organization**. |
+
+### 🧠 Skills Demonstrated
+
+```
+🔷 Angular 21 (Standalone Components)   🔷 TypeScript 5.9
+🔷 RxJS 7.8 (Observables, Subjects)     🔷 Angular Signals
+🔷 Angular Material 21.1                🔷 Angular CDK
+🔷 SCSS (Variables, Mixins, Gradients)  🔷 CSS Grid & Flexbox
+🔷 Chart.js + ng2-charts                🔷 Data Visualization
+🔷 JWT Authentication & Authorization   🔷 HTTP Interceptors
+🔷 Route Guards (Auth + Role)           🔷 Lazy Loading
+🔷 i18n (ngx-translate)                 🔷 RTL/LTR Support
+🔷 Vitest + JSDOM                       🔷 Unit Testing
+🔷 REST API Integration                 🔷 Error Handling Patterns
+🔷 Reactive State Management            🔷 Signals + Observables
+```
 
 ---
 
 ## ✨ Key Features
 
 ### 📊 Professional Dashboard
-- Live KPIs (today's revenue, orders, average order value)
-- Interactive revenue & sales charts
-- Top-performing products ranking with performance percentages
-- Low-stock and expiry alerts with visual indicators
-- Real-time recent sales feed
-- Distinct gradient color schemes per stat card
+- **Live KPIs** — today's revenue, orders, average order value
+- **Interactive Charts** — revenue & sales trends with Chart.js
+- **Top Products Ranking** — with performance percentages
+- **Low-Stock & Expiry Alerts** — visual indicators with color coding
+- **Recent Sales Feed** — real-time transaction display
+- **Gradient Color Schemes** — distinct visual identity per stat card
 
 ### 📦 Product Management
-- Full product catalog (scientific name, barcode, category, unit type)
-- Category classification & management
-- Sell/buy price tracking with prescription requirements
-- Custom extensible attributes per product
-- Server-side pagination with configurable page sizes
+- **Full Product Catalog** — scientific name, barcode, category, unit type
+- **Category Classification** — hierarchical category management
+- **Price Tracking** — sell/buy price with prescription requirements
+- **Custom Attributes** — extensible fields per product
+- **Server-Side Pagination** — configurable page sizes with search
 
 ### 🏭 Advanced Inventory & Stock
-- **Batch system** with production/expiry date tracking
-- Automatic low-stock and expired-product alerts
-- Stock movement history (add, remove, correction)
-- Location management (shelf, warehouse)
-- Stock adjustments with reason tracking (damaged, expired, returned, count error)
-- Real-time stock valuation
+- **Batch System** — production/expiry date tracking with lot numbers
+- **Automatic Alerts** — low-stock and expired-product notifications
+- **Stock Movement History** — add, remove, correction with timestamps
+- **Location Management** — shelf, warehouse organization
+- **Adjustment Tracking** — damaged, expired, returned, count error with reasons
+- **Real-Time Valuation** — live inventory value calculation
 
 ### 🧠 AI-Powered Demand Prediction
-- Intelligent forecasts for future stock requirements
-- Multi-algorithm confidence levels
-- Trend analysis (increasing, decreasing, stable)
-- Seasonality factors (high, medium, low)
-- Smart purchase recommendations with suggested quantities
-- One-click purchase order creation from predictions
-- PDF/Excel export and shareable prediction links
-- Prediction accuracy analytics
+- **Intelligent Forecasting** — future stock requirement predictions
+- **Multi-Algorithm Confidence** — 0–100% confidence levels
+- **Trend Analysis** — Increasing ⬆️ / Stable ➡️ / Decreasing ⬇️
+- **Seasonality Factors** — High / Medium / Low
+- **Smart Recommendations** — suggested purchase quantities
+- **One-Click Purchase Orders** — create POs directly from predictions
+- **Export & Share** — PDF, Excel, or shareable prediction links
+- **Accuracy Analytics** — prediction performance tracking
 
 ### 💰 Integrated Sales & POS
-- Fast, efficient point-of-sale (POS) interface
-- Multi-payment support: Cash, Visa, InstaPay, Fawry, Wallet, Bank Transfer
-- Discount management & customer phone tracking
-- Full sales history with advanced search
-- Invoice details with sequential numbering
+- **Fast POS Interface** — optimized for quick transactions
+- **Multi-Payment Support** — Cash, Visa, InstaPay, Fawry, Wallet, Bank Transfer
+- **Discount Management** — flexible discount application
+- **Customer Tracking** — phone-based customer identification
+- **Sales History** — advanced search with filters
+- **Invoice Details** — sequential numbering with detailed breakdowns
 
 ### 💳 Payment Processing
-- Multi-gateway payment processing
-- Full refund system with multi-status lifecycle
-- Payment statistics & reference tracking
-- Detailed payment history
+- **Multi-Gateway** — 6 payment method support
+- **Full Refund System** — multi-status lifecycle (Pending → Approved → Processing → Completed)
+- **Payment Statistics** — method distribution & revenue breakdown
+- **Reference Tracking** — complete audit trail
+- **Detailed History** — per-transaction records
 
 ### 📈 Advanced Analytics
-- Sales analytics by period (daily, weekly, monthly, yearly)
-- Payment method distribution & revenue breakdown
-- Daily comparisons & trend tracking
-- Profit margins & performance ratios
-- Top-products revenue analysis
+- **Sales Analytics** — daily, weekly, monthly, yearly periods
+- **Payment Distribution** — proportional revenue by method
+- **Daily Comparisons** — today vs. previous periods
+- **Profit Margins** — performance ratios & trends
+- **Top Products** — revenue analysis with ranking
 
 ### 📑 Reporting Engine
-- **Sales reports** — revenue, orders, top products, daily distribution
-- **Financial reports** — profit, expenses, margins, monthly breakdown
-- **Stock reports** — inventory value, low stock, expired items, category breakdown
-- **Expiry reports** — urgent, warning, OK classifications
-- PDF & Excel export for all report types
+- **Sales Reports** — revenue, orders, top products, daily distribution
+- **Financial Reports** — profit, expenses, margins, monthly breakdown
+- **Stock Reports** — inventory value, low stock, expired, category breakdown
+- **Expiry Reports** — Urgent / Warning / OK classifications
+- **PDF & Excel Export** — professional formatting for all reports
 
 ### 📋 Purchase Orders & Suppliers
-- Supplier management (active, inactive, blocked)
-- Purchase orders with full status lifecycle (draft, pending, approved, received, cancelled)
-- Priority levels (low, normal, urgent)
-- Partial receiving & pending quantity tracking
-- Order item management with received vs. ordered quantities
+- **Supplier Management** — active, inactive, blocked statuses
+- **Purchase Orders** — draft → pending → approved → received → cancelled lifecycle
+- **Priority Levels** — low, normal, urgent
+- **Partial Receiving** — pending quantity tracking
+- **Order Item Management** — received vs. ordered quantities
 
 ### 💸 Expense Management
-- Multi-category expense recording (purchases, salaries, rent, utilities, maintenance, marketing, insurance, licenses, transport, other)
-- Daily summaries & category breakdowns
-- Receipt/attachment support
+- **Multi-Category** — purchases, salaries, rent, utilities, maintenance, marketing, insurance, licenses, transport, other
+- **Daily Summaries** — category breakdowns
+- **Receipt Support** — attachment upload per expense
 
 ### 👥 User Management
-- Role-based access (Admin, Pharmacist, Viewer, Manager)
-- Multi-user accounts per pharmacy
-- Last-login tracking
-- User activation/deactivation
+- **Role-Based Access** — Admin, Pharmacist, Viewer, Manager
+- **Multi-User Accounts** — per pharmacy support
+- **Last-Login Tracking** — security monitoring
+- **Activation/Deactivation** — user status control
 
 ### 🔔 Notification System
-- Real-time in-app notifications
-- Low-stock & expiry alerts
-- Slide-out notification panel
+- **Real-Time Alerts** — in-app notification panel
+- **Low-Stock Alerts** — automatic threshold monitoring
+- **Expiry Alerts** — proactive expiration warnings
+- **Slide-Out Panel** — intuitive notification center
 
 ### ⚙️ Advanced Settings
-- Pharmacy profile management
-- Security & password settings
-- Notification preferences
-- Backup management
-- User profile management
+- **Pharmacy Profile** — business information management
+- **Security Settings** — password policies & session management
+- **Notification Preferences** — per-user customization
+- **Backup Management** — data protection
+- **User Profile** — personal settings
 
 ### 🌍 Internationalization (i18n)
-- Full Arabic support with complete RTL layout
-- Full English support with LTR layout
-- Instant language switching without page reload
-- Translated dates, currencies, and all UI strings
-- Persistent language preference via localStorage
+- **Full Arabic RTL** — complete right-to-left layout
+- **Full English LTR** — instant language switching
+- **Zero Reload Switching** — language changes instantly
+- **Translated Everything** — dates, currencies, UI strings, statuses
+- **Persistent Preference** — saved to localStorage
 
 ### 🖨️ Printing & Export
-- Direct invoice printing
-- PDF export for reports & predictions
-- Excel export for data analysis
-- Shareable prediction links
+- **Direct Invoice Printing** — optimized print layout
+- **PDF Export** — professional report generation
+- **Excel Export** — data analysis ready
+- **Shareable Links** — temporary access sharing
 
 ---
 
@@ -159,7 +207,7 @@ The system is architected for **high performance, security, and scalability**, l
 
 ### Core Framework
 | Technology | Version | Purpose |
-|------------|---------|---------|
+|:-----------|:--------|:--------|
 | **Angular** | 21.1 | Frontend framework (Standalone Components) |
 | **TypeScript** | 5.9 | Type-safe development |
 | **RxJS** | 7.8 | Reactive programming & state streams |
@@ -167,165 +215,89 @@ The system is architected for **high performance, security, and scalability**, l
 
 ### UI & Design
 | Technology | Version | Purpose |
-|------------|---------|---------|
+|:-----------|:--------|:--------|
 | **Angular Material** | 21.1 | Material Design component library |
-| **Angular CDK** | 21.1 | Component dev kit |
-| **SCSS** | — | Advanced styling with CSS Variables |
+| **Angular CDK** | 21.1 | Component development kit |
+| **SCSS** | — | Advanced styling with CSS variables |
 
 ### Charts & Visualization
 | Technology | Version | Purpose |
-|------------|---------|---------|
-| **Chart.js** | 4.5 | Interactive charting |
+|:-----------|:--------|:--------|
+| **Chart.js** | 4.5 | Interactive charting library |
 | **ng2-charts** | 8.0 | Angular wrapper for Chart.js |
 
 ### Auth & Security
 | Technology | Version | Purpose |
-|------------|---------|---------|
-| **JWT Decode** | 4.0 | Token parsing |
-| **Route Guards** | — | Path protection |
+|:-----------|:--------|:--------|
+| **JWT Decode** | 4.0 | Token parsing & validation |
+| **Route Guards** | — | Path protection (auth + role) |
 | **HTTP Interceptors** | — | Centralized auth & error handling |
 
 ### Utilities
 | Technology | Version | Purpose |
-|------------|---------|---------|
-| **Axios** | 1.13 | HTTP client (supplementary) |
+|:-----------|:--------|:--------|
+| **Axios** | 1.13 | Supplementary HTTP client |
 | **SweetAlert2** | 11.26 | Beautiful alert dialogs |
 | **ngx-translate** | 17.0 | Complete i18n translation system |
 
 ### Testing
 | Technology | Version | Purpose |
-|------------|---------|---------|
-| **Vitest** | 4.0 | Fast unit testing |
+|:-----------|:--------|:--------|
+| **Vitest** | 4.0 | Fast unit testing framework |
 | **JSDOM** | 27.1 | Browser environment simulation |
 
 ---
 
 ## 🏗 Architecture
 
-The project follows a **scalable enterprise architecture** with strict **Separation of Concerns**:
+### Architecture Diagram
 
 ```
 📁 src/app/
-├── 📁 core/                         # Core Layer
-│   ├── 📁 guards/                   # Route Guards
-│   │   ├── auth.guard.ts            # Auth guard
-│   │   └── role.guard.ts            # Role-based guard
-│   ├── 📁 interceptors/             # HTTP Interceptors
-│   │   ├── auth.interceptor.ts      # Auto JWT injection
-│   │   └── error.interceptor.ts     # Centralized error handling
-│   ├── 📁 models/                   # TypeScript Models (20+)
-│   │   ├── 📁 settings/             # Settings models
-│   │   ├── product.model.ts         # Product interfaces
-│   │   ├── sale.model.ts            # Sales interfaces
-│   │   ├── stock.model.ts           # Stock & batch interfaces
-│   │   ├── payment.model.ts         # Payment & refund interfaces
-│   │   ├── purchase-order.model.ts  # PO & supplier interfaces
-│   │   ├── user.model.ts            # User & auth interfaces
-│   │   ├── Expense.model.ts         # Expense interfaces
-│   │   ├── Report.model.ts          # Report interfaces
-│   │   ├── dashboard.model.ts       # Dashboard/KPI interfaces
-│   │   ├── Notification.model.ts    # Notification interfaces
-│   │   ├── stock-alert.model.ts     # Stock alert interfaces
-│   │   ├── Export.model.ts          # Export interfaces
-│   │   └── index.ts                 # Barrel export
-│   ├── 📁 services/                 # Business Services (18+)
-│   │   ├── 📁 settings/             # Settings services
-│   │   ├── auth.service.ts          # Authentication
-│   │   ├── dashboard.service.ts     # Dashboard stats
-│   │   ├── product.service.ts       # Product CRUD
-│   │   ├── stock.service.ts         # Stock & batch management
-│   │   ├── sales.service.ts         # Sales & POS
-│   │   ├── payment.service.ts       # Payment processing
-│   │   ├── expense.service.ts       # Expense tracking
-│   │   ├── purchase-order.service.ts # PO management
-│   │   ├── supplier.service.ts      # Supplier management
-│   │   ├── report.service.ts        # Reporting engine
-│   │   ├── notification.service.ts  # Notifications
-│   │   ├── demand-prediction.service.ts # AI demand forecasting
-│   │   ├── language.service.ts      # i18n management
-│   │   ├── pharmacy-context.service.ts # Multi-pharmacy context
-│   │   ├── error-handler.service.ts # Centralized error handler
-│   │   ├── invoice-print.service.ts # Invoice printing
-│   │   ├── export.service.ts        # PDF/Excel export
-│   │   ├── share.service.ts         # Link sharing
-│   │   └── audio.service.ts         # Sound alerts
-│   └── 📁 utils/                    # Utility Functions
-│       ├── format.util.ts           # Currency, date formatting
-│       ├── http-error.util.ts       # HTTP error fallback
-│       ├── pagination.util.ts       # Pagination helpers
-│       └── paginator-state.ts       # Paginator state management
+├── 📁 core/                         # Core Layer — Foundation
+│   ├── 📁 guards/                   #   Route Guards
+│   ├── 📁 interceptors/             #   HTTP Interceptors
+│   ├── 📁 models/                   #   TypeScript Models (20+)
+│   ├── 📁 services/                 #   Business Services (18+)
+│   └── 📁 utils/                    #   Utility Functions
 │
-├── 📁 features/                     # Feature Modules (Lazy Loaded)
-│   ├── 📁 auth/                     # Login & Registration
-│   ├── 📁 dashboard/               # Main Dashboard
-│   ├── 📁 products/                # Product Catalog
-│   │   ├── product-list/
-│   │   ├── product-form/
-│   │   ├── product-categories/
-│   │   └── category-dialog/
-│   ├── 📁 stock/                   # Stock Management
-│   │   ├── stock-management/
-│   │   ├── stock-alerts/
-│   │   ├── stock-movements/
-│   │   ├── stock-adjustment-dialog/
-│   │   ├── stock-adjustment-history/
-│   │   ├── stock-batch-form/
-│   │   ├── demand-predictions/
-│   │   ├── prediction-detail/
-│   │   └── edit-prediction-dialog/
-│   ├── 📁 sales/                   # Sales & POS
-│   │   ├── sales-form/             # POS interface
-│   │   ├── sales-history/          # Sales records
-│   │   ├── sales-analytics/        # Advanced analytics
-│   │   └── sale-details-dialog/    # Invoice detail modal
-│   ├── 📁 purchases/               # Purchasing
-│   │   ├── purchase-orders/
-│   │   ├── purchase-form/
-│   │   ├── purchase-detail/
-│   │   └── suppliers/
-│   ├── 📁 payment/                 # Payment Processing
-│   │   ├── payment-form/
-│   │   ├── payment-history/
-│   │   ├── payment-stats/
-│   │   ├── payment-receipt/
-│   │   └── refund-form/
-│   ├── 📁 expenses/                # Expense Tracking
-│   ├── 📁 reports/                 # Reports
-│   │   ├── sales-report/
-│   │   ├── financial-report/
-│   │   ├── stock-report/
-│   │   └── expiry-report/
-│   ├── 📁 users/                   # User Administration
-│   ├── 📁 settings/                # System Settings
-│   │   ├── pharmacy/
-│   │   ├── profile/
-│   │   ├── security/
-│   │   ├── notifications/
-│   │   ├── backup/
-│   │   └── settings/
-│   ├── 📁 notification-bell/       # Notification dropdown
-│   └── 📁 help/                    # Help section
+├── 📁 features/                     # Feature Modules — Lazy Loaded
+│   ├── 📁 auth/                     #   Authentication
+│   ├── 📁 dashboard/               #   Main Dashboard
+│   ├── 📁 products/                #   Product Catalog (4 sub-modules)
+│   ├── 📁 stock/                   #   Stock Management (9 sub-modules)
+│   ├── 📁 sales/                   #   Sales & POS (4 sub-modules)
+│   ├── 📁 purchases/               #   Purchasing (4 sub-modules)
+│   ├── 📁 payment/                 #   Payment Processing (5 sub-modules)
+│   ├── 📁 expenses/                #   Expense Tracking
+│   ├── 📁 reports/                 #   Reporting (4 report types)
+│   ├── 📁 users/                   #   User Administration
+│   ├── 📁 settings/                #   System Settings (6 sub-modules)
+│   ├── 📁 notification-bell/       #   Notification Panel
+│   └── 📁 help/                    #   Help Section
 │
-├── 📁 layouts/                     # Page Layouts
-│   ├── 📁 auth-layout/             # Auth pages shell
-│   └── 📁 main-layout/             # Main app shell (Header + Sidebar + Footer)
+├── 📁 layouts/                      # Page Layouts
+│   ├── 📁 auth-layout/             #   Auth pages shell
+│   └── 📁 main-layout/             #   Main app shell (Header + Sidebar + Footer)
 │
-├── 📁 shared/                      # Shared Module
-│   ├── material.module.ts          # Material module aggregation
-│   ├── 📁 components/              # Reusable components
-│   ├── 📁 directives/              # Custom directives
-│   ├── 📁 models/                  # Shared models
-│   └── 📁 services/                # Shared services
+├── 📁 shared/                       # Shared Module
+│   ├── material.module.ts          #   Material module aggregation
+│   ├── 📁 components/              #   Reusable components
+│   ├── 📁 directives/              #   Custom directives
+│   ├── 📁 models/                  #   Shared models
+│   └── 📁 services/                #   Shared services
 │
 ├── app.config.ts                   # Application bootstrap config
 ├── app.routes.ts                   # Route definitions
 └── app.ts                          # Root component
 ```
 
+Total: **~40 feature sub-modules** | **18+ services** | **20+ models** | **4 guards/interceptors** | **100% standalone**
+
 ### Architecture Principles
 
 | Principle | Implementation |
-|-----------|---------------|
+|:----------|:---------------|
 | **Standalone Components** | Zero NgModules — 100% modern Angular |
 | **Lazy Loading** | Every feature module loads on-demand |
 | **Dependency Injection** | Angular DI with `inject()` function |
@@ -333,27 +305,42 @@ The project follows a **scalable enterprise architecture** with strict **Separat
 | **Reactive Programming** | RxJS observables for async data streams |
 | **Interceptor Pattern** | Centralized request/response processing |
 | **Guard Pattern** | Multi-layer route protection |
-| **Barrel Exports** | Clean imports via index.ts |
+| **Barrel Exports** | Clean imports via `index.ts` |
 | **Environment Config** | Per-environment configuration files |
+| **Error Pipeline** | Interceptor → Service → UI component chain |
 
 ---
 
 ## 🔐 Role-Based Access Control
 
-The system implements a four-tier role hierarchy:
+### Role Hierarchy
 
-| Role | Privileges |
-|------|-----------|
-| **ADMIN** | Full system access — manage users, pharmacy settings, all data |
-| **MANAGER** | Daily operations, reports, analytics, staff oversight |
-| **PHARMACIST** | Sales processing, basic stock management |
-| **VIEWER** | Read-only access to data and reports |
+```
+                        ┌─────────────┐
+                        │    ADMIN    │  ← Full system access
+                        └──────┬──────┘
+                               │
+                        ┌──────┴──────┐
+                        │   MANAGER   │  ← Operations, reports, staff
+                        └──────┬──────┘
+                               │
+                    ┌──────────┴──────────┐
+                    │     PHARMACIST      │  ← Sales, basic stock
+                    └──────────┬──────────┘
+                               │
+                    ┌──────────┴──────────┐
+                    │       VIEWER        │  ← Read-only access
+                    └─────────────────────┘
+```
 
-**Security Layers:**
-- **`authGuard`** — ensures the user is authenticated before accessing any protected route
-- **`roleGuard`** — restricts feature access based on user role
-- **`authInterceptor`** — automatically attaches JWT Bearer tokens to all outgoing HTTP requests
-- **`errorInterceptor`** — centralized error handling with automatic logout on 401
+### Security Layers
+
+| Layer | Guard/Interceptor | Purpose |
+|:------|:------------------|:--------|
+| **Authentication** | `authGuard` | Ensures user is authenticated before accessing routes |
+| **Authorization** | `roleGuard` | Restricts feature access based on user role |
+| **Token Injection** | `authInterceptor` | Automatically attaches JWT Bearer tokens |
+| **Error Handling** | `errorInterceptor` | Centralized error handling with auto-logout on 401 |
 
 ---
 
@@ -363,21 +350,20 @@ The system implements a four-tier role hierarchy:
 ```
 📈 Today's Revenue       💰 Inventory Value        📦 Total Products
 🛒 Today's Orders        ⚠️ Low Stock Items        ❌ Out of Stock
-📊 Average Order Value   🕐 Expiring Soon          💵 Profit Margins
+📊 Avg Order Value       🕐 Expiring Soon          💵 Profit Margins
 ```
 
 ### Charts & Visualizations
-- **Sales Trend Chart** — revenue tracking over time
-- **Payment Method Distribution** — proportional breakdown
-- **Top Products Table** — ranked by quantity sold & revenue
-- **Daily Comparisons** — today vs. previous periods
+- **Sales Trend Chart** — revenue tracking over time with interactive tooltips
+- **Payment Method Distribution** — proportional breakdown with legend
+- **Top Products Table** — ranked by quantity sold & revenue generated
+- **Daily Comparisons** — today vs. yesterday vs. last week
 
 ---
 
 ## 📦 Stock Management & Demand Prediction
 
 ### Batch System
-
 ```
 Batch #2025-001
 ├── Product: Paracetamol 500mg
@@ -394,9 +380,9 @@ Batch #2025-001
 - **Confidence Level** — 0% to 100% per prediction
 - **Trend Analysis** — Increasing ⬆️ / Stable ➡️ / Decreasing ⬇️
 - **Seasonality Factor** — High / Medium / Low
-- **Recommended Order Quantity** — calculated based on historical data
+- **Recommended Order Quantity** — calculated from historical data
 - **Smart Recommendations** — data-driven purchase suggestions
-- **One-Click PO Generation** — create purchase orders directly from predictions
+- **One-Click PO Generation** — create purchase orders from predictions
 - **Export & Share** — PDF, Excel, or shareable link
 
 ---
@@ -405,13 +391,13 @@ Batch #2025-001
 
 ### Supported Payment Methods
 | Method | Type | Status |
-|--------|------|--------|
-| 💵 Cash | Direct | Supported |
-| 💳 Visa | Payment Gateway | Supported |
-| 📱 InstaPay | Digital Wallet | Supported |
-| 🏢 Fawry | E-Payment | Supported |
-| 📲 Wallet | Mobile Wallet | Supported |
-| 🏦 Bank Transfer | Wire Transfer | Supported |
+|:-------|:-----|:-------|
+| 💵 **Cash** | Direct | ✅ Supported |
+| 💳 **Visa** | Payment Gateway | ✅ Supported |
+| 📱 **InstaPay** | Digital Wallet | ✅ Supported |
+| 🏢 **Fawry** | E-Payment | ✅ Supported |
+| 📲 **Wallet** | Mobile Wallet | ✅ Supported |
+| 🏦 **Bank Transfer** | Wire Transfer | ✅ Supported |
 
 ### Payment Lifecycle
 ```
@@ -422,9 +408,9 @@ COMPLETED → REFUNDED ↩️
 ```
 
 ### Refund System
-- Refund request with specific reason
-- Status flow: Pending → Approved → Processing → Completed
-- Full audit trail
+- **Refund Request** — with specific reason
+- **Status Flow** — Pending → Approved → Processing → Completed
+- **Full Audit Trail** — complete history tracking
 
 ---
 
@@ -433,14 +419,14 @@ COMPLETED → REFUNDED ↩️
 ### Report Types
 
 | Report | Contents |
-|--------|----------|
+|:-------|:---------|
 | 📊 **Sales Report** | Total revenue, orders, top products, daily distribution |
 | 💰 **Financial Report** | Profit, expenses, margins, monthly breakdown |
 | 📦 **Stock Report** | Inventory value, low stock, expired, category breakdown |
 | ⏰ **Expiry Report** | Expiring products by urgency (Urgent / Warning / OK) |
 
 ### Export Options
-- 📄 **PDF** — professional print-ready reports
+- 📄 **PDF** — professional print-ready reports (local HTML generation)
 - 📊 **Excel** — analyzable data exports
 - 🔗 **Share** — temporary shareable links
 
@@ -450,30 +436,31 @@ COMPLETED → REFUNDED ↩️
 
 ### Language Features
 - 🌐 **Arabic** — default language with full RTL layout
-- 🇬🇧 **English** — instant LTR switch
-- 📝 **Complete Translation** — all text, dates, currencies translated
-- 🔄 **Instant Switching** — no page reload required
+- 🇬🇧 **English** — instant LTR switch without page reload
+- 📝 **Complete Translation** — all text, dates, currencies, statuses translated
+- 🔄 **Instant Switching** — no page reload required (reactive)
 - 💾 **Persistent Preference** — language saved to localStorage
 
 ### User Experience
-- 📱 **Responsive Design** — works on mobile, tablet, and desktop
-- 🎨 **Material Design UI** — Angular Material components
+- 📱 **Responsive Design** — mobile, tablet, and desktop optimized
+- 🎨 **Material Design UI** — Angular Material components with custom theming
 - 🔊 **Audio Alerts** — sound notifications for low stock/expiry
-- 🔔 **Real-Time Notifications** — in-app toast & panel
+- 🔔 **Real-Time Notifications** — in-app toast & slide-out panel
 - ⚡ **Fast Loading** — full lazy loading for all feature modules
+- 🌈 **Gradient Color Scheme** — professional visual design
 
 ---
 
 ## 🔒 Security
 
 | Layer | Mechanism |
-|-------|-----------|
+|:------|:----------|
 | **Authentication** | JWT (Access + Refresh Tokens) |
-| **Authorization** | Role-Based Access Control (RBAC) |
+| **Authorization** | Role-Based Access Control (RBAC) with 4 roles |
 | **Transport** | HTTPS + Bearer Authorization Headers |
 | **Interception** | HTTP Interceptors for automatic token injection |
 | **Routing** | Route Guards (`authGuard` + `roleGuard`) |
-| **Error Handling** | Centralized Error Interceptor |
+| **Error Handling** | Centralized Error Interceptor pipeline |
 | **Storage** | Secure localStorage with token management |
 | **Auto-Logout** | On token expiry or 401 response |
 
@@ -482,7 +469,7 @@ COMPLETED → REFUNDED ↩️
 ## 📋 Prerequisites
 
 | Requirement | Version |
-|-------------|---------|
+|:------------|:--------|
 | **Node.js** | 18.x or later |
 | **npm** | 10.x or later |
 | **Angular CLI** | 21.1.x |
@@ -527,7 +514,7 @@ npm test
 ## 📜 Available Scripts
 
 | Command | Description |
-|---------|-------------|
+|:--------|:------------|
 | `npm start` | Start the development server |
 | `npm run build` | Build for production |
 | `npm test` | Run Vitest unit tests |
@@ -566,6 +553,12 @@ export const environment = {
 🟣 Secondary:  #8b5cf6 (Violet)
 🟡 Warning:    #f59e0b (Amber)
 🔵 Info:       #3b82f6 (Blue)
+
+Sidebar:       Gradient #667eea → #764ba2
+Background:    #f5f7fa (Light Gray)
+Text:          #111827 → #6b7280 (Dark → Gray)
+Success:       Green Gradient #10b981 → #059669
+Error:         Red Gradient #ef4444 → #dc2626
 ```
 
 ---
@@ -576,25 +569,25 @@ export const environment = {
 smartpharma-frontend/
 ├── public/                          # Static assets
 │   └── favicon.ico
+├── uploads/                         # User uploads
+│   └── profiles/                    # Profile images
 ├── src/
 │   ├── index.html                   # Entry HTML (RTL by default)
 │   ├── main.ts                      # Bootstrap entry point
-│   ├── styles.scss                  # Global styles
+│   ├── styles.scss                  # Global styles (800+ lines)
 │   ├── polyfills.ts                 # Zone.js polyfills
 │   ├── app/
 │   │   ├── app.ts                   # Root component
 │   │   ├── app.config.ts            # App configuration & providers
 │   │   ├── app.routes.ts            # Top-level route definitions
-│   │   ├── core/                    # Core layer (guards, interceptors, models, services, utils)
-│   │   ├── features/                # Feature modules (auth, dashboard, products, stock, etc.)
-│   │   ├── layouts/                 # Layout components (auth-layout, main-layout)
-│   │   └── shared/                  # Shared components, directives, models, services
+│   │   ├── core/                    # Core layer
+│   │   ├── features/                # Feature modules (13+ lazy-loaded)
+│   │   ├── layouts/                 # Layout components
+│   │   └── shared/                  # Shared components
 │   ├── assets/
-│   │   ├── i18n/                    # Translation files (ar.json, en.json)
+│   │   ├── i18n/                    # Translation files
 │   │   └── images/                  # Static images
 │   └── environments/                # Environment configs
-│       ├── environment.ts           # Development
-│       └── environment.prod.ts      # Production
 ├── angular.json                     # Angular CLI configuration
 ├── package.json                     # Dependencies & scripts
 ├── tsconfig.json                    # TypeScript configuration
@@ -603,29 +596,6 @@ smartpharma-frontend/
 ├── .editorconfig                    # Editor settings
 └── .gitignore                       # Git ignore rules
 ```
-
----
-
-## 📝 Important Technical Notes
-
-### 🏆 Why This Project Stands Out (CV/Resume Highlights)
-
-- ✅ **Angular 21 Standalone Components** — Zero `NgModule`s! 100% modern, future-proof architecture
-- ✅ **Advanced Lazy Loading** — Every feature module loads independently for optimal performance
-- ✅ **18 Business Services** — Comprehensive service layer covering all pharmacy operations
-- ✅ **20+ TypeScript Models** — Rich domain modeling with interfaces, enums, and union types
-- ✅ **Full RBAC System** — Multi-layered Guards + Interceptors for enterprise-grade auth
-- ✅ **Advanced State Management** — Angular Signals combined with RxJS observables
-- ✅ **Centralized Error Handling** — Error Interceptor + Error Handler Service pipeline
-- ✅ **Complete i18n** — Full Arabic RTL & English LTR with `ngx-translate`
-- ✅ **Responsive Design** — Works seamlessly on mobile, tablet, and desktop
-- ✅ **Unit Testing** — Modern Vitest test runner with JSDOM
-- ✅ **REST API Integration** — HttpClient interceptors + Axios for robust HTTP layer
-- ✅ **Interactive Charts** — Chart.js + ng2-charts for data visualization
-- ✅ **Unified Pagination** — Reusable pagination patterns across all list views
-- ✅ **Clean Code Architecture** — Strict separation of concerns (core / features / shared / layouts)
-- ✅ **Multi-Gateway Payments** — 6 payment methods with full refund lifecycle
-- ✅ **AI Features** — Demand prediction engine with trend analysis and confidence scoring
 
 ---
 
