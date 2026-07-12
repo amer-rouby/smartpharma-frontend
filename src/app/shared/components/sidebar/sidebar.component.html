@@ -36,6 +36,20 @@
     <!-- Expansion -->
     @if (item.children && hasAccess(item.roles)) {
 
+    @if (isCollapsed() && item.children.length > 0) {
+
+    <a mat-list-item class="menu-item" [routerLink]="item.children[0].route" routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }" [matTooltip]="item.label | translate"
+      matTooltipPosition="right">
+      <span matListItemTitle class="menu-content-wrapper">
+        <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+      </span>
+    </a>
+
+    }
+
+    @if (!isCollapsed()) {
+
     <mat-expansion-panel class="sidebar-expansion" hideToggle [expanded]="isExpanded(i)">
 
       <mat-expansion-panel-header (click)="togglePanel(i)">
@@ -77,6 +91,9 @@
       </mat-nav-list>
 
     </mat-expansion-panel>
+
+    }
+
 
     }
 

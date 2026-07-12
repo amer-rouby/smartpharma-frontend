@@ -42,6 +42,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   readonly currentUser = toSignal(this.authService.currentUser$);
 
   private langSubscription?: Subscription;
+  private notificationPollingSubscription?: Subscription;
   private lastUnreadCount = 0;
 
   readonly userDisplayName = computed(() => this.currentUser()?.fullName ?? 'مستخدم');
@@ -93,7 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private setupNotificationPolling(): void {
-    timer(0, 30000).pipe(
+    this.notificationPollingSubscription = timer(0, 30000).pipe(
       switchMap(() => this.notificationService.getNotifications(0, 1000)),
       catchError(() => of({ content: [], totalElements: 0 }))
     ).subscribe(response => {
@@ -145,11 +146,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/auth/login']);
+      },
+      error: () => {
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.langSubscription?.unsubscribe();
+    this.notificationPollingSubscription?.unsubscribe();
   }
 }

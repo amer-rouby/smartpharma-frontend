@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from '../../../core/services/language.service';
@@ -17,9 +17,10 @@ import { MaterialModule } from '../../../shared/material.module';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   readonly authService = inject(AuthService);
   readonly router = inject(Router);
+  readonly route = inject(ActivatedRoute);
   readonly snackBar = inject(MatSnackBar);
   readonly translate = inject(TranslateService);
   readonly languageService = inject(LanguageService);
@@ -30,7 +31,52 @@ export class LoginComponent {
   hidePassword = true;
   isSubmitted = false;
 
+  sessionExpiredMessage: string | null = null;
+
+  ngOnInit(): void {
+    // Check for session expiration query params
+    this.route.queryParams.subscribe(params => {
+      if (params['expired']) {
+        this.authService.forceLogout();
+        this.sessionExpiredMessage = 'AUTH.SESSION_EXPIRED';
+        this.showSessionExpiredWarning('AUTH.SESSION_EXPIRED');
+        this.clearSessionExpiredParams();
+      } else if (params['sessionExpired']) {
+        this.authService.forceLogout();
+        this.sessionExpiredMessage = 'AUTH.SESSION_EXPIRED';
+        this.showSessionExpiredWarning('AUTH.SESSION_EXPIRED');
+        this.clearSessionExpiredParams();
+      }
+    });
+  }
+
+  private showSessionExpiredWarning(messageKey: string): void {
+    this.snackBar.open(
+      `${this.translate.instant(messageKey)} - ${this.translate.instant('AUTH.PLEASE_LOGIN_AGAIN')}`,
+      undefined,
+      {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['warning-snackbar']
+      }
+    );
+  }
+
+  private clearSessionExpiredParams(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        expired: null,
+        sessionExpired: null
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+  }
+
   onSubmit(): void {
+    Swal.close();
     this.isSubmitted = true;
 
     if (!this.credentials.username || !this.credentials.password) {

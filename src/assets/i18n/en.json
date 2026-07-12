@@ -579,7 +579,22 @@
     "EXPIRY_ALERTS": "Expiry Alerts",
     "LOAD_ERROR": "Failed to load settings",
     "SAVE_SUCCESS": "Settings saved successfully",
-    "SAVE_ERROR": "Failed to save settings"
+    "SAVE_ERROR": "Failed to save settings",
+    "SESSION": {
+      "TITLE": "Session Settings",
+      "SUBTITLE": "Manage session timeout and security settings",
+      "TIMEOUT_LABEL": "Session Timeout",
+      "TIMEOUT_DESC": "Duration before automatic logout due to inactivity",
+      "CURRENT_SESSION": "Current Session",
+      "CURRENT_SESSION_DESC": "Your current session information",
+      "EXPIRES_AT": "Session Expires At",
+      "CURRENT_TIMEOUT": "Current Timeout",
+      "NOTE_TITLE": "Note",
+      "NOTE_DESC": "The new timeout will take effect after your next login. The backend manages session expiration automatically.",
+      "SAVE_SUCCESS": "Session settings saved successfully",
+      "SAVE_ERROR": "Failed to save session settings",
+      "LOAD_ERROR": "Failed to load session settings"
+    }
   },
   "PROFILE": {
     "TITLE": "Profile",
@@ -636,7 +651,9 @@
     "INVALID_CREDENTIALS": "Invalid username or password",
     "ACCOUNT_DISABLED": "Account disabled",
     "LOGOUT_SUCCESS": "Logout successful",
-    "NO_ACCOUNT": "Don't have an account?"
+    "NO_ACCOUNT": "Don't have an account?",
+    "SESSION_EXPIRED": "Session Expired",
+    "PLEASE_LOGIN_AGAIN": "Please login again"
   },
   "REGISTER": {
     "TITLE": "Create New Account",
@@ -734,6 +751,8 @@
     "EXPORT_PDF": "Export PDF",
     "EXPORT_EXCEL": "Export Excel",
     "COPY": "Copy",
+    "MINUTES": "minutes",
+    "NOT_AVAILABLE": "N/A",
     "WELCOME": "Welcome",
     "PAYMENT_METHODS": {
       "CASH": "Cash",
@@ -1569,6 +1588,13 @@
     "FAILED": "Refund failed",
     "MAX_AMOUNT": "Maximum Amount",
     "ERROR": "Error occurred during refund"
+  },
+  "SESSION_WARNING": {
+    "TITLE": "Session Expiring Soon",
+    "MESSAGE": "Your session will expire in {{minutes}} minutes. Do you want to continue?",
+    "EXTEND": "Extend Session",
+    "LOGOUT": "Logout",
+    "REMAINING_EXTENSIONS": "Remaining extensions: {{count}}"
   },
   "PAYMENTS_RECEPT": {
     "RECEIPT_TITLE": "Payment Receipt",

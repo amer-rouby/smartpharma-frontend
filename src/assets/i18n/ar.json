@@ -579,7 +579,24 @@
     "EXPIRY_ALERTS": "تنبيهات الصلاحية",
     "LOAD_ERROR": "فشل تحميل الإعدادات",
     "SAVE_SUCCESS": "تم حفظ الإعدادات بنجاح",
-    "SAVE_ERROR": "فشل حفظ الإعدادات"
+    "SAVE_ERROR": "فشل حفظ الإعدادات",
+    "SESSION": {
+      "TITLE": "إعدادات الجلسة",
+      "SUBTITLE": "إدارة مهلة الجلسة وإعدادات الأمان",
+      "TIMEOUT_LABEL": "مهلة الجلسة",
+      "TIMEOUT_DESC": "المدة الزمنية قبل تسجيل الخروج التلقائي بسبب عدم النشاط",
+      "CURRENT_SESSION": "الجلسة الحالية",
+      "CURRENT_SESSION_DESC": "معلومات جلستك الحالية",
+      "EXPIRES_AT": "تنتهي الجلسة في",
+      "CURRENT_TIMEOUT": "المهلة الحالية",
+      "NOTE_TITLE": "ملاحظة",
+      "NOTE_DESC": "المهلة الجديدة ستدخل حيز التنفيذ بعد تسجيل الخروج التالي. النظام يدير انتهاء الجلسة تلقائياً.",
+      "REMAINING_EXTENSIONS": "التمديدات المتبقية",
+      "OF": "من",
+      "SAVE_SUCCESS": "تم حفظ إعدادات الجلسة بنجاح",
+      "SAVE_ERROR": "فشل حفظ إعدادات الجلسة",
+      "LOAD_ERROR": "فشل تحميل إعدادات الجلسة"
+    }
   },
   "PROFILE": {
     "TITLE": "الملف الشخصي",
@@ -636,7 +653,9 @@
     "INVALID_CREDENTIALS": "اسم المستخدم أو كلمة المرور غير صحيحة",
     "ACCOUNT_DISABLED": "الحساب معطل",
     "LOGOUT_SUCCESS": "تم تسجيل الخروج بنجاح",
-    "NO_ACCOUNT": "ليس لديك حساب؟"
+    "NO_ACCOUNT": "ليس لديك حساب؟",
+    "SESSION_EXPIRED": "انتهت الجلسة",
+    "PLEASE_LOGIN_AGAIN": "الرجاء تسجيل الدخول مرة أخرى"
   },
   "REGISTER": {
     "TITLE": "إنشاء حساب جديد",
@@ -734,6 +753,8 @@
     "EXPORT_PDF": "تصدير PDF",
     "EXPORT_EXCEL": "تصدير Excel",
     "COPY": "نسخ",
+    "MINUTES": "دقيقة",
+    "NOT_AVAILABLE": "غير متاح",
     "WELCOME": "مرحباً",
     "PAYMENT_METHODS": {
       "CASH": "نقدي",
@@ -1569,6 +1590,13 @@
     "FAILED": "فشل الاسترداد",
     "MAX_AMOUNT": "الحد الأقصى للمبلغ",
     "ERROR": "حدث خطأ أثناء الاسترداد"
+  },
+  "SESSION_WARNING": {
+    "TITLE": "تنبيه انتهاء الجلسة",
+    "MESSAGE": "ستنتهي جلستك خلال {{minutes}} دقائق. هل تريد الاستمرار؟",
+    "EXTEND": "تمديد الجلسة",
+    "LOGOUT": "تسجيل الخروج",
+    "REMAINING_EXTENSIONS": "التمديدات المتبقية: {{count}}"
   },
   "PAYMENTS_RECEPT": {
     "RECEIPT_TITLE": "إيصال الدفع",
