@@ -93,10 +93,12 @@
         <span>{{'HEADER.PROFILE' | translate}}</span>
       </button>
 
+      @if (hasAccess(['ADMIN', 'MANAGER'])) {
       <button mat-menu-item routerLink="/settings">
         <mat-icon>settings</mat-icon>
         <span>{{'NAV.SETTINGS' | translate}}</span>
       </button>
+      }
 
       <button mat-menu-item [matMenuTriggerFor]="languageMenu">
         <mat-icon>language</mat-icon>

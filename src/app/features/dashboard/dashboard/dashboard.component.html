@@ -184,6 +184,7 @@
     </div>
 
     <!-- Alerts Section -->
+    @if (hasAlerts()) {
     <mat-card class="alerts-card">
       <mat-card-header>
         <mat-card-title>
@@ -194,35 +195,43 @@
       <mat-card-content>
         <div class="alerts-grid">
 
+          @if (stats()!.expiringBatches > 0) {
           <div class="alert-item warning">
             <mat-icon>warning</mat-icon>
             <div class="alert-info">
               <strong>{{'DASHBOARD.EXPIRING_SOON' | translate}}</strong>
               <p>{{stats()!.expiringBatches}} {{'STOCK.DAYS_UNTIL_EXPIRY' | translate}}</p>
             </div>
-            <button mat-button color="warn" size="small">{{'COMMON.VIEW' | translate}}</button>
+            <button mat-button color="warn" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
           </div>
+          }
 
+          @if (stats()!.expiredBatches > 0) {
           <div class="alert-item danger">
             <mat-icon>error</mat-icon>
             <div class="alert-info">
               <strong>{{'DASHBOARD.EXPIRED' | translate}}</strong>
               <p>{{stats()!.expiredBatches}} {{'PRODUCTS.EXPIRED' | translate}}</p>
             </div>
-            <button mat-button color="warn" size="small">{{'COMMON.VIEW' | translate}}</button>
+            <button mat-button color="warn" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
           </div>
+          }
 
+          @if (stats()!.outOfStockProducts > 0) {
           <div class="alert-item info">
             <mat-icon>inventory</mat-icon>
             <div class="alert-info">
               <strong>{{'DASHBOARD.OUT_OF_STOCK' | translate}}</strong>
               <p>{{stats()!.outOfStockProducts}} {{'STOCK.OUT_OF_STOCK_PRODUCTS' | translate}}</p>
             </div>
-            <button mat-button color="primary" size="small">{{'COMMON.VIEW' | translate}}</button>
+            <button mat-button color="primary" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
           </div>
+          }
+
         </div>
       </mat-card-content>
     </mat-card>
+    }
 
   </div>
   }

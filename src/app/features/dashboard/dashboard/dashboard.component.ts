@@ -44,6 +44,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly showStats = computed(() => !this.loading() && !this.error() && !!this.stats());
   readonly hasTopProducts = computed(() => this.showStats() && (this.stats()?.topProducts?.length ?? 0) > 0);
   readonly hasRecentSales = computed(() => this.showStats() && (this.stats()?.recentSales?.length ?? 0) > 0);
+  readonly hasAlerts = computed(() => {
+    if (!this.stats()) return false;
+    const stats = this.stats()!;
+    return stats.expiringBatches > 0 || stats.expiredBatches > 0 || stats.outOfStockProducts > 0;
+  });
 
   readonly recentSalesColumns = ['invoiceNumber', 'totalAmount', 'transactionDate', 'paymentMethod'];
 
