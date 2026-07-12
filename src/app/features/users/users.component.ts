@@ -2,11 +2,14 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
+import { TableLoadingComponent } from '../../shared/components/table-loading/table-loading.component';
 import { MaterialModule } from '../../shared/material.module';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogService } from '../../shared/services/confirm-dialog.service';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '../../core/services/auth.service';
+import { PharmacyContextService } from '../../core/services/pharmacy-context.service';
 import { User, UserRequest, UserRole } from '../../core/models/user.model';
 import { UserDialogComponent } from './user-dialog/user-dialog.component';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, FormsModule],
+  imports: [MaterialModule, PageHeaderComponent, FormsModule, EmptyStateComponent, TableLoadingComponent],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
@@ -23,7 +26,8 @@ export class UsersComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly userService = inject(UserService);
-  private readonly authService = inject(AuthService);
+  private readonly pharmacyContext = inject(PharmacyContextService);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   readonly users = signal<User[]>([]);
   readonly loading = signal(false);
@@ -73,7 +77,7 @@ export class UsersComponent implements OnInit {
     const dialogRef = this.dialog.open(UserDialogComponent, {
       width: '500px',
       data: {
-        pharmacyId: this.authService.getPharmacyId(),
+        pharmacyId: this.pharmacyContext.getPharmacyId(),
         mode: 'add'
       }
     });
@@ -103,18 +107,9 @@ export class UsersComponent implements OnInit {
   }
 
   onDelete(user: User): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: this.translate.instant('COMMON.CONFIRM'),
-        message: this.translate.instant('USERS.CONFIRM_DELETE', { name: user.fullName }),
-        confirmText: this.translate.instant('COMMON.YES'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
+    this.confirmDialog
+      .confirmDelete('USERS.CONFIRM_DELETE', { name: user.fullName })
+      .subscribe((confirmed) => {
       if (confirmed) {
         this.userService.deleteUser(user.id).subscribe({
           next: () => {

@@ -9,6 +9,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { StockBatchService } from '../../../core/services/stock.service';
 import { Product } from '../../../core/models/product.model';
 import { StockBatch } from '../../../core/models/stock.model';
+import { PharmacyContextService } from '../../../core/services/pharmacy-context.service';
 
 @Component({
   selector: 'app-stock-batch-form',
@@ -30,12 +31,15 @@ export class StockBatchFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
   private readonly stockBatchService = inject(StockBatchService);
+  private readonly pharmacyContext = inject(PharmacyContextService);
 
   readonly products = signal<Product[]>([]);
   readonly loading = signal(false);
   readonly isEditMode = signal(false);
   readonly batchId = signal<number | null>(null);
-  readonly pharmacyId = 4;
+  get pharmacyId(): number {
+    return this.pharmacyContext.getPharmacyId();
+  }
   readonly productsList = computed(() => {
     const prods = this.products();
     return Array.isArray(prods) ? prods : [];

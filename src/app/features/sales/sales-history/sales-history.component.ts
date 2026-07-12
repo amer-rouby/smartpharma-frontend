@@ -166,9 +166,9 @@ export class SalesHistoryComponent implements OnInit {
         totalAmount: sale.totalAmount,
         subtotal: sale.subtotal,
         discountAmount: sale.discountAmount,
-        items: sale.items.map((item: any) => ({
+        items: (sale.items || []).map((item: any) => ({
           id: item.id,
-          productName: item.productName,
+          productName: item.productName || item.product?.name || this.translate.instant('PRODUCTS.UNNAMED'),
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           totalPrice: item.totalPrice

@@ -9,29 +9,19 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  direction: inherit;
 
   &.collapsed {
     width: 70px;
 
     .sidebar-logo span,
     .menu-text,
-    .version-info {
+    .sidebar-footer {
       display: none;
     }
 
     .sidebar-logo {
       justify-content: center;
     }
-  }
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
   }
 }
 
@@ -43,11 +33,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-  }
 
   .logo-icon {
     width: 40px;
@@ -59,16 +44,15 @@
     justify-content: center;
 
     mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
+      font-size: 24px;
+      color: white;
     }
   }
 
   .logo-text {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
-    white-space: nowrap;
+    color: white;
   }
 }
 
@@ -76,68 +60,109 @@
   flex: 1;
   padding: 16px 12px;
 
-  .mat-list-item {
-    height: 56px;
-    margin: 6px 0;
-    border-radius: 14px;
-    transition: all 0.3s ease;
-    cursor: pointer;
+  ::ng-deep .mat-mdc-list-item,
+  ::ng-deep .mat-expansion-panel-header {
+    height: 48px !important;
+    margin: 4px 0 !important;
+    border-radius: 12px !important;
+    color: white !important;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15) !important;
     }
 
-    &.active {
-      background: rgba(255, 255, 255, 0.3);
+    &.active,
+    &.mat-expanded {
+      background: rgba(255, 255, 255, 0.25) !important;
     }
   }
 
+  ::ng-deep .mdc-list-item__content,
+  ::ng-deep .mat-expansion-panel-header-title,
+  ::ng-deep .mat-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  ::ng-deep .mat-expansion-panel-header {
+    padding: 0 16px !important;
+  }
+
+  .menu-content-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100%;
+    height: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+
+    &.sub-item {
+      padding-inline-start: 24px !important;
+    }
+  }
+
+  .menu-item-panel {
+    width: 100%;
+    height: 100%;
+  }
+
+  .menu-icon {
+    color: white !important;
+    font-size: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
+    flex-shrink: 0;
+  }
+
+  .menu-text {
+    color: white !important;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
   .sidebar-expansion {
-    background: transparent;
-    box-shadow: none;
-    margin: 6px 0;
-    border-radius: 14px;
+    background: transparent !important;
+    box-shadow: none !important;
+
+    ::ng-deep .mat-expansion-panel-body {
+      padding: 0 !important;
+    }
+
+    ::ng-deep .mat-expansion-indicator::after {
+      color: white !important;
+    }
 
     .submenu {
       background: rgba(0, 0, 0, 0.15);
-      border-radius: 12px;
-      margin: 8px 12px;
-      padding: 8px 0;
-
-      .mat-list-item {
-        height: 48px;
-        padding-inline-start: 56px;
-        margin: 4px 8px;
-        border-radius: 10px;
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.15);
-        }
-
-        &.active {
-          background: rgba(255, 255, 255, 0.25);
-        }
-      }
+      border-radius: 10px;
+      margin: 4px 0;
+      padding: 4px 0;
     }
   }
 }
 
 .sidebar-footer {
-  padding: 20px;
+  padding: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(0, 0, 0, 0.1);
-}
 
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    z-index: 9999;
-    inset-inline-start: -280px;
-    top: 64px;
-    height: calc(100vh - 64px);
+  .version-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.7);
 
-    &.mobile-open {
-      inset-inline-start: 0;
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
   }
 }

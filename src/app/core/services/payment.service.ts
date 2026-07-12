@@ -3,6 +3,7 @@ import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { PharmacyContextService } from './pharmacy-context.service';
 import {
   Payment,
   PaymentRequest,
@@ -26,7 +27,8 @@ export interface PaymentsResponse {
 export class PaymentService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8081/api/payments';
+  private readonly pharmacy = inject(PharmacyContextService);
+  private readonly apiUrl = this.pharmacy.apiUrl('payments');
 
   private getHeaders(): HttpHeaders {
     const token = this.authService.getToken();

@@ -3,7 +3,6 @@
     icon="warning">
   </app-page-header>
 
-  <!-- Stats Cards -->
   @if (stats()) {
   <div class="stats-grid">
     <mat-card class="stat-card critical">
@@ -80,32 +79,31 @@
   </div>
   }
 
-  <!-- Filters -->
   <mat-card class="filters-card">
     <mat-card-content>
       <div class="filters-grid">
-    <form [formGroup]="filterForm">
-      <mat-form-field appearance="outline">
-        <mat-label>{{'STOCK_ALERTS.FILTERS.TYPE' | translate}}</mat-label>
-        <mat-select formControlName="alertType" (selectionChange)="onFilterChange()">
-          <mat-option value="all">{{'STOCK_ALERTS.FILTERS.ALL_TYPES' | translate}}</mat-option>
-          <mat-option value="LOW_STOCK">{{'STOCK_ALERTS.TYPE.LOW_STOCK' | translate}}</mat-option>
-          <mat-option value="OUT_OF_STOCK">{{'STOCK_ALERTS.TYPE.OUT_OF_STOCK' | translate}}</mat-option>
-          <mat-option value="EXPIRING_SOON">{{'STOCK_ALERTS.TYPE.EXPIRING_SOON' | translate}}</mat-option>
-          <mat-option value="EXPIRED">{{'STOCK_ALERTS.TYPE.EXPIRED' | translate}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <form [formGroup]="filterForm">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'STOCK_ALERTS.FILTERS.TYPE' | translate}}</mat-label>
+            <mat-select formControlName="alertType" (selectionChange)="onFilterChange()">
+              <mat-option value="all">{{'STOCK_ALERTS.FILTERS.ALL_TYPES' | translate}}</mat-option>
+              <mat-option value="LOW_STOCK">{{'STOCK_ALERTS.TYPE.LOW_STOCK' | translate}}</mat-option>
+              <mat-option value="OUT_OF_STOCK">{{'STOCK_ALERTS.TYPE.OUT_OF_STOCK' | translate}}</mat-option>
+              <mat-option value="EXPIRING_SOON">{{'STOCK_ALERTS.TYPE.EXPIRING_SOON' | translate}}</mat-option>
+              <mat-option value="EXPIRED">{{'STOCK_ALERTS.TYPE.EXPIRED' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>{{'STOCK_ALERTS.FILTERS.STATUS' | translate}}</mat-label>
-        <mat-select formControlName="status" (selectionChange)="onFilterChange()">
-          <mat-option value="all">{{'STOCK_ALERTS.FILTERS.ALL_STATUS' | translate}}</mat-option>
-          <mat-option value="unread">{{'STOCK_ALERTS.STATUS.UNREAD' | translate}}</mat-option>
-          <mat-option value="read">{{'STOCK_ALERTS.STATUS.READ' | translate}}</mat-option>
-          <mat-option value="resolved">{{'STOCK_ALERTS.STATUS.RESOLVED' | translate}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </form>
+          <mat-form-field appearance="outline">
+            <mat-label>{{'STOCK_ALERTS.FILTERS.STATUS' | translate}}</mat-label>
+            <mat-select formControlName="status" (selectionChange)="onFilterChange()">
+              <mat-option value="all">{{'STOCK_ALERTS.FILTERS.ALL_STATUS' | translate}}</mat-option>
+              <mat-option value="unread">{{'STOCK_ALERTS.STATUS.UNREAD' | translate}}</mat-option>
+              <mat-option value="read">{{'STOCK_ALERTS.STATUS.READ' | translate}}</mat-option>
+              <mat-option value="resolved">{{'STOCK_ALERTS.STATUS.RESOLVED' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
 
         <button mat-raised-button color="primary" (click)="onMarkAllAsRead()" [disabled]="loading()">
           <mat-icon>done_all</mat-icon>
@@ -120,7 +118,6 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- Loading State -->
   @if (loading()) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
@@ -128,19 +125,17 @@
   </div>
   }
 
-  <!-- Alerts Table -->
-  @if (!loading() && getFilteredAlerts().length) {
+  @if (!loading() && getFilteredAlertsCount()) {
   <mat-card class="table-card">
     <mat-card-header>
       <mat-card-title>{{'STOCK_ALERTS.ALERTS_LIST' | translate}}</mat-card-title>
-      <mat-card-subtitle>{{getFilteredAlerts().length}} {{'STOCK_ALERTS.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{getFilteredAlertsCount()}} {{'STOCK_ALERTS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
       <div class="table-wrapper">
         <table mat-table [dataSource]="getFilteredAlerts()" class="alerts-table">
 
-          <!-- Alert Type -->
           <ng-container matColumnDef="alertType">
             <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.TYPE' | translate}} </th>
             <td mat-cell *matCellDef="let alert">
@@ -158,7 +153,6 @@
             </td>
           </ng-container>
 
-          <!-- Product -->
           <ng-container matColumnDef="product">
             <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.PRODUCT' | translate}} </th>
             <td mat-cell *matCellDef="let alert">
@@ -174,7 +168,6 @@
             </td>
           </ng-container>
 
-          <!-- Message -->
           <ng-container matColumnDef="message">
             <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.MESSAGE' | translate}} </th>
             <td mat-cell *matCellDef="let alert">
@@ -182,7 +175,6 @@
             </td>
           </ng-container>
 
-          <!-- Severity -->
           <ng-container matColumnDef="severity">
             <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.SEVERITY' | translate}} </th>
             <td mat-cell *matCellDef="let alert">
@@ -192,7 +184,6 @@
             </td>
           </ng-container>
 
-          <!-- Status -->
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.STATUS' | translate}} </th>
             <td mat-cell *matCellDef="let alert">
@@ -202,7 +193,6 @@
             </td>
           </ng-container>
 
-          <!-- Created At -->
           <ng-container matColumnDef="createdAt">
             <th mat-header-cell *matHeaderCellDef> {{'STOCK_ALERTS.COLUMN.DATE' | translate}} </th>
             <td mat-cell *matCellDef="let alert">
@@ -210,7 +200,6 @@
             </td>
           </ng-container>
 
-          <!-- Actions -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef> {{'COMMON.ACTIONS' | translate}} </th>
             <td mat-cell *matCellDef="let alert">
@@ -240,9 +229,12 @@
         </table>
       </div>
     </mat-card-content>
+
+    <mat-paginator [length]="getFilteredAlertsCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
+      [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" aria-label="Select page of alerts">
+    </mat-paginator>
   </mat-card>
   } @else if (!loading()) {
-  <!-- Empty State -->
   <div class="empty-state">
     <mat-icon class="empty-icon">notifications_none</mat-icon>
     <h3>{{'STOCK_ALERTS.NO_ALERTS' | translate}}</h3>

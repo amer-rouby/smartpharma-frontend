@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { AuthService } from './auth.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiResponse } from '../models';
+import { PharmacyContextService } from './pharmacy-context.service';
+import { withHttpErrorFallback } from '../utils/http-error.util';
 
 export interface DemandPrediction {
   predictionId: number;
@@ -49,130 +50,119 @@ export interface UpdatePredictionDTO {
 @Injectable({ providedIn: 'root' })
 export class DemandPredictionService {
   private readonly http = inject(HttpClient);
-  private readonly authService = inject(AuthService);
-  private readonly apiUrl = 'http://localhost:8081/api/predictions';
-
-  private getPharmacyId(): number {
-    return this.authService.getPharmacyId() || 1;
-  }
+  private readonly pharmacy = inject(PharmacyContextService);
+  private readonly apiUrl = this.pharmacy.apiUrl('predictions');
 
   getPredictions(page: number = 0, size: number = 10): Observable<DemandPrediction[]> {
-    const pharmacyId = this.getPharmacyId();
     return this.http.get<ApiResponse<PredictionsResponse>>(this.apiUrl, {
-      params: new HttpParams()
-        .set('pharmacyId', pharmacyId)
-        .set('page', page)
-        .set('size', size)
+      params: this.pharmacy.pharmacyParams({ page, size })
     }).pipe(
-      map(response => response.data?.content || []),
-      catchError(this.handleError<DemandPrediction[]>('getPredictions', []))
+      map((response) => response.data?.content || []),
+      withHttpErrorFallback<DemandPrediction[]>('getPredictions', [])
     );
   }
 
   getPredictionsWithPagination(page: number = 0, size: number = 10): Observable<PredictionsResponse> {
-    const pharmacyId = this.getPharmacyId();
+    const empty: PredictionsResponse = {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      number: 0,
+      size: 10,
+      first: true,
+      last: true
+    };
     return this.http.get<ApiResponse<PredictionsResponse>>(this.apiUrl, {
-      params: new HttpParams()
-        .set('pharmacyId', pharmacyId)
-        .set('page', page)
-        .set('size', size)
+      params: this.pharmacy.pharmacyParams({ page, size })
     }).pipe(
-      map(response => response.data || { content: [], totalElements: 0, totalPages: 0, number: 0, size: 10, first: true, last: true }),
-      catchError(this.handleError<PredictionsResponse>('getPredictionsWithPagination', { content: [], totalElements: 0, totalPages: 0, number: 0, size: 10, first: true, last: true }))
+      map((response) => response.data || empty),
+      withHttpErrorFallback<PredictionsResponse>('getPredictionsWithPagination', empty)
     );
   }
 
   getUpcomingPredictions(daysAhead: number = 7): Observable<DemandPrediction[]> {
-    const pharmacyId = this.getPharmacyId();
     return this.http.get<ApiResponse<DemandPrediction[]>>(`${this.apiUrl}/upcoming`, {
-      params: new HttpParams()
-        .set('pharmacyId', pharmacyId)
-        .set('daysAhead', daysAhead)
+      params: this.pharmacy.pharmacyParams({ daysAhead })
     }).pipe(
-      map(response => response.data || []),
-      catchError(this.handleError<DemandPrediction[]>('getUpcomingPredictions', []))
+      map((response) => response.data || []),
+      withHttpErrorFallback<DemandPrediction[]>('getUpcomingPredictions', [])
     );
   }
 
   generatePredictions(forDate?: string): Observable<void> {
-    const pharmacyId = this.getPharmacyId();
-    let params = new HttpParams().set('pharmacyId', pharmacyId);
-    if (forDate) params = params.set('forDate', forDate);
+    const params = forDate
+      ? this.pharmacy.pharmacyParams({ forDate })
+      : this.pharmacy.pharmacyParams();
     return this.http.post<ApiResponse<void>>(`${this.apiUrl}/generate`, null, { params }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<void>('generatePredictions'))
+      map((response) => response.data),
+      withHttpErrorFallback<void>('generatePredictions')
     );
   }
 
   getAccuracyStats(): Observable<PredictionStats> {
-    const pharmacyId = this.getPharmacyId();
+    const fallback: PredictionStats = {
+      averageAccuracy: 0,
+      totalPredictions: 0,
+      lastUpdated: new Date().toISOString()
+    };
     return this.http.get<ApiResponse<PredictionStats>>(`${this.apiUrl}/accuracy`, {
-      params: new HttpParams().set('pharmacyId', pharmacyId)
+      params: this.pharmacy.pharmacyParams()
     }).pipe(
-      map(response => response.data || { averageAccuracy: 0, totalPredictions: 0, lastUpdated: new Date().toISOString() }),
-      catchError(this.handleError<PredictionStats>('getAccuracyStats', { averageAccuracy: 0, totalPredictions: 0, lastUpdated: new Date().toISOString() }))
+      map((response) => response.data || fallback),
+      withHttpErrorFallback<PredictionStats>('getAccuracyStats', fallback)
     );
   }
 
-  createPurchaseFromPrediction(predictionId: number): Observable<any> {
-    const pharmacyId = this.getPharmacyId();
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/${predictionId}/create-purchase`, { pharmacyId }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<any>('createPurchaseFromPrediction'))
-    );
+  createPurchaseFromPrediction(predictionId: number): Observable<unknown> {
+    return this.http
+      .post<ApiResponse<unknown>>(`${this.apiUrl}/${predictionId}/create-purchase`, {
+        pharmacyId: this.pharmacy.getPharmacyId()
+      })
+      .pipe(
+        map((response) => response.data),
+        withHttpErrorFallback<unknown>('createPurchaseFromPrediction')
+      );
   }
 
   getPredictionDetails(predictionId: number): Observable<DemandPrediction> {
     return this.http.get<ApiResponse<DemandPrediction>>(`${this.apiUrl}/${predictionId}`).pipe(
-      map(response => response.data),
-      catchError(this.handleError<DemandPrediction>('getPredictionDetails'))
+      map((response) => response.data),
+      withHttpErrorFallback<DemandPrediction>('getPredictionDetails')
     );
   }
 
   updatePrediction(predictionId: number, updates: UpdatePredictionDTO): Observable<DemandPrediction> {
     return this.http.put<ApiResponse<DemandPrediction>>(`${this.apiUrl}/${predictionId}`, updates).pipe(
-      map(response => response.data),
-      catchError(this.handleError<DemandPrediction>('updatePrediction'))
+      map((response) => response.data),
+      withHttpErrorFallback<DemandPrediction>('updatePrediction')
     );
   }
 
   deletePrediction(predictionId: number): Observable<void> {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${predictionId}`).pipe(
-      map(response => response.data),
-      catchError(this.handleError<void>('deletePrediction'))
+      map((response) => response.data),
+      withHttpErrorFallback<void>('deletePrediction')
     );
   }
 
   exportToPdf(predictionId: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${predictionId}/export/pdf`, {
-      responseType: 'blob'
-    }).pipe(
-      catchError(this.handleError<Blob>('exportToPdf'))
-    );
+    return this.http
+      .get(`${this.apiUrl}/${predictionId}/export/pdf`, { responseType: 'blob' })
+      .pipe(withHttpErrorFallback<Blob>('exportToPdf'));
   }
 
   exportToExcel(predictionId: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/${predictionId}/export/excel`, {
-      responseType: 'blob'
-    }).pipe(
-      catchError(this.handleError<Blob>('exportToExcel'))
-    );
+    return this.http
+      .get(`${this.apiUrl}/${predictionId}/export/excel`, { responseType: 'blob' })
+      .pipe(withHttpErrorFallback<Blob>('exportToExcel'));
   }
 
   sharePrediction(predictionId: number): Observable<{ shareUrl: string; expiresAt: string }> {
-    return this.http.post<ApiResponse<{ shareUrl: string; expiresAt: string }>>(
-      `${this.apiUrl}/${predictionId}/share`,
-      {}
-    ).pipe(
-      map(response => response.data),
-      catchError(this.handleError<{ shareUrl: string; expiresAt: string }>('sharePrediction'))
-    );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
+    return this.http
+      .post<ApiResponse<{ shareUrl: string; expiresAt: string }>>(`${this.apiUrl}/${predictionId}/share`, {})
+      .pipe(
+        map((response) => response.data),
+        withHttpErrorFallback<{ shareUrl: string; expiresAt: string }>('sharePrediction')
+      );
   }
 }

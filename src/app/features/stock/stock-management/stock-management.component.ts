@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { StockAdjustmentDialogComponent } from '../stock-adjustment-dialog/stock-adjustment-dialog.component';
 import { StockAdjustmentHistoryComponent } from '../stock-adjustment-history/stock-adjustment-history.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { PharmacyContextService } from '../../../core/services/pharmacy-context.service';
 
 @Component({
   selector: 'app-stock-management',
@@ -37,6 +38,7 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   private readonly stockBatchService = inject(StockBatchService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
+  private readonly pharmacyContext = inject(PharmacyContextService);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -46,13 +48,20 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
   readonly loading = signal(false);
   readonly searchQuery = signal('');
-  readonly pharmacyId = 4;
+  get pharmacyId(): number {
+    return this.pharmacyContext.getPharmacyId();
+  }
   readonly totalElements = signal(0);
   readonly currentPage = signal(0);
   readonly pageSize = signal(10);
 
   ngOnInit(): void {
     this.loadStockBatches();
+
+    // Reload data when language changes
+    this.languageService.currentLang$.subscribe(() => {
+      this.loadStockBatches();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -107,7 +116,9 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   }
 
   getStatusLabel(status: string): string {
-    return this.translate.instant(`STOCK.STATUS.${status?.toUpperCase()}`);
+    const statusKey = status?.toUpperCase() || 'GOOD';
+    const translated = this.translate.instant(`STOCK.STATUS.${statusKey}`);
+    return translated !== `STOCK.STATUS.${statusKey}` ? translated : status;
   }
 
   getStatusChipColor(status: string): 'primary' | 'accent' | 'warn' | '' {

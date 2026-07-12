@@ -1,32 +1,32 @@
 <div class="reports-container">
-  <!-- ✅ Page Header with Export Buttons -->
+  <!-- Page Header with Export Buttons -->
   <app-page-header [title]="'REPORTS.FINANCIAL_REPORTS' | translate" [subtitle]="'REPORTS.FINANCIAL_DESC' | translate"
     icon="account_balance">
 
     <!-- Export Buttons -->
     <div class="export-buttons">
-      <button mat-raised-button color="warn" (click)="exportPDF()" [disabled]="exportLoading()">
+      <button mat-raised-button color="primary" (click)="exportPDF()" [disabled]="exportLoading()">
         @if (exportLoading()) {
         <mat-spinner diameter="20"></mat-spinner>
         } @else {
-        <mat-icon>visibility</mat-icon>
+        <mat-icon>picture_as_pdf</mat-icon>
         }
-        <span>معاينة PDF</span>
+        <span>{{ 'REPORTS.EXPORT_PDF' | translate }}</span>
       </button>
 
-      <button mat-raised-button color="primary" (click)="exportExcel()" [disabled]="exportLoading()">
+      <button mat-raised-button color="accent" (click)="exportExcel()" [disabled]="exportLoading()">
         @if (exportLoading()) {
         <mat-spinner diameter="20"></mat-spinner>
         } @else {
         <mat-icon>download</mat-icon>
         }
-        <span>تحميل Excel</span>
+        <span>{{ 'REPORTS.EXPORT_EXCEL' | translate }}</span>
       </button>
     </div>
 
   </app-page-header>
 
-  <!-- ✅ Filters Card -->
+  <!-- Filters Card -->
   <mat-card class="filters-card">
     <mat-card-content>
       <div class="filters-grid">
@@ -70,7 +70,7 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- ✅ Loading State -->
+  <!-- Loading State -->
   @if (reportLoading()) {
   <div class="loading-overlay">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
@@ -78,7 +78,7 @@
   </div>
   }
 
-  <!-- ✅ Error State -->
+  <!-- Error State -->
   @if (reportError()) {
   <mat-card class="error-card">
     <mat-icon color="warn">error_outline</mat-icon>
@@ -89,7 +89,7 @@
   </mat-card>
   }
 
-  <!-- ✅ Data State -->
+  <!-- Data State -->
   @if (!reportLoading() && !reportError() && financialData()) {
 
   <!-- Stats Cards -->

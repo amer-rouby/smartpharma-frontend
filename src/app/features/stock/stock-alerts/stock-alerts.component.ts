@@ -39,6 +39,10 @@ export class StockAlertsComponent implements OnInit {
   readonly stats = signal<AlertStats | null>(null);
   readonly selectedFilter = signal<'all' | 'unread' | 'resolved'>('all');
   readonly selectedType = signal<'all' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'EXPIRING_SOON' | 'EXPIRED'>('all');
+
+  readonly pageSize = signal<number>(10);
+  readonly pageIndex = signal<number>(0);
+
   readonly displayedColumns = ['alertType', 'product', 'message', 'severity', 'status', 'createdAt', 'actions'];
   readonly filterForm: FormGroup = this.fb.group({ alertType: ['all'], status: ['all'] });
 
@@ -71,6 +75,12 @@ export class StockAlertsComponent implements OnInit {
   onFilterChange(): void {
     this.selectedFilter.set(this.filterForm.get('status')?.value || 'all');
     this.selectedType.set(this.filterForm.get('alertType')?.value || 'all');
+    this.pageIndex.set(0);
+  }
+
+  onPageChange(event: any): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   onMarkAsRead(alertId: number): void {
@@ -168,7 +178,11 @@ export class StockAlertsComponent implements OnInit {
 
   formatDate(dateString: string): string { return new Date(dateString).toLocaleString('ar-EG'); }
 
-  getFilteredAlerts(): StockAlert[] {
+  getFilteredAlertsCount(): number {
+    return this.allFilteredData().length;
+  }
+
+  private allFilteredData(): StockAlert[] {
     const alertsArray = this.alerts();
     if (!Array.isArray(alertsArray)) return [];
     let filtered = [...alertsArray];
@@ -179,5 +193,12 @@ export class StockAlertsComponent implements OnInit {
       filtered = filtered.filter(a => a.alertType === this.selectedType());
     }
     return filtered;
+  }
+
+  getFilteredAlerts(): StockAlert[] {
+    const filtered = this.allFilteredData();
+    const start = this.pageIndex() * this.pageSize();
+    const end = start + this.pageSize();
+    return filtered.slice(start, end);
   }
 }

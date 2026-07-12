@@ -123,45 +123,9 @@
         </mat-card-header>
         <mat-card-content>
           @if (hasTopProducts()) {
-          <table mat-table [dataSource]="stats()!.topProducts" class="data-table">
-
-            <ng-container matColumnDef="rank">
-              <th mat-header-cell *matHeaderCellDef> # </th>
-              <td mat-cell *matCellDef="let element; let i = index">
-                <span class="rank-badge">{{i + 1}}</span>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="productName">
-              <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
-              <td mat-cell *matCellDef="let element">
-                <span class="product-name">{{element.productName}}</span>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="quantitySold">
-              <th mat-header-cell *matHeaderCellDef>{{'SALES.QUANTITY' | translate}}</th>
-              <td mat-cell *matCellDef="let element">
-                <span class="quantity">{{element.quantitySold}}</span>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="totalRevenue">
-              <th mat-header-cell *matHeaderCellDef>{{'SALES.TOTAL_PRICE' | translate}}</th>
-              <td mat-cell *matCellDef="let element">
-                <span class="revenue">{{formatCurrency(element.totalRevenue)}}</span>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="topProductsColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: topProductsColumns;"></tr>
-          </table>
+          <app-top-products-table [products]="stats()!.topProducts" />
           } @else {
-          <div class="empty-state">
-            <mat-icon>show_chart</mat-icon>
-            <p>{{'DASHBOARD.NO_DATA' | translate}}</p>
-            <small>{{'SALES.NO_SALES' | translate}}</small>
-          </div>
+          <app-empty-state icon="show_chart" message="DASHBOARD.NO_DATA" hint="SALES.NO_SALES" />
           }
         </mat-card-content>
       </mat-card>
@@ -213,17 +177,14 @@
             <tr mat-row *matRowDef="let row; columns: recentSalesColumns;"></tr>
           </table>
           } @else {
-          <div class="empty-state">
-            <mat-icon>receipt_long</mat-icon>
-            <p>{{'DASHBOARD.NO_DATA' | translate}}</p>
-            <small>{{'SALES.NO_SALES' | translate}}</small>
-          </div>
+          <app-empty-state icon="receipt_long" message="DASHBOARD.NO_DATA" hint="SALES.NO_SALES" />
           }
         </mat-card-content>
       </mat-card>
     </div>
 
     <!-- Alerts Section -->
+    @if (hasAlerts()) {
     <mat-card class="alerts-card">
       <mat-card-header>
         <mat-card-title>
@@ -234,35 +195,43 @@
       <mat-card-content>
         <div class="alerts-grid">
 
+          @if (stats()!.expiringBatches > 0) {
           <div class="alert-item warning">
             <mat-icon>warning</mat-icon>
             <div class="alert-info">
               <strong>{{'DASHBOARD.EXPIRING_SOON' | translate}}</strong>
               <p>{{stats()!.expiringBatches}} {{'STOCK.DAYS_UNTIL_EXPIRY' | translate}}</p>
             </div>
-            <button mat-button color="warn" size="small">{{'COMMON.VIEW' | translate}}</button>
+            <button mat-button color="warn" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
           </div>
+          }
 
+          @if (stats()!.expiredBatches > 0) {
           <div class="alert-item danger">
             <mat-icon>error</mat-icon>
             <div class="alert-info">
               <strong>{{'DASHBOARD.EXPIRED' | translate}}</strong>
               <p>{{stats()!.expiredBatches}} {{'PRODUCTS.EXPIRED' | translate}}</p>
             </div>
-            <button mat-button color="warn" size="small">{{'COMMON.VIEW' | translate}}</button>
+            <button mat-button color="warn" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
           </div>
+          }
 
+          @if (stats()!.outOfStockProducts > 0) {
           <div class="alert-item info">
             <mat-icon>inventory</mat-icon>
             <div class="alert-info">
               <strong>{{'DASHBOARD.OUT_OF_STOCK' | translate}}</strong>
               <p>{{stats()!.outOfStockProducts}} {{'STOCK.OUT_OF_STOCK_PRODUCTS' | translate}}</p>
             </div>
-            <button mat-button color="primary" size="small">{{'COMMON.VIEW' | translate}}</button>
+            <button mat-button color="primary" size="small" routerLink="/stock/alerts">{{'COMMON.VIEW' | translate}}</button>
           </div>
+          }
+
         </div>
       </mat-card-content>
     </mat-card>
+    }
 
   </div>
   }

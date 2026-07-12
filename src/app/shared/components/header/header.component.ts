@@ -47,6 +47,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   readonly userDisplayName = computed(() => this.currentUser()?.fullName ?? 'مستخدم');
   readonly userDisplayRole = computed(() => this.currentUser()?.role ?? 'دور');
 
+  hasAccess(roles?: string[]): boolean {
+    if (!roles || roles.length === 0) return true;
+    const userRole = this.currentUser()?.role;
+    if (!userRole) {
+      return false;
+    }
+    return roles.includes(userRole);
+  }
+
   readonly quickActions = [
     { route: '/products/new', icon: 'inventory_2', label: 'NAV.PRODUCTS_ADD', color: 'primary' },
     { route: '/sales/pos', icon: 'point_of_sale', label: 'NAV.SALES_POS', color: 'accent' },

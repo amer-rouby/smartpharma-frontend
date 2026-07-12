@@ -465,6 +465,9 @@
     "EXPORT_SUCCESS": "تم تصدير التقرير بنجاح",
     "EXPORT_ERROR": "فشل في تصدير التقرير",
     "EXPORT_NOT_SUPPORTED": "التصدير غير متوفر حالياً",
+    "DOWNLOADED_SUCCESS": "تم تحميل ملف {{type}} بنجاح",
+    "DOWNLOAD_ERROR": "فشل تحميل ملف {{type}}",
+    "OPENED_IN_NEW_TAB": "تم فتح ملف {{type}}",
     "LOAD_ERROR": "فشل تحميل التقرير، يرجى المحاولة مرة أخرى",
     "NO_DATA": "لا توجد بيانات للفترة المحددة",
     "SELECT_FILTERS": "اختر فترة زمنية واضغط على إنشاء التقرير",
@@ -492,7 +495,11 @@
     "CATEGORY": "التصنيف",
     "PERCENTAGE": "النسبة المئوية",
     "PRODUCT": "المنتج",
-    "QUANTITY": "الكمية"
+    "QUANTITY": "الكمية",
+    "SUMMARY": "ملخص",
+    "GENERATED": "تم الإنشاء",
+    "PRINT_SUCCESS": "تم طباعة التقرير بنجاح",
+    "PRINT_ERROR": "فشل طباعة التقرير"
   },
   "USERS": {
     "TITLE": "المستخدمين",

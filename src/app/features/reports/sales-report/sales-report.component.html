@@ -208,48 +208,12 @@
       }
       }
 
-      <!-- Top Products Table -->
       @if (activeTable() === 'products') {
-      <table mat-table [dataSource]="topProductsTableData()" class="data-table">
-
-        <!-- Rank Column -->
-        <ng-container matColumnDef="rank">
-          <th mat-header-cell *matHeaderCellDef>#</th>
-          <td mat-cell *matCellDef="let row">{{row.rank}}</td>
-        </ng-container>
-
-        <!-- Product Name Column -->
-        <ng-container matColumnDef="productName">
-          <th mat-header-cell *matHeaderCellDef>{{'PRODUCTS.NAME' | translate}}</th>
-          <td mat-cell *matCellDef="let row"><strong>{{row.productName}}</strong></td>
-        </ng-container>
-
-        <!-- Quantity Sold Column -->
-        <ng-container matColumnDef="quantitySold">
-          <th mat-header-cell *matHeaderCellDef>{{'SALES.QUANTITY' | translate}}</th>
-          <td mat-cell *matCellDef="let row">
-            <mat-chip class="small-chip">{{row.quantitySold}}</mat-chip>
-          </td>
-        </ng-container>
-
-        <!-- Total Revenue Column -->
-        <ng-container matColumnDef="totalRevenue">
-          <th mat-header-cell *matHeaderCellDef>{{'SALES.TOTAL' | translate}}</th>
-          <td mat-cell *matCellDef="let row">
-            <strong>{{formatCurrency(row.totalRevenue)}}</strong>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="topProductsColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: topProductsColumns;"></tr>
-      </table>
-
-      @if (topProductsTableData().length === 0) {
-      <div class="empty-state">
-        <mat-icon>inventory_2</mat-icon>
-        <p>{{'REPORTS.NO_DATA' | translate}}</p>
-      </div>
-      }
+        @if (topProductsTableData().length) {
+        <app-top-products-table [products]="topProductsTableData()" [useChips]="true" />
+        } @else {
+        <app-empty-state icon="inventory_2" message="REPORTS.NO_DATA" />
+        }
       }
 
     </mat-card-content>
