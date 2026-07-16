@@ -2,7 +2,7 @@ import { Component, inject, signal, computed, OnInit, OnDestroy, output } from '
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { timer, switchMap, catchError, of, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { MaterialModule } from '../../material.module';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
@@ -42,10 +42,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   readonly currentUser = toSignal(this.authService.currentUser$);
 
   private langSubscription?: Subscription;
+  private notificationStreamSubscription?: Subscription;
   private lastUnreadCount = 0;
 
   readonly userDisplayName = computed(() => this.currentUser()?.fullName ?? 'مستخدم');
   readonly userDisplayRole = computed(() => this.currentUser()?.role ?? 'دور');
+  readonly pharmacyDisplayName = computed(() => this.currentUser()?.pharmacyName?.trim() ?? '');
 
   hasAccess(roles?: string[]): boolean {
     if (!roles || roles.length === 0) return true;
@@ -65,20 +67,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initLanguage();
     this.loadNotifications();
-    this.setupNotificationPolling();
+    this.setupNotificationStream();
 
     this.langSubscription = this.languageService.currentLang$.subscribe(lang => {
       this.currentLang.set(lang);
     });
   }
 
-  loadNotifications(): void {
+  loadNotifications(playSoundOnIncrease = false): void {
     this.notificationService.getNotifications(0, 100).subscribe({
       next: (response) => {
         const list = response.content || [];
+        const currentUnread = list.filter(n => !n.read).length;
+
+        if (playSoundOnIncrease && currentUnread > this.lastUnreadCount && this.lastUnreadCount !== 0) {
+          this.audioService.playNotificationSound();
+        }
+
+        this.lastUnreadCount = currentUnread;
         this.notifications.set([...list]);
         this.totalCount.set(response.totalElements || 0);
-        this.unreadCount.set(list.filter(n => !n.read).length);
+        this.unreadCount.set(currentUnread);
       },
       error: () => {
         this.notifications.set([]);
@@ -92,22 +101,39 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.currentLang.set(lang);
   }
 
-  private setupNotificationPolling(): void {
-    timer(0, 30000).pipe(
-      switchMap(() => this.notificationService.getNotifications(0, 1000)),
-      catchError(() => of({ content: [], totalElements: 0 }))
-    ).subscribe(response => {
-      const list = response.content || [];
-      const currentUnread = list.filter(n => !n.read).length;
+  private setupNotificationStream(): void {
+    this.notificationStreamSubscription = this.notificationService.connectToNotificationStream()
+      .subscribe(event => {
+        if (event.type === 'connected') {
+          return;
+        }
 
-      if (currentUnread > this.lastUnreadCount && this.lastUnreadCount !== 0) {
-        this.audioService.playNotificationSound();
-      }
+        if (event.type === 'notification-created' && event.notification) {
+          this.addIncomingNotification(event.notification);
+          return;
+        }
 
-      this.lastUnreadCount = currentUnread;
-      this.notifications.set(list);
-      this.unreadCount.set(currentUnread);
-    });
+        this.loadNotifications(true);
+      });
+  }
+
+  private addIncomingNotification(notification: NotificationModel): void {
+    const currentList = this.notifications();
+    if (currentList.some(item => item.id === notification.id)) {
+      return;
+    }
+
+    const updatedList = [notification, ...currentList].slice(0, 100);
+    const currentUnread = updatedList.filter(n => !n.read).length;
+
+    if (currentUnread > this.lastUnreadCount && this.lastUnreadCount !== 0) {
+      this.audioService.playNotificationSound();
+    }
+
+    this.lastUnreadCount = currentUnread;
+    this.notifications.set(updatedList);
+    this.totalCount.update(count => count + 1);
+    this.unreadCount.set(currentUnread);
   }
 
   onSearch(): void {
@@ -145,11 +171,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/auth/login']);
+      },
+      error: () => {
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.langSubscription?.unsubscribe();
+    this.notificationStreamSubscription?.unsubscribe();
   }
 }

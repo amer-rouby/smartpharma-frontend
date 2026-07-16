@@ -1,38 +1,65 @@
 .adjustment-dialog {
-  min-width: 500px;
+  width: 100%;
+  max-height: calc(100vh - 48px);
   direction: inherit;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .dialog-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 16px;
+  padding: 14px 18px;
   border-bottom: 1px solid #e9ecef;
-  margin-bottom: 20px;
   direction: inherit;
 }
 
 .dialog-header h2 {
   margin: 0;
   color: #667eea;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.dialog-content {
+  padding: 16px 18px 4px;
+  overflow-y: auto;
 }
 
 .batch-info {
-  background: #f8f9fa;
-  padding: 16px;
+  background: #f8fafc;
+  padding: 14px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   direction: inherit;
+  display: grid;
+  gap: 10px;
 }
 
-.batch-info p {
-  margin: 8px 0;
+.batch-info div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.batch-info span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.batch-info strong {
+  color: #0f172a;
+  font-size: 14px;
+  text-align: end;
+  overflow-wrap: anywhere;
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 mat-form-field {
@@ -92,16 +119,15 @@ mat-form-field {
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 20px;
-  padding-top: 16px;
+  gap: 10px;
+  padding: 12px 18px 16px;
   border-top: 1px solid #e9ecef;
+  background: #fff;
 }
 
 @media (max-width: 600px) {
   .adjustment-dialog {
-    min-width: 100%;
-    margin: 0 16px;
+    max-height: calc(100vh - 24px);
   }
 
   .dialog-actions {

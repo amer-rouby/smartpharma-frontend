@@ -1,6 +1,8 @@
 export interface Category {
   id: number;
   name: string;
+  nameAr?: string;
+  nameEn?: string;
   description?: string;
   icon?: string;
   color?: string;
@@ -12,6 +14,8 @@ export interface Category {
 
 export interface CategoryRequest {
   name: string;
+  nameAr?: string;
+  nameEn?: string;
   description?: string;
   icon?: string;
   color?: string;

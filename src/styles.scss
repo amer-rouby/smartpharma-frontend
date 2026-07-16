@@ -1,6 +1,9 @@
 // My Smart Pharmacy - Main Styles
 // Complete and clean version
 
+// Sass Color Module
+@use 'sass:color';
+
 // Material Design Setup
 @use '@angular/material' as mat;
 @include mat.core();
@@ -416,7 +419,7 @@ code {
 
 // Snackbar Styles
 .success-snackbar {
-  background: linear-gradient(135deg, $success 0%, darken($success, 10%) 100%) !important;
+  background: linear-gradient(135deg, $success 0%, color.adjust($success, $lightness: -10%) 100%) !important;
   color: $white !important;
   font-weight: 500;
   border-radius: $radius-md;
@@ -429,7 +432,7 @@ code {
 }
 
 .error-snackbar {
-  background: linear-gradient(135deg, $error 0%, darken($error, 10%) 100%) !important;
+  background: linear-gradient(135deg, $error 0%, color.adjust($error, $lightness: -10%) 100%) !important;
   color: $white !important;
   font-weight: 500;
   border-radius: $radius-md;

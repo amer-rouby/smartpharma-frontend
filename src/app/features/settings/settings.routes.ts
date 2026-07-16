@@ -37,6 +37,12 @@ export const SETTINGS_ROUTES: Routes = [
       .then(m => m.SecuritySettingsComponent),
     canActivate: [authGuard]
   },
+  {
+    path: 'session',
+    loadComponent: () => import('./security/session-settings.component')
+      .then(m => m.SessionSettingsComponent),
+    canActivate: [authGuard]
+  },
   // {
   //   path: 'language',
   //   loadComponent: () => import('./language/language-settings.component')

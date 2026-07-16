@@ -156,7 +156,11 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
 
   onAdjust(batch: StockBatch): void {
     const dialogRef = this.dialog.open(StockAdjustmentDialogComponent, {
-      width: '600px',
+      width: '520px',
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100vh - 48px)',
+      autoFocus: false,
+      panelClass: 'stock-adjustment-dialog-panel',
       data: { batch, pharmacyId: this.pharmacyId }
     });
 
