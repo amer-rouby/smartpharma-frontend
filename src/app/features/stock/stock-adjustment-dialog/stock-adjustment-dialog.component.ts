@@ -47,10 +47,7 @@ export class StockAdjustmentDialogComponent {
     if (this.form.invalid || this.loading) return;
 
     this.loading = true;
-    const adjustment = {
-      ...this.form.value,
-      batchId: this.data.batch.id
-    };
+    const adjustment = this.form.value;
 
     const pharmacyId = this.data.pharmacyId || 4;
 

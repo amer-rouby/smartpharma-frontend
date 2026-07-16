@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError, of, timer, Subscription } from 'rxjs';
-import { tap, catchError, switchMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { LoginRequest } from '../models/LoginRequest.model';
 import { RegisterRequest } from '../models/RegisterRequest.model';
@@ -22,11 +22,8 @@ export class AuthService {
   // Token expiry buffer: refresh if token expires within 5 minutes
   private readonly TOKEN_EXPIRY_BUFFER_MS = 5 * 60 * 1000;
 
-  // Keepalive interval: send request every 60 seconds
-  private readonly KEEPALIVE_INTERVAL_MS = 60 * 1000;
-
-  // Keepalive subscription
-  private keepaliveSubscription: Subscription | null = null;
+  private warningTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private expiryTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   // Track if warning dialog is open
   private warningDialogOpen = false;
@@ -43,7 +40,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         this.setSession(response);
-        this.startSessionKeepalive();
+        this.startSessionMonitor();
       })
     );
   }
@@ -52,7 +49,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
       tap(response => {
         this.setSession(response);
-        this.startSessionKeepalive();
+        this.startSessionMonitor();
       })
     );
   }
@@ -61,7 +58,7 @@ export class AuthService {
    * Logout: calls backend to revoke session, then clears local storage
    */
   logout(): Observable<any> {
-    this.stopSessionKeepalive();
+    this.stopSessionMonitor();
 
     const token = this.getToken();
     if (token) {
@@ -84,7 +81,7 @@ export class AuthService {
    * Force logout without calling backend (used for SESSION_EXPIRED)
    */
   forceLogout(): void {
-    this.stopSessionKeepalive();
+    this.stopSessionMonitor();
     this.clearSession();
   }
 
@@ -100,6 +97,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh?refreshToken=${refreshToken}`, {}).pipe(
       tap(response => {
         this.setSession(response);
+        this.startSessionMonitor();
       }),
       catchError(error => {
         this.clearSession();
@@ -118,6 +116,7 @@ export class AuthService {
       tap(response => {
         if (response.success && response.expiresAt) {
           localStorage.setItem('expiresAt', response.expiresAt);
+          this.startSessionMonitor();
         }
         if (response.remainingExtensions !== undefined) {
           localStorage.setItem('remainingExtensions', response.remainingExtensions.toString());
@@ -160,81 +159,17 @@ export class AuthService {
   }
 
   /**
-   * Start checking session status every minute.
+   * Backward-compatible alias used by guards.
    */
   startSessionKeepalive(): void {
-    // Stop any existing keepalive
-    this.stopSessionKeepalive();
-
-    // Start new keepalive interval
-    this.keepaliveSubscription = timer(0, this.KEEPALIVE_INTERVAL_MS)
-      .pipe(
-        switchMap(() => {
-          const token = this.getToken();
-          if (!token) {
-            this.stopSessionKeepalive();
-            return throwError(() => new Error('No token'));
-          }
-
-          const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-          return this.http.get<SessionStatus>(`${this.apiUrl}/session-status`, { headers });
-        })
-      )
-      .subscribe({
-        next: (status: SessionStatus) => {
-          const isActive = status.isActive ?? status.active ?? false;
-          if (!isActive) {
-            this.forceLogout();
-            this.router.navigate(['/auth/login'], { queryParams: { expired: true } });
-            return;
-          }
-
-          // Update local session data from response
-          if (status.remainingExtensions !== undefined) {
-            localStorage.setItem('remainingExtensions', status.remainingExtensions.toString());
-          }
-          if (status.expiresAt) {
-            localStorage.setItem('expiresAt', status.expiresAt);
-          }
-
-          if (status.remainingMinutes <= status.warningThreshold) {
-            this.handleSessionWarning({
-              remainingMinutes: status.remainingMinutes,
-              canExtend: status.canExtend,
-              remainingExtensions: status.remainingExtensions
-            });
-          }
-        },
-        error: (error) => {
-          // Handle SESSION_EXPIRED
-          if (error.status === 401 && error.error?.code === 'SESSION_EXPIRED') {
-            this.forceLogout();
-            this.router.navigate(['/auth/login'], { queryParams: { expired: true } });
-            return;
-          }
-
-          // Handle MAX_EXTENSIONS_REACHED
-          if (error.status === 400 && error.error?.code === 'MAX_EXTENSIONS_REACHED') {
-            this.forceLogout();
-            this.router.navigate(['/auth/login']);
-            return;
-          }
-
-          // Other errors - log but don't logout
-          console.error('Keepalive error:', error);
-        }
-      });
+    this.startSessionMonitor();
   }
 
   /**
-   * Stop sending keepalive requests
+   * Backward-compatible alias used by logout and expiry handling.
    */
   stopSessionKeepalive(): void {
-    if (this.keepaliveSubscription) {
-      this.keepaliveSubscription.unsubscribe();
-      this.keepaliveSubscription = null;
-    }
+    this.stopSessionMonitor();
   }
 
   /**
@@ -288,7 +223,7 @@ export class AuthService {
    * Check if keepalive is running
    */
   isKeepaliveRunning(): boolean {
-    return this.keepaliveSubscription !== null && !this.keepaliveSubscription.closed;
+    return this.warningTimeoutId !== null || this.expiryTimeoutId !== null;
   }
 
   /**
@@ -420,6 +355,7 @@ export class AuthService {
     }
     localStorage.setItem(environment.userKey, JSON.stringify(response));
     this.currentUserSubject.next(response);
+    this.startSessionMonitor();
   }
 
   /**
@@ -444,9 +380,75 @@ export class AuthService {
       try {
         const user = JSON.parse(userStr) as AuthResponse;
         this.currentUserSubject.next(user);
+        this.startSessionMonitor();
       } catch {
         this.clearSession();
       }
     }
+  }
+
+  private startSessionMonitor(): void {
+    this.stopSessionMonitor();
+
+    const expiresAt = this.getExpiresAt();
+    if (!expiresAt || !this.getToken()) {
+      return;
+    }
+
+    const expiresAtMs = new Date(expiresAt).getTime();
+    if (Number.isNaN(expiresAtMs)) {
+      return;
+    }
+
+    const now = Date.now();
+    const msUntilExpiry = expiresAtMs - now;
+    if (msUntilExpiry <= 0) {
+      this.forceLogout();
+      this.router.navigate(['/auth/login'], { queryParams: { expired: true } });
+      return;
+    }
+
+    const warningThresholdMinutes = this.getWarningThreshold();
+    const msUntilWarning = msUntilExpiry - (warningThresholdMinutes * 60 * 1000);
+
+    if (msUntilWarning <= 0) {
+      this.showLocalSessionWarning(expiresAtMs, warningThresholdMinutes);
+    } else {
+      this.warningTimeoutId = setTimeout(() => {
+        this.showLocalSessionWarning(expiresAtMs, warningThresholdMinutes);
+      }, msUntilWarning);
+    }
+
+    this.expiryTimeoutId = setTimeout(() => {
+      this.forceLogout();
+      this.router.navigate(['/auth/login'], { queryParams: { expired: true } });
+    }, msUntilExpiry);
+  }
+
+  private stopSessionMonitor(): void {
+    if (this.warningTimeoutId) {
+      clearTimeout(this.warningTimeoutId);
+      this.warningTimeoutId = null;
+    }
+
+    if (this.expiryTimeoutId) {
+      clearTimeout(this.expiryTimeoutId);
+      this.expiryTimeoutId = null;
+    }
+  }
+
+  private showLocalSessionWarning(expiresAtMs: number, warningThresholdMinutes: number): void {
+    const remainingMinutes = Math.max(1, Math.ceil((expiresAtMs - Date.now()) / 60000));
+    this.handleSessionWarning({
+      remainingMinutes: Math.min(remainingMinutes, warningThresholdMinutes),
+      canExtend: this.getRemainingExtensions() > 0,
+      remainingExtensions: this.getRemainingExtensions(),
+      expiresAt: new Date(expiresAtMs).toISOString()
+    });
+  }
+
+  private getWarningThreshold(): number {
+    const user = this.getCurrentUser();
+    return user?.warningThreshold || 5;
   }
 }

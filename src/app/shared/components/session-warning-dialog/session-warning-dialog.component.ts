@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../material.module';
@@ -17,7 +17,7 @@ import { SessionWarningData } from '../../../core/models/session-status.model';
 
       <mat-dialog-content>
         <p class="warning-message">
-          {{ 'SESSION_WARNING.MESSAGE' | translate : { minutes: data.remainingMinutes } }}
+          {{ 'SESSION_WARNING.MESSAGE' | translate : { time: remainingTimeText } }}
         </p>
 
         <div class="extensions-info" *ngIf="data.canExtend">
@@ -122,9 +122,23 @@ import { SessionWarningData } from '../../../core/models/session-status.model';
     }
   `]
 })
-export class SessionWarningDialogComponent {
+export class SessionWarningDialogComponent implements OnInit, OnDestroy {
   private readonly dialogRef = inject(MatDialogRef<SessionWarningDialogComponent>);
   readonly data: SessionWarningData = inject(MAT_DIALOG_DATA);
+  remainingTimeText = '00:00';
+  private countdownIntervalId: ReturnType<typeof setInterval> | null = null;
+
+  ngOnInit(): void {
+    this.updateRemainingTime();
+    this.countdownIntervalId = setInterval(() => this.updateRemainingTime(), 1000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.countdownIntervalId) {
+      clearInterval(this.countdownIntervalId);
+      this.countdownIntervalId = null;
+    }
+  }
 
   onExtend(): void {
     this.dialogRef.close(true);
@@ -132,5 +146,25 @@ export class SessionWarningDialogComponent {
 
   onLogout(): void {
     this.dialogRef.close(false);
+  }
+
+  private updateRemainingTime(): void {
+    const expiresAtMs = this.data.expiresAt
+      ? new Date(this.data.expiresAt).getTime()
+      : Date.now() + (this.data.remainingMinutes * 60 * 1000);
+
+    const remainingSeconds = Math.max(0, Math.ceil((expiresAtMs - Date.now()) / 1000));
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+
+    this.remainingTimeText = `${this.padTimePart(minutes)}:${this.padTimePart(seconds)}`;
+
+    if (remainingSeconds <= 0) {
+      this.dialogRef.close(false);
+    }
+  }
+
+  private padTimePart(value: number): string {
+    return value.toString().padStart(2, '0');
   }
 }

@@ -5,6 +5,11 @@ import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 import { NotificationModel, NotificationsResponse } from '../models/Notification.model';
 
+export interface NotificationStreamEvent {
+  type: 'notification-created' | 'notifications-changed' | 'connected';
+  notification?: NotificationModel;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -109,6 +114,43 @@ export class NotificationService {
         return throwError(() => error);
       })
     );
+  }
+
+  connectToNotificationStream(): Observable<NotificationStreamEvent> {
+    return new Observable<NotificationStreamEvent>((observer) => {
+      const token = this.authService.getToken();
+      const pharmacyId = this.authService.getPharmacyId();
+
+      if (!token || !pharmacyId) {
+        observer.complete();
+        return undefined;
+      }
+
+      const streamUrl = `${this.apiUrl}/stream?pharmacyId=${pharmacyId}&token=${encodeURIComponent(token)}`;
+      const eventSource = new EventSource(streamUrl);
+
+      eventSource.addEventListener('connected', () => {
+        observer.next({ type: 'connected' });
+      });
+
+      eventSource.addEventListener('notification-created', (event) => {
+        const data = JSON.parse((event as MessageEvent).data);
+        observer.next({
+          type: 'notification-created',
+          notification: this.mapNotification(data)
+        });
+      });
+
+      eventSource.addEventListener('notifications-changed', () => {
+        observer.next({ type: 'notifications-changed' });
+      });
+
+      eventSource.onerror = (error) => {
+        console.error('Notification stream error:', error);
+      };
+
+      return () => eventSource.close();
+    });
   }
 
   getUnreadNotifications(): Observable<NotificationModel[]> {

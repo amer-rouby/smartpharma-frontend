@@ -14,6 +14,7 @@
     width: 70px;
 
     .sidebar-logo span,
+    .logo-text-stack,
     .menu-text,
     .sidebar-footer {
       display: none;
@@ -30,7 +31,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 20px;
+  padding: 18px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
   cursor: pointer;
@@ -50,10 +51,21 @@
     }
   }
 
-  .logo-text {
-    font-size: 17px;
-    font-weight: 700;
-    color: white;
+  .logo-text-stack {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+    line-height: 1.35;
+
+    .pharmacy-name {
+      color: white;
+      font-size: 19px;
+      font-weight: 800;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    }
   }
 }
 

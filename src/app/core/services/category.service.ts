@@ -84,6 +84,8 @@ export class CategoryService {
 
     const request: CategoryRequest = {
       ...category,
+      nameAr: category.nameAr || category.name,
+      nameEn: category.nameEn || category.name,
       pharmacyId
     };
 
@@ -100,7 +102,14 @@ export class CategoryService {
       return throwError(() => new Error('Pharmacy ID is required'));
     }
 
-    return this.http.put<ApiResponse<Category>>(`${this.apiUrl}/${id}`, category, {
+    const request: CategoryRequest = {
+      ...category,
+      nameAr: category.nameAr || category.name,
+      nameEn: category.nameEn || category.name,
+      pharmacyId
+    };
+
+    return this.http.put<ApiResponse<Category>>(`${this.apiUrl}/${id}`, request, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
       map(response => response.data),

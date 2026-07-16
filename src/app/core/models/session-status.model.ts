@@ -19,6 +19,7 @@ export interface SessionWarningData {
   remainingMinutes: number;
   canExtend: boolean;
   remainingExtensions: number;
+  expiresAt?: string;
 }
 
 export interface SessionWarningResponse {

@@ -7,9 +7,11 @@
     </div>
 
     @if (!isCollapsed()) {
-    <span class="logo-text">
-      {{ 'APP.NAME' | translate }}
-    </span>
+    <div class="logo-text-stack">
+      <span class="pharmacy-name">
+        {{ pharmacyDisplayName() || ('APP.NAME' | translate) }}
+      </span>
+    </div>
     }
   </div>
 

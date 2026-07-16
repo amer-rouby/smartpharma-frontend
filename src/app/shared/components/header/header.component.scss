@@ -93,6 +93,10 @@
   .logo-text {
     font-size: 19px;
     font-weight: 800;
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .logo-subtitle {

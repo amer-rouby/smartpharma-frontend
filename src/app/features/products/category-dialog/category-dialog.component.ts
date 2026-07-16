@@ -54,6 +54,8 @@ export class CategoryDialogComponent {
 
     const request: CategoryRequest = {
       name: formValue.name,
+      nameAr: formValue.name,
+      nameEn: formValue.name,
       description: formValue.description,
       icon: formValue.icon,
       color: formValue.color,
