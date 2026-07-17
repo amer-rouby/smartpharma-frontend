@@ -35,6 +35,17 @@
         <span>{{'PURCHASES.RECEIVE' | translate}}</span>
       </button>
       }
+
+      @if (order()!.status === 'APPROVED' || order()!.status === 'PENDING') {
+      <button
+        mat-raised-button
+        style="background: linear-gradient(135deg, #25d366, #128c7e); color: #fff;"
+        (click)="onSendWhatsApp()"
+      >
+        <mat-icon>chat</mat-icon>
+        <span>{{'PURCHASES.SEND_WHATSAPP' | translate}}</span>
+      </button>
+      }
     </div>
   </app-page-header>
 

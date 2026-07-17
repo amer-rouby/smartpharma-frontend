@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { WhatsAppDialogComponent } from '../../../shared/components/whatsapp-dialog/whatsapp-dialog.component';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
@@ -109,6 +110,26 @@ export class PurchaseDetailComponent implements OnInit {
           },
           error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.APPROVE_ERROR')
         });
+      }
+    });
+  }
+
+  /**
+   * Opens the WhatsApp dialog to preview and send the order to the supplier.
+   */
+  onSendWhatsApp(): void {
+    const order = this.order();
+    if (!order) return;
+
+    this.dialog.open(WhatsAppDialogComponent, {
+      width: '560px',
+      maxWidth: '95vw',
+      panelClass: 'whatsapp-dialog-panel',
+      disableClose: true,
+      data: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        supplierName: order.supplierName
       }
     });
   }
