@@ -4,6 +4,8 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
 import { WhatsAppService } from '../../../core/services/whatsapp.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 
@@ -21,21 +23,25 @@ export interface WhatsAppDialogData {
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    TranslateModule
   ],
   templateUrl: './whatsapp-dialog.component.html',
   styleUrl: './whatsapp-dialog.component.scss'
 })
 export class WhatsAppDialogComponent {
   private readonly whatsAppService = inject(WhatsAppService);
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly loading = signal(false);
-  readonly sending = signal(false);
-  readonly sent = signal(false);
-  readonly failed = signal(false);
   readonly decodedMessage = signal<string>('');
   readonly phoneNumber = signal<string>('');
+  readonly rawUrl = signal<string>('');
+  readonly desktopUrl = signal<string>('');
+  readonly safeUrl = signal<SafeUrl | null>(null);
+  readonly opened = signal(false);
+  readonly desktopOpened = signal(false);
 
   constructor(
     public dialogRef: MatDialogRef<WhatsAppDialogComponent>,
@@ -50,7 +56,6 @@ export class WhatsAppDialogComponent {
     this.whatsAppService.getWhatsappData(this.data.orderId).subscribe({
       next: (response) => {
         if (!response || !response.phoneNumber) {
-          this.failed.set(true);
           this.loading.set(false);
           return;
         }
@@ -68,48 +73,40 @@ export class WhatsAppDialogComponent {
           this.decodedMessage.set('');
         }
 
+        const webUrl = response.whatsAppUrl || this.whatsAppService.buildWhatsAppLink(response);
+        this.rawUrl.set(webUrl);
+        this.safeUrl.set(this.sanitizer.bypassSecurityTrustUrl(webUrl));
+
+        const phone = (response.phoneNumber || '').replace(/^\+/, '');
+        const message = response.encodedMessage || '';
+        this.desktopUrl.set(`whatsapp://send?phone=${phone}&text=${message}`);
+
         this.loading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.failed.set(true);
+        this.errorHandler.handleHttpError(err, 'PURCHASES.WHATSAPP_LOAD_ERROR');
       }
     });
   }
 
-  onSend(): void {
-    if (this.sending() || this.sent()) return;
+  onOpenDesktop(): void {
+    const url = this.desktopUrl();
+    if (!url) return;
+    this.desktopOpened.set(true);
+    window.location.href = url;
+    setTimeout(() => this.dialogRef.close(true), 2000);
+  }
 
-    this.sending.set(true);
-    this.failed.set(false);
-
-    this.whatsAppService.sendWhatsApp(this.data.orderId).subscribe({
-      next: (response) => {
-        this.sending.set(false);
-        if (response?.success) {
-          this.sent.set(true);
-          setTimeout(() => this.dialogRef.close(true), 1800);
-        } else {
-          this.failed.set(true);
-          this.errorHandler.showError('فشل إرسال الرسالة');
-        }
-      },
-      error: (err) => {
-        this.sending.set(false);
-        this.failed.set(true);
-
-        const errorMessage = err?.error?.error?.message || '';
-        if (errorMessage.includes('not in allowed list') || errorMessage.includes('Recipient phone number')) {
-          this.errorHandler.showError('WHATSAPP.NOT_ALLOWED');
-        } else {
-          this.errorHandler.handleHttpError(err, 'PURCHASES.WHATSAPP_ERROR');
-        }
-      }
-    });
+  onOpenWeb(): void {
+    const url = this.rawUrl();
+    if (!url) return;
+    this.opened.set(true);
+    window.open(url, '_blank', 'noopener,noreferrer');
+    setTimeout(() => this.dialogRef.close(true), 2000);
   }
 
   onRetry(): void {
-    this.failed.set(false);
     this.loadWhatsAppData();
   }
 

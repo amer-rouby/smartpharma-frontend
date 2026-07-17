@@ -163,6 +163,7 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 - **Priority Levels** — low, normal, urgent
 - **Partial Receiving** — pending quantity tracking
 - **Order Item Management** — received vs. ordered quantities
+- **WhatsApp Integration** — send purchase orders directly to suppliers via WhatsApp Desktop or Web
 
 ### 💸 Expense Management
 - **Multi-Category** — purchases, salaries, rent, utilities, maintenance, marketing, insurance, licenses, transport, other
