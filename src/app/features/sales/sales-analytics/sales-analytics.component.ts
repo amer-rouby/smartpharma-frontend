@@ -3,12 +3,21 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { SalesService } from '../../../core/services/sales.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { ExportService } from '../../../core/services/export.service';
 import { CategorySales, ProductSales, SalesAnalytics, SalesAnalyticsParams } from '../../../core/models/sale.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { FilterState, PeriodType, StatCard } from '../../../core/models';
+import { environment } from '../../../../environments/environment';
+
+declare global {
+  interface Window {
+    __exportIframe?: HTMLIFrameElement;
+  }
+}
 
 @Component({
   selector: 'app-sales-analytics',
@@ -22,6 +31,8 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly exportService = inject(ExportService);
+  private readonly http = inject(HttpClient);
   private readonly destroy$ = new Subject<void>();
 
   // ✅ إضافة currentLang signal
@@ -157,7 +168,104 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   }
 
   onExport(format: 'excel' | 'pdf'): void {
-    this.errorHandler.showWarning('REPORTS.EXPORT_NOT_SUPPORTED');
+    const pharmacyId = this.state().pharmacyId;
+    const { startDate, endDate } = this.filters();
+
+    if (!startDate || !endDate) {
+      this.errorHandler.showWarning('REPORTS.EXPORT_NO_DATE_RANGE');
+      return;
+    }
+
+    const endpoint = format === 'excel' ? '/sales/excel' : '/sales/pdf';
+    const fileName = `sales_report_${startDate}_to_${endDate}.${format}`;
+
+    // Remove existing iframe if present
+    if (window.__exportIframe) {
+      window.__exportIframe.remove();
+    }
+
+    // Create iframe that covers the entire screen (visible for printing)
+    const iframe = document.createElement('iframe');
+    iframe.id = 'export-iframe';
+    iframe.style.position = 'fixed';
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.style.zIndex = '9999';
+    iframe.style.backgroundColor = 'white';
+    iframe.style.display = 'block';
+    iframe.style.visibility = 'visible';
+    iframe.style.opacity = '1';
+    document.body.appendChild(iframe);
+    window.__exportIframe = iframe;
+
+    // Build URL with params
+    const baseUrl = `${environment.apiUrl}/reports/export${endpoint}`;
+    let params = new HttpParams()
+      .set('pharmacyId', pharmacyId.toString())
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': token ? `Bearer ${token}` : '',
+      'Accept': 'application/octet-stream'
+    });
+
+    // Fetch the blob
+    this.http.get(baseUrl, { headers, params, responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        // Create blob URL
+        const blobURL = URL.createObjectURL(blob);
+
+        // Set iframe src directly to blob URL
+        iframe.src = blobURL;
+
+        // Wait for iframe to load completely
+        iframe.onload = () => {
+          // Wait for content to render
+          setTimeout(() => {
+            try {
+              // Trigger print dialog
+              iframe.contentWindow?.print();
+            } catch (error) {
+              console.error('Print failed:', error);
+            }
+
+            // Clean up after printing
+            setTimeout(() => {
+              URL.revokeObjectURL(blobURL);
+              if (iframe.parentNode) {
+                iframe.remove();
+              }
+            }, 2000);
+          }, 1500);
+        };
+
+        // Fallback if onload doesn't fire
+        setTimeout(() => {
+          try {
+            iframe.contentWindow?.print();
+          } catch (error) {
+            console.error('Print failed:', error);
+          }
+          setTimeout(() => {
+            URL.revokeObjectURL(blobURL);
+            if (iframe.parentNode) {
+              iframe.remove();
+            }
+          }, 2000);
+        }, 4000);
+      },
+      error: (err) => {
+        this.errorHandler.handleHttpError(err, 'REPORTS.EXPORT_ERROR');
+        if (iframe.parentNode) {
+          iframe.remove();
+        }
+      }
+    });
   }
 
   calculateBarHeight(value: number): number {
