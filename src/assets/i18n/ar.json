@@ -454,6 +454,7 @@
     "NET_PROFIT": "صافي الربح",
     "REVENUE": "الإيرادات",
     "EXPENSES": "المصروفات",
+    "TOTAL_EXPENSES": "إجمالي المصروفات",
     "CATEGORY_STOCK": "المخزون حسب التصنيف",
     "STOCK_DETAILS": "تفاصيل المخزون",
     "EXPIRY_DETAILS": "تفاصيل الصلاحية",
@@ -1032,6 +1033,8 @@
   "STOCK_ALERTS": {
     "TITLE": "تنبيهات المخزون",
     "SUBTITLE": "متابعة ومراقبة تنبيهات المخزون والصلاحية",
+    "EXPIRED": "منتهي الصلاحية",
+    "LOW_STOCK": "مخزون منخفض",
     "STATS": {
       "OUT_OF_STOCK": "نفاد المخزون",
       "EXPIRED": "منتهي الصلاحية",

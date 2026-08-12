@@ -49,14 +49,14 @@ export class ExportService {
     return this.http.get(url, { headers, params, responseType: 'blob' }).pipe(
       tap(blob => {
         if (options.preview) {
-          this.downloadBlob(blob, options.fileName);
+          this.downloadBlob(blob, options.fileName, true);
           this.snackBar.open(
             this.translate.instant('REPORTS.OPENED_IN_NEW_TAB', { type: options.fileType.toUpperCase() }),
             this.translate.instant('COMMON.CLOSE'),
             { duration: 3000 }
           );
         } else if (!options.onSuccess) {
-          this.downloadBlob(blob, options.fileName);
+          this.downloadBlob(blob, options.fileName, false);
           this.snackBar.open(
             this.translate.instant('REPORTS.DOWNLOADED_SUCCESS', { type: options.fileType.toUpperCase() }),
             this.translate.instant('COMMON.CLOSE'),
@@ -76,16 +76,33 @@ export class ExportService {
     );
   }
 
-  private downloadBlob(blob: Blob, fileName: string): void {
+  private downloadBlob(blob: Blob, fileName: string, preview: boolean = false): void {
     const url = window.URL.createObjectURL(blob);
+
+    if (preview) {
+      // Open in new tab for preview
+      const newWindow = window.open(url, '_blank');
+      if (!newWindow) {
+        // If popup is blocked, fallback to download
+        this.forceDownload(url, fileName);
+      }
+    } else {
+      // Direct download
+      this.forceDownload(url, fileName);
+    }
+
+    // Revoke after a delay to ensure the download/view starts
+    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+  }
+
+  private forceDownload(url: string, fileName: string): void {
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
+    link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    // Revoke after a short delay to ensure the download starts
-    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
   }
 
   // === Shortcut export methods ===

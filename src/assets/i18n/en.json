@@ -454,6 +454,7 @@
     "NET_PROFIT": "Net Profit",
     "REVENUE": "Revenue",
     "EXPENSES": "Expenses",
+    "TOTAL_EXPENSES": "Total Expenses",
     "CATEGORY_STOCK": "Stock by Category",
     "STOCK_DETAILS": "Stock Details",
     "EXPIRY_DETAILS": "Expiry Details",
@@ -1030,6 +1031,8 @@
   "STOCK_ALERTS": {
     "TITLE": "Stock Alerts",
     "SUBTITLE": "Monitor and track stock and expiry alerts",
+    "EXPIRED": "Expired",
+    "LOW_STOCK": "Low Stock",
     "STATS": {
       "OUT_OF_STOCK": "Out of Stock",
       "EXPIRED": "Expired",

@@ -30,29 +30,61 @@ export class InvoicePrintService {
   private readonly languageService = inject(LanguageService);
 
   /**
-   * Opens a print-ready invoice in a new window.
-   * The window will auto-trigger the browser's print dialog after loading.
+   * Opens a print-ready invoice in a hidden iframe using srcdoc.
+   * The iframe will auto-trigger the browser's print dialog after loading.
+   * No new window or tab will be opened.
    */
   printInvoice(sale: PrintableSale, pharmacy: PharmacySettings): void {
     const html = this.generateInvoiceHtml(sale, pharmacy);
 
-    // Open a blank window first, then write content
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
-
-    if (!printWindow) {
-      console.error('Print window blocked - please allow pop-ups');
-      return;
+    // Remove existing iframe if present
+    const existingIframe = document.getElementById('print-iframe');
+    if (existingIframe) {
+      existingIframe.remove();
     }
 
-    printWindow.document.write(html);
-    printWindow.document.close();
+    // Create new iframe with srcdoc
+    const iframe = document.createElement('iframe');
+    iframe.id = 'print-iframe';
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0px';
+    iframe.style.height = '0px';
+    iframe.style.border = 'none';
+    iframe.style.visibility = 'hidden';
+    iframe.style.opacity = '0';
+    iframe.setAttribute('srcdoc', html);
 
-    // Wait for content & fonts to load, then trigger print
-    printWindow.onload = () => {
+    document.body.appendChild(iframe);
+
+    // Flag to ensure print only happens once
+    let hasPrinted = false;
+
+    // Trigger print when iframe loads
+    const triggerPrint = () => {
+      if (hasPrinted) return;
+      hasPrinted = true;
+
       setTimeout(() => {
-        printWindow.print();
-      }, 600);
+        try {
+          iframe.contentWindow?.print();
+        } catch (error) {
+          console.error('Print failed:', error);
+        }
+        // Clean up: remove iframe after printing
+        setTimeout(() => {
+          if (iframe.parentNode) {
+            iframe.remove();
+          }
+        }, 500);
+      }, 300);
     };
+
+    iframe.onload = triggerPrint;
+
+    // Fallback timeout in case onload doesn't fire
+    setTimeout(triggerPrint, 800);
   }
 
   private generateInvoiceHtml(sale: PrintableSale, pharmacy: PharmacySettings): string {
@@ -215,7 +247,7 @@ ${this.getPrintStyles(isArabic)}
 
   private translatePaymentMethod(method: string): string {
     if (!method) return '-';
-    const key = `SALES.PAYMENT_METHOD.${method}`;
+    const key = `SALES.PAYMENT_METHODS.${method}`;
     const translated = this.translate.instant(key);
     if (translated && translated !== key) return translated;
 
