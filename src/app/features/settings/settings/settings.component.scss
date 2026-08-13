@@ -31,7 +31,7 @@
     }
 
     mat-icon[matListItemIcon] {
-      color: #667eea;
+      color: var(--color-primary-600, #667eea);
       font-size: 24px;
       width: 24px;
       height: 24px;
@@ -40,11 +40,11 @@
     span[matListItemTitle] {
       font-weight: 500;
       font-size: 15px;
-      color: #2d3748;
+      color: var(--color-text-primary, #2d3748);
     }
 
     mat-icon[matListItemMeta] {
-      color: #a0aec0;
+      color: var(--color-text-muted, #a0aec0);
       font-size: 20px;
     }
   }

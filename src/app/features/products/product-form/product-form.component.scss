@@ -17,7 +17,7 @@
     gap: 16px;
 
     p {
-      color: #718096;
+      color: var(--color-text-secondary, #718096);
       font-size: 16px;
       margin: 0;
     }
@@ -64,14 +64,14 @@
     }
 
     mat-icon {
-      color: #667eea;
+      color: var(--color-primary-600, #667eea);
     }
   }
 
   .checkbox-section {
     margin: 24px 0;
     padding: 20px;
-    background: #f7fafc;
+    background: var(--color-slate-50, #f7fafc);
     border-radius: 12px;
     direction: inherit;
 
@@ -80,7 +80,7 @@
 
       ::ng-deep {
         .mdc-checkbox__background {
-          border-color: #667eea;
+          border-color: var(--color-primary-600, #667eea);
         }
       }
 
@@ -92,7 +92,7 @@
         font-weight: 600;
 
         mat-icon {
-          color: #667eea;
+          color: var(--color-primary-600, #667eea);
         }
       }
     }

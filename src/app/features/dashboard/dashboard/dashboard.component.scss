@@ -75,10 +75,16 @@
     justify-content: center;
     flex-shrink: 0;
 
+    // The global .stat-card mat-icon rule (styles.scss) hardcodes
+    // white, meant for the solid-gradient icon badges other screens
+    // use - it wins over this block's inherited tone color unless
+    // stated explicitly here, since inheritance never beats a direct
+    // declaration on the same element regardless of specificity.
     mat-icon {
       font-size: 26px;
       width: 26px;
       height: 26px;
+      color: inherit !important;
     }
 
     &.tone-primary {
