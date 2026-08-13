@@ -1,5 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
@@ -32,6 +33,17 @@ export class UsersComponent implements OnInit {
   readonly users = signal<User[]>([]);
   readonly loading = signal(false);
   readonly searchQuery = signal('');
+  readonly page = signal(0);
+  readonly size = signal(10);
+
+  // The backend user list/search endpoints return every matching user in one
+  // array with no server-side paging support, so pagination happens here.
+  readonly pagedUsers = computed(() => {
+    const start = this.page() * this.size();
+    return this.users().slice(start, start + this.size());
+  });
+
+  readonly hasPagination = computed(() => this.users().length > this.size());
 
   readonly displayedColumns = ['fullName', 'email', 'role', 'isActive', 'lastLoginAt', 'actions'];
   readonly userRoles = [
@@ -51,6 +63,7 @@ export class UsersComponent implements OnInit {
     this.userService.getUsers().subscribe({
       next: (data) => {
         this.users.set(data);
+        this.page.set(0);
         this.loading.set(false);
       },
       error: (err) => {
@@ -65,12 +78,20 @@ export class UsersComponent implements OnInit {
 
     if (query.trim()) {
       this.userService.searchUsers(query).subscribe({
-        next: (data) => this.users.set(data),
+        next: (data) => {
+          this.users.set(data);
+          this.page.set(0);
+        },
         error: (err) => this.errorHandler.handleHttpError(err, 'USERS.LOAD_ERROR')
       });
     } else {
       this.loadUsers();
     }
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.page.set(event.pageIndex);
+    this.size.set(event.pageSize);
   }
 
   onAdd(): void {

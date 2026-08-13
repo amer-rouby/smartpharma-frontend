@@ -54,7 +54,7 @@
       <!-- Products Table -->
       @if (!loading()) {
       <div class="table-container">
-        <table mat-table [dataSource]="filteredProducts()" class="data-table">
+        <table mat-table [dataSource]="pagedProducts()" class="data-table">
 
           <!-- Name Column -->
           <ng-container matColumnDef="name">
@@ -150,6 +150,12 @@
             {{'PRODUCTS.ADD_NEW' | translate}}
           </button>
         </div>
+        }
+
+        @if (hasPagination()) {
+        <mat-paginator [length]="filteredProducts().length" [pageIndex]="page()" [pageSize]="size()"
+          [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+        </mat-paginator>
         }
       </div>
       }

@@ -1,6 +1,7 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -22,6 +23,10 @@ export class StockMovementsComponent implements OnInit {
   readonly loading = signal(false);
   readonly movements = signal<any[]>([]);
   readonly stats = signal<any>(null);
+  readonly page = signal(0);
+  readonly size = signal(20);
+  readonly totalElements = signal(0);
+  readonly hasPagination = computed(() => this.totalElements() > this.size());
 
   readonly filterForm: FormGroup = this.fb.group({
     startDate: [''],
@@ -47,17 +52,22 @@ export class StockMovementsComponent implements OnInit {
   loadMovements(): void {
     this.loading.set(true);
 
-    this.stockMovementService.getMovements().subscribe({
+    this.stockMovementService.getMovements(this.page(), this.size()).subscribe({
       next: (response: any) => {
         let movementsData: any[] = [];
+        let total = 0;
         if (response?.data?.content && Array.isArray(response.data.content)) {
           movementsData = response.data.content;
+          total = response.data.totalElements || 0;
         } else if (response?.content && Array.isArray(response.content)) {
           movementsData = response.content;
+          total = response.totalElements || 0;
         } else if (Array.isArray(response)) {
           movementsData = response;
+          total = response.length;
         }
         this.movements.set(movementsData);
+        this.totalElements.set(total);
         this.loading.set(false);
       },
       error: (error) => {
@@ -70,6 +80,12 @@ export class StockMovementsComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.page.set(event.pageIndex);
+    this.size.set(event.pageSize);
+    this.loadMovements();
   }
 
   loadStats(): void {
@@ -124,6 +140,8 @@ export class StockMovementsComponent implements OnInit {
           }
 
           this.movements.set(filtered);
+          this.totalElements.set(filtered.length);
+          this.page.set(0);
           this.loading.set(false);
         },
         error: (error) => {

@@ -47,7 +47,7 @@
 
     <mat-card-content>
       <div class="table-wrapper">
-        <table mat-table [dataSource]="users()" class="data-table" matSort>
+        <table mat-table [dataSource]="pagedUsers()" class="data-table" matSort>
 
           <!-- Full Name -->
           <ng-container matColumnDef="fullName">
@@ -133,6 +133,12 @@
           </tr>
         </table>
       </div>
+
+      @if (hasPagination()) {
+      <mat-paginator [length]="users().length" [pageIndex]="page()" [pageSize]="size()"
+        [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+      }
     </mat-card-content>
   </mat-card>
   }
