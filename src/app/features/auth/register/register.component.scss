@@ -3,7 +3,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-slate-50, #f8fafc);
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(79, 70, 229, 0.06), transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(79, 70, 229, 0.05), transparent 40%);
   padding: 20px;
   direction: inherit;
 }
@@ -14,9 +17,10 @@
 }
 
 .register-card {
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  padding: 32px 28px;
+  border-radius: var(--radius-xl, 20px);
+  border: 1px solid var(--color-border, #e2e8f0);
+  box-shadow: var(--shadow-lg, 0 12px 32px rgba(15, 23, 42, 0.12));
   direction: inherit;
 
   mat-card-header {
@@ -29,16 +33,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
       gap: 12px;
-      font-size: 24px;
-      font-weight: 700;
-      color: #667eea;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--color-text-primary, #1e293b);
 
       mat-icon {
-        font-size: 36px;
-        width: 36px;
-        height: 36px;
+        font-size: 30px;
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
+        color: #fff;
+        background: linear-gradient(135deg, var(--color-primary-500, #6366f1), var(--color-primary-700, #4338ca));
+        border-radius: var(--radius-lg, 16px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
       }
 
       span {
@@ -48,7 +60,7 @@
 
     mat-card-subtitle {
       font-size: 14px;
-      color: #666;
+      color: var(--color-text-secondary, #64748b);
     }
   }
 
@@ -78,6 +90,7 @@
 
         .mat-mdc-form-field-prefix {
           margin-inline-end: 8px;
+          color: var(--color-text-muted, #94a3b8);
         }
 
         .mat-mdc-form-field-suffix {
@@ -100,11 +113,12 @@
       }
 
       button[type="submit"] {
-        margin-top: 16px;
+        margin-top: 12px;
         padding: 12px;
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 15px;
+        font-weight: 700;
         min-height: 48px;
+        border-radius: var(--radius-md, 12px);
 
         .spin-icon {
           animation: spin 1s linear infinite;
@@ -129,12 +143,12 @@
     p {
       margin: 0;
       font-size: 14px;
-      color: #666;
+      color: var(--color-text-secondary, #64748b);
       text-align: center;
 
       a {
-        color: #667eea;
-        font-weight: 600;
+        color: var(--color-primary-600, #4f46e5);
+        font-weight: 700;
         text-decoration: none;
 
         &:hover {
@@ -146,6 +160,7 @@
 
   mat-divider {
     margin: 20px 0;
+    border-top-color: var(--color-border, #e2e8f0);
   }
 
   .language-actions {
@@ -161,21 +176,22 @@
       font-weight: 500;
       min-width: 80px;
       padding: 8px 16px;
+      color: var(--color-text-secondary, #64748b);
 
       &.active {
-        color: #667eea;
+        color: var(--color-primary-700, #4338ca);
         font-weight: 700;
-        background: rgba(102, 126, 234, 0.1);
+        background: var(--color-primary-50, #eef2ff);
         border-radius: 8px;
       }
 
       &:hover:not(.active) {
-        background: rgba(0, 0, 0, 0.04);
+        background: var(--color-slate-100, #f1f5f9);
       }
     }
 
     .divider {
-      color: #ccc;
+      color: var(--color-border, #e2e8f0);
       font-size: 16px;
     }
   }
@@ -193,7 +209,7 @@
 
 @media (max-width: 480px) {
   .register-card {
-    padding: 20px;
+    padding: 24px 20px;
   }
 
   .language-actions {

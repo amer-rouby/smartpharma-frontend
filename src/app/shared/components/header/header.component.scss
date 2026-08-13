@@ -1,13 +1,13 @@
 // 1. الثوابت والمتغيرات
 :host {
-  --header-height: 80px;
-  --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --header-text: #ffffff;
-  --radius-main: 14px;
+  --header-height: 72px;
+  --header-bg: #ffffff;
+  --header-text: #1e293b;
+  --radius-main: 12px;
   --radius-menu: 16px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --glass-effect: rgba(255, 255, 255, 0.15);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass-effect: var(--color-slate-100, #f1f5f9);
+  --glass-border: 1px solid var(--color-border, #e2e8f0);
   display: block;
 }
 
@@ -16,7 +16,6 @@
   background: var(--glass-effect);
   border-radius: var(--radius-main);
   border: var(--glass-border);
-  backdrop-filter: blur(10px);
   color: var(--header-text);
   padding: $padding;
   display: flex;
@@ -24,9 +23,7 @@
   transition: var(--transition);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    background: var(--color-slate-200, #e2e8f0);
   }
 }
 
@@ -37,7 +34,8 @@
   z-index: 1000;
   height: var(--header-height);
   background: var(--header-bg);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(15, 23, 42, 0.04));
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -73,15 +71,20 @@
 }
 
 .logo-icon {
-  width: 50px;
-  height: 50px;
-  @include glass-style(0);
+  width: 46px;
+  height: 46px;
+  background: var(--color-primary-600, #4f46e5);
+  border-radius: var(--radius-main);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+  display: flex;
+  align-items: center;
   justify-content: center;
 
   mat-icon {
-    font-size: 30px;
-    height: 30px;
-    width: 30px;
+    font-size: 26px;
+    height: 26px;
+    width: 26px;
+    color: #fff;
   }
 }
 
@@ -91,17 +94,18 @@
   line-height: 1.2;
 
   .logo-text {
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 800;
     max-width: 210px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--color-text-primary, #1e293b);
   }
 
   .logo-subtitle {
     font-size: 12px;
-    opacity: 0.85;
+    color: var(--color-text-muted, #94a3b8);
   }
 }
 
@@ -115,34 +119,34 @@
     }
 
     .mat-mdc-text-field-wrapper {
-      @include glass-style(0 16px);
+      background: var(--color-slate-100, #f1f5f9);
+      border-radius: var(--radius-main);
       height: 48px;
-      border: 2px solid rgba(255, 255, 255, 0.25);
+      padding: 0 16px;
+      border: 1.5px solid transparent;
+      transition: var(--transition);
 
       &.mdc-text-field--focused {
-        background: white;
-        border-color: white;
-
-        input {
-          color: #1e293b;
-        }
+        background: #fff;
+        border-color: var(--color-primary-500, #6366f1);
+        box-shadow: 0 0 0 3px var(--color-primary-100, #e0e7ff);
 
         mat-icon {
-          color: #667eea;
+          color: var(--color-primary-600, #4f46e5);
         }
       }
     }
 
     input {
-      color: white;
+      color: var(--color-text-primary, #1e293b);
 
       &::placeholder {
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--color-text-muted, #94a3b8);
       }
     }
 
     mat-icon {
-      color: white;
+      color: var(--color-text-muted, #94a3b8);
       transition: var(--transition);
     }
   }
@@ -180,7 +184,7 @@
 
   .user-menu-header {
     padding: 24px;
-    background: var(--header-bg);
+    background: linear-gradient(135deg, var(--color-primary-600, #4f46e5) 0%, var(--color-primary-800, #3730a3) 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -245,27 +249,7 @@
   }
 }
 
-// 8. الأنماط الخاصة (Dark Mode & Utilities)
-@media (prefers-color-scheme: dark) {
-  :host {
-    --header-bg: linear-gradient(135deg, #0f172a, #1e293b);
-  }
-
-  .quick-actions-menu,
-  .user-menu {
-    background: #1e293b;
-    color: #f8fafc;
-
-    button[mat-menu-item]:hover {
-      background: #334155;
-    }
-
-    .logout-item {
-      border-top-color: #334155;
-    }
-  }
-}
-
+// 8. أدوات مساعدة (Utilities)
 .sr-only {
   position: absolute;
   width: 1px;

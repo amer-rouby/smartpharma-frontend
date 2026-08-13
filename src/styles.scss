@@ -9,7 +9,7 @@
 @include mat.core();
 
 $theme: mat.define-theme((color: (theme-type: light,
-        primary: mat.$azure-palette,
+        primary: mat.$violet-palette,
         tertiary: mat.$blue-palette,
       ),
       typography: (brand-family: 'Cairo, sans-serif',
@@ -18,6 +18,28 @@ $theme: mat.define-theme((color: (theme-type: light,
       density: (scale: 0)));
 
 @include mat.all-component-themes($theme);
+
+// Material 3's "raised" (elevated) button intentionally uses a pale tinted
+// surface instead of a solid fill - correct per M3 spec, but it makes every
+// primary submit/add/save button in the app look washed-out and low-emphasis.
+// Override raised buttons to render as solid filled buttons instead, so
+// primary actions actually read as primary.
+.mat-mdc-raised-button {
+  &.mat-primary {
+    background-color: #4f46e5 !important;
+    color: #fff !important;
+  }
+
+  &.mat-accent {
+    background-color: #6366f1 !important;
+    color: #fff !important;
+  }
+
+  &.mat-warn {
+    background-color: #ef4444 !important;
+    color: #fff !important;
+  }
+}
 
 // Font Import
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
@@ -29,7 +51,65 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Cairo', sans-serif;
-  background: #f5f7fa;
+  background: #f1f5f9;
+}
+
+// ============================================================
+// Design tokens — Deep Slate Blue / Indigo enterprise theme
+// Exposed both as SCSS variables (compile-time, used below and
+// in component .scss files) and CSS custom properties (runtime,
+// used by components that already read var(--...), e.g. header).
+// ============================================================
+:root {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  --color-success: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-danger: #ef4444;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+  --color-info: #3b82f6;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #bfdbfe;
+
+  --color-surface: #ffffff;
+  --color-background: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 }
 
 // Direction Support
@@ -43,28 +123,30 @@ body {
   text-align: left;
 }
 
-// Color Variables
-$primary: #667eea;
-$primary-dark: #556cd6;
-$accent: #764ba2;
+// Color Variables — Deep Slate Blue / Indigo (kept as SCSS aliases of the
+// :root custom properties above so existing usages below keep working)
+$primary: #4f46e5;
+$primary-dark: #4338ca;
+$primary-light: #eef2ff;
+$accent: #6366f1;
 $success: #10b981;
 $warning: #f59e0b;
 $error: #ef4444;
 $info: #3b82f6;
 
-$gray-50: #f9fafb;
-$gray-100: #f3f4f6;
-$gray-200: #e5e7eb;
-$gray-300: #d1d5db;
-$gray-400: #9ca3af;
-$gray-500: #6b7280;
-$gray-600: #4b5563;
-$gray-700: #374151;
-$gray-800: #1f2937;
-$gray-900: #111827;
+$gray-50: #f8fafc;
+$gray-100: #f1f5f9;
+$gray-200: #e2e8f0;
+$gray-300: #cbd5e1;
+$gray-400: #94a3b8;
+$gray-500: #64748b;
+$gray-600: #475569;
+$gray-700: #334155;
+$gray-800: #1e293b;
+$gray-900: #0f172a;
 
 $white: #ffffff;
-$background: #f5f7fa;
+$background: #f1f5f9;
 
 // Spacing Variables
 $spacing-1: 4px;
@@ -90,10 +172,11 @@ $radius-full: 9999px;
 $transition-fast: 150ms ease;
 $transition-normal: 250ms ease;
 
-// Shadows
-$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+// Shadows — soft, low-contrast (easy on the eyes for long shifts)
+$shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+$shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+$shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+$shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
 
 // Utility Classes
 .full-width {
@@ -444,208 +527,6 @@ code {
   }
 }
 
-// Sidebar Styles - مع إصلاح الألوان
-.sidebar {
-  width: 280px;
-  height: 100vh;
-  background: linear-gradient(180deg, $primary 0%, $accent 100%) !important;
-  color: $white !important;
-  transition: all $transition-normal;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 1000;
-
-  &.collapsed {
-    width: 80px;
-
-    .sidebar-logo span,
-    .menu-text,
-    .version-info {
-      display: none;
-    }
-
-    .sidebar-logo {
-      justify-content: center;
-    }
-  }
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: $radius-sm;
-  }
-}
-
-.sidebar-logo {
-  display: flex;
-  align-items: center;
-  gap: $spacing-3;
-  padding: $spacing-5;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-
-  mat-icon {
-    font-size: 32px;
-    color: $white !important;
-  }
-
-  .logo-text {
-    font-size: 20px;
-    font-weight: 700;
-    color: $white !important;
-  }
-}
-
-.sidebar-menu {
-  flex: 1;
-  padding: $spacing-4 $spacing-3;
-
-  .mat-list-item {
-    height: 56px;
-    margin: $spacing-2 0;
-    border-radius: $radius-lg;
-    transition: all $transition-normal;
-    cursor: pointer;
-    color: $white !important;
-
-    mat-icon {
-      color: $white !important;
-      margin-inline-end: $spacing-4;
-    }
-
-    .mat-line,
-    span {
-      color: $white !important;
-      font-size: 15px;
-      font-weight: 500;
-    }
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.2) !important;
-
-      mat-icon {
-        color: $white !important;
-      }
-    }
-
-    &.active {
-      background: rgba(255, 255, 255, 0.3) !important;
-
-      mat-icon,
-      span,
-      .mat-line {
-        color: $white !important;
-        font-weight: 700;
-      }
-    }
-  }
-
-  .sidebar-expansion {
-    background: transparent !important;
-    box-shadow: none !important;
-    margin: $spacing-2 0;
-    border-radius: $radius-lg;
-
-    ::ng-deep {
-      .mat-expansion-panel-header {
-        height: 56px;
-        padding: 0 $spacing-4;
-        border-radius: $radius-lg;
-        background: transparent !important;
-
-        .mat-expansion-panel-header-title {
-          color: $white !important;
-          font-size: 15px;
-          font-weight: 500;
-
-          mat-icon {
-            color: $white !important;
-          }
-        }
-
-        .mat-expansion-indicator {
-          color: $white !important;
-        }
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.2) !important;
-        }
-      }
-
-      .mat-content {
-        padding: $spacing-2 0;
-      }
-    }
-
-    .submenu {
-      background: rgba(0, 0, 0, 0.15);
-      border-radius: $radius-md;
-      margin: $spacing-2 $spacing-3;
-      padding: $spacing-2 0;
-
-      .mat-list-item {
-        height: 48px;
-        padding-inline-start: 56px;
-        margin: $spacing-1 $spacing-2;
-        border-radius: $radius-sm;
-
-        mat-icon {
-          color: $white !important;
-          font-size: 20px;
-          margin-inline-end: $spacing-3;
-        }
-
-        .mat-line,
-        span {
-          color: $white !important;
-          font-size: 14px;
-          font-weight: 400;
-        }
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.15) !important;
-        }
-
-        &.active {
-          background: rgba(255, 255, 255, 0.25) !important;
-
-          mat-icon,
-          span {
-            color: $white !important;
-            font-weight: 700;
-          }
-        }
-      }
-    }
-  }
-}
-
-.sidebar-footer {
-  padding: $spacing-5;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.1);
-
-  .version-info {
-    display: flex;
-    align-items: center;
-    gap: $spacing-2;
-    font-size: 12px;
-    color: $white !important;
-
-    mat-icon {
-      color: $white !important;
-      font-size: 16px;
-    }
-  }
-}
-
 // Responsive Styles
 @media (max-width: 768px) {
   .content {
@@ -665,25 +546,6 @@ code {
     text-align: center;
   }
 
-  .sidebar {
-    position: fixed;
-    z-index: 9999;
-    inset-inline-start: -280px;
-    top: 64px;
-    height: calc(100vh - 64px);
-
-    &.open {
-      inset-inline-start: 0;
-    }
-
-    &.collapsed {
-      inset-inline-start: -80px;
-
-      &.open {
-        inset-inline-start: 0;
-      }
-    }
-  }
 }
 
 // RTL Icon Flip
@@ -741,99 +603,6 @@ app-footer {
     direction: inherit;
   }
 
-  // Sidebar Color Overrides - مهم جداً
-  .sidebar {
-    background: linear-gradient(180deg, $primary 0%, $accent 100%) !important;
-
-    .mat-list-item {
-      color: $white !important;
-
-      mat-icon {
-        color: $white !important;
-      }
-
-      span,
-      .mat-line {
-        color: $white !important;
-      }
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.2) !important;
-      }
-
-      &.active {
-        background: rgba(255, 255, 255, 0.3) !important;
-
-        mat-icon,
-        span {
-          color: $white !important;
-          font-weight: 700;
-        }
-      }
-    }
-
-    .sidebar-expansion {
-      background: transparent !important;
-
-      ::ng-deep {
-        .mat-expansion-panel-header {
-          color: $white !important;
-
-          .mat-expansion-panel-header-title {
-            color: $white !important;
-
-            mat-icon {
-              color: $white !important;
-            }
-          }
-        }
-
-        .mat-expansion-indicator {
-          color: $white !important;
-
-          &::after {
-            color: $white !important;
-          }
-        }
-      }
-
-      .submenu {
-        .mat-list-item {
-          color: $white !important;
-
-          mat-icon {
-            color: $white !important;
-          }
-
-          span,
-          .mat-line {
-            color: $white !important;
-          }
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.15) !important;
-          }
-
-          &.active {
-            background: rgba(255, 255, 255, 0.25) !important;
-
-            mat-icon,
-            span {
-              color: $white !important;
-            }
-          }
-        }
-      }
-    }
-
-    .sidebar-footer {
-      color: $white !important;
-
-      * {
-        color: $white !important;
-      }
-    }
-  }
 }
 
 // Placeholder Styles
@@ -852,33 +621,6 @@ app-footer {
 ::-webkit-scrollbar-track {
   background: $gray-100;
   border-radius: $radius-full;
-}
-.sidebar {
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%) !important;
-
-  mat-icon,
-  span,
-  .mat-line,
-  .logo-text,
-  .version-info {
-    color: white !important;
-  }
-
-  .mat-list-item:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-  }
-
-  .mat-list-item.active {
-    background: rgba(255, 255, 255, 0.3) !important;
-  }
-
-  .submenu .mat-list-item:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-  }
-
-  .submenu .mat-list-item.active {
-    background: rgba(255, 255, 255, 0.25) !important;
-  }
 }
 ::-webkit-scrollbar-thumb {
   background: $primary;
