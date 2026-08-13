@@ -19,6 +19,22 @@ $theme: mat.define-theme((color: (theme-type: light,
 
 @include mat.all-component-themes($theme);
 
+$dark-theme: mat.define-theme((color: (theme-type: dark,
+        primary: mat.$violet-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: (brand-family: 'Cairo, sans-serif',
+        plain-family: 'Cairo, sans-serif',
+      ),
+      density: (scale: 0)));
+
+// Re-emits only the color tokens (not typography/density, already set above)
+// scoped under the toggle class, so Material components re-theme for dark
+// mode without a second full theme application.
+.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+}
+
 // Material 3's "raised" (elevated) button intentionally uses a pale tinted
 // surface instead of a solid fill - correct per M3 spec, but it makes every
 // primary submit/add/save button in the app look washed-out and low-emphasis.
@@ -51,7 +67,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Cairo', sans-serif;
-  background: #f1f5f9;
+  background: var(--color-background, #f1f5f9);
+  transition: background-color 0.2s ease;
 }
 
 // ============================================================
@@ -110,6 +127,57 @@ body {
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+}
+
+// ============================================================
+// Dark theme — same tokens, redefined. Any component reading
+// var(--color-*) re-themes automatically with no changes of its own.
+// Toggled by ThemeService via a `dark-theme` class on <body>.
+// ============================================================
+body.dark-theme {
+  --color-primary-50: #1e1b4b;
+  --color-primary-100: #312e81;
+  --color-primary-200: #3730a3;
+  --color-primary-500: #818cf8;
+  --color-primary-600: #6366f1;
+  --color-primary-700: #a5b4fc;
+  --color-primary-800: #c7d2fe;
+  --color-primary-900: #e0e7ff;
+
+  --color-slate-50: #1e293b;
+  --color-slate-100: #273549;
+  --color-slate-200: #334155;
+  --color-slate-300: #475569;
+  --color-slate-400: #64748b;
+  --color-slate-500: #94a3b8;
+  --color-slate-600: #cbd5e1;
+  --color-slate-700: #e2e8f0;
+  --color-slate-800: #f1f5f9;
+  --color-slate-900: #f8fafc;
+
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-success-border: rgba(16, 185, 129, 0.35);
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.35);
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+  --color-danger-border: rgba(239, 68, 68, 0.35);
+  --color-info-bg: rgba(59, 130, 246, 0.12);
+  --color-info-border: rgba(59, 130, 246, 0.35);
+
+  --color-surface: #1e293b;
+  --color-background: #0f172a;
+  --color-border: #334155;
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.45);
+
+  background-color: #0f172a;
+  color: #f1f5f9;
 }
 
 // Direction Support

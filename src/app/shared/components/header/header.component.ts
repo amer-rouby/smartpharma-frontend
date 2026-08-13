@@ -8,6 +8,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { ThemeService } from '../../../core/services/theme.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { NotificationModel } from '../../../core/models/Notification.model';
 import { NotificationPanelComponent } from '../../../features/notification-bell/notification-panel/notification-panel.component';
@@ -31,17 +32,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private readonly audioService = inject(AudioService);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
   readonly toggleSidebar = output<void>();
   readonly searchQuery = signal<string>('');
   readonly currentLang = signal<string>(this.languageService.getCurrentLanguage());
+  readonly isDarkTheme = signal<boolean>(this.themeService.isDark());
   readonly notifications = signal<NotificationModel[]>([]);
   readonly totalCount = signal(0);
   readonly unreadCount = signal(0);
   readonly currentUser = toSignal(this.authService.currentUser$);
 
   private langSubscription?: Subscription;
+  private themeSubscription?: Subscription;
   private notificationStreamSubscription?: Subscription;
   private lastUnreadCount = 0;
 
@@ -72,6 +76,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.langSubscription = this.languageService.currentLang$.subscribe(lang => {
       this.currentLang.set(lang);
     });
+
+    this.themeSubscription = this.themeService.currentTheme$.subscribe(theme => {
+      this.isDarkTheme.set(theme === 'dark');
+    });
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
   loadNotifications(playSoundOnIncrease = false): void {
@@ -185,6 +197,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.langSubscription?.unsubscribe();
+    this.themeSubscription?.unsubscribe();
     this.notificationStreamSubscription?.unsubscribe();
   }
 }

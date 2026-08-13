@@ -1,18 +1,18 @@
 .footer {
-  background: #fff;
-  border-top: 1px solid #e0e0e0;
+  background: var(--color-surface, #fff);
+  border-top: 1px solid var(--color-border, #e0e0e0);
   padding: 16px 24px;
   text-align: center;
 
   .footer-content {
     p {
       margin: 4px 0;
-      color: #666;
+      color: var(--color-text-secondary, #666);
       font-size: 14px;
 
       &.version {
         font-size: 12px;
-        color: #999;
+        color: var(--color-text-muted, #999);
       }
     }
   }
