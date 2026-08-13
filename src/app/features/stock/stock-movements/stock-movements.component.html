@@ -117,7 +117,7 @@
   <mat-card class="table-card">
     <mat-card-header>
       <mat-card-title>{{'STOCK_MOVEMENTS.MOVEMENTS_LIST' | translate}}</mat-card-title>
-      <mat-card-subtitle>{{movements().length}} {{'STOCK_MOVEMENTS.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{totalElements() || movements().length}} {{'STOCK_MOVEMENTS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
@@ -196,6 +196,12 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="movement-row"></tr>
         </table>
       </div>
+
+      @if (hasPagination()) {
+      <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+        [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+      }
     </mat-card-content>
   </mat-card>
   } @else if (!loading()) {

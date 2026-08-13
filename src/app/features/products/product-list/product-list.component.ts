@@ -3,6 +3,7 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product.model';
@@ -31,6 +32,8 @@ export class ProductListComponent implements OnInit {
   readonly searchQuery = signal('');
   readonly selectedCategory = signal('all');
   readonly categories = signal<string[]>(['all']);
+  readonly page = signal(0);
+  readonly size = signal(10);
 
   readonly displayedColumns = ['name', 'barcode', 'category', 'stock', 'price', 'actions'];
 
@@ -40,8 +43,17 @@ export class ProductListComponent implements OnInit {
     return this.products().filter(p => p.category === category);
   });
 
-  readonly hasProducts = computed(() => !this.loading() && this.filteredProducts().length > 0);
+  // The backend list/search endpoints don't support real server-side paging
+  // (page/size params are accepted but ignored - they always return every
+  // matching product), so pagination is done here over the already-loaded list.
+  readonly pagedProducts = computed(() => {
+    const start = this.page() * this.size();
+    return this.filteredProducts().slice(start, start + this.size());
+  });
+
+  readonly hasProducts = computed(() => !this.loading() && this.pagedProducts().length > 0);
   readonly isEmpty = computed(() => !this.loading() && this.filteredProducts().length === 0);
+  readonly hasPagination = computed(() => this.filteredProducts().length > this.size());
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
@@ -61,6 +73,7 @@ export class ProductListComponent implements OnInit {
       next: (response: any) => {
         this.products.set(response.data || []);
         this.extractCategories();
+        this.page.set(0);
         this.loading.set(false);
       },
       error: () => {
@@ -68,6 +81,11 @@ export class ProductListComponent implements OnInit {
         this.showError('PRODUCTS.LOAD_ERROR');
       }
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.page.set(event.pageIndex);
+    this.size.set(event.pageSize);
   }
 
   extractCategories(): void {
@@ -82,7 +100,10 @@ export class ProductListComponent implements OnInit {
     const query = this.searchQuery().trim();
     if (query) {
       this.productService.searchProducts(query).subscribe({
-        next: (response: any) => this.products.set(response.data || [])
+        next: (response: any) => {
+          this.products.set(response.data || []);
+          this.page.set(0);
+        }
       });
     } else {
       this.loadProducts();
@@ -90,9 +111,7 @@ export class ProductListComponent implements OnInit {
   }
 
   filterByCategory(): void {
-    if (this.selectedCategory() === 'all') {
-      this.loadProducts();
-    }
+    this.page.set(0);
   }
 
   onDelete(product: Product): void {
@@ -134,6 +153,7 @@ export class ProductListComponent implements OnInit {
 
   clearSearch(): void {
     this.searchQuery.set('');
+    this.page.set(0);
     this.loadProducts();
   }
 
