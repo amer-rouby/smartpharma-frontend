@@ -180,6 +180,67 @@ body.dark-theme {
   color: #f1f5f9;
 }
 
+// ============================================================
+// Dark-mode safety net for screens not yet migrated to the design
+// system tokens. Many older components hardcode a near-white table
+// row hover (e.g. background: #f8f9fa) with no matching text-color
+// change, which reads fine in light mode but makes the text
+// invisible once dark mode is on. Same story for a hardcoded purple
+// gradient table header left over from before this palette existed.
+// This does not fix every hardcoded color on those screens, but it
+// stops the worst readability bugs everywhere at once, immediately.
+// ============================================================
+body.dark-theme {
+
+  table tr:hover,
+  .mat-mdc-row:hover,
+  tr.stock-row:hover {
+    background: var(--color-slate-100, #273549) !important;
+  }
+
+  table tr:hover td,
+  table tr:hover th,
+  .mat-mdc-row:hover .mat-mdc-cell,
+  tr.stock-row:hover td {
+    color: var(--color-text-primary, #f1f5f9) !important;
+  }
+
+  table th {
+    background: var(--color-slate-100, #273549) !important;
+    color: var(--color-text-secondary, #cbd5e1) !important;
+
+    mat-icon,
+    .mat-sort-header-arrow {
+      color: var(--color-text-secondary, #cbd5e1) !important;
+    }
+  }
+
+  table td {
+    color: var(--color-text-secondary, #cbd5e1);
+    border-bottom-color: var(--color-border, #334155) !important;
+  }
+
+  // Generic un-migrated card/container wrappers still hardcoding a
+  // light surface (mat-card itself is already theme-aware via
+  // Angular Material's own dark theme - this only catches the plain
+  // custom wrapper divs many older screens use instead).
+  .stock-card,
+  .search-container,
+  .empty-state h3 {
+    background: transparent;
+  }
+}
+
+// Sensible default icon color so icons that don't set their own color
+// explicitly still read with reasonable contrast in both themes,
+// instead of silently inheriting whatever text color happens to be
+// nearby. Any component-specific color (buttons, semantic icons,
+// active nav state, etc.) still wins - this is just a low-specificity
+// fallback, not an override.
+mat-icon {
+  color: var(--color-text-secondary, #64748b);
+}
+
 // Direction Support
 [dir="rtl"] {
   direction: rtl;
@@ -270,7 +331,7 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
 
 // Stat Card
 .stat-card {
-  background: $white;
+  background: var(--color-surface, #{$white});
   border-radius: $radius-xl;
   padding: $spacing-6;
   box-shadow: $shadow-sm;
@@ -311,20 +372,20 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
         margin: 0 0 $spacing-1;
         font-size: 24px;
         font-weight: 700;
-        color: $gray-900;
+        color: var(--color-text-primary, #{$gray-900});
       }
 
       p {
         margin: 0 0 $spacing-1;
         font-size: 14px;
-        color: $gray-600;
+        color: var(--color-text-secondary, #{$gray-600});
         font-weight: 500;
       }
 
       small {
         margin: 0;
         font-size: 12px;
-        color: $gray-500;
+        color: var(--color-text-muted, #{$gray-500});
       }
     }
   }
@@ -335,13 +396,13 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
   margin-top: $spacing-8;
 
   mat-card {
-    background: $white;
+    background: var(--color-surface, #{$white});
     border-radius: $radius-xl;
     box-shadow: $shadow-sm;
 
     mat-card-header {
       padding: $spacing-5 $spacing-6;
-      border-bottom: 1px solid $gray-200;
+      border-bottom: 1px solid var(--color-border, #{$gray-200});
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -349,7 +410,7 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
       mat-card-title {
         font-size: 20px;
         font-weight: 600;
-        color: $gray-800;
+        color: var(--color-text-primary, #{$gray-800});
         display: flex;
         align-items: center;
         gap: $spacing-2;
@@ -395,7 +456,7 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
 
 // Table Styles
 .table-container {
-  background: $white;
+  background: var(--color-surface, #{$white});
   border-radius: $radius-xl;
   box-shadow: $shadow-sm;
   overflow-x: auto;
@@ -405,11 +466,11 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
     border-collapse: collapse;
 
     th {
-      background: $gray-50;
+      background: var(--color-slate-50, #{$gray-50});
       font-weight: 600;
-      color: $gray-600;
+      color: var(--color-text-secondary, #{$gray-600});
       padding: $spacing-4 $spacing-6;
-      border-bottom: 2px solid $gray-200;
+      border-bottom: 2px solid var(--color-border, #{$gray-200});
       text-align: start;
       font-size: 13px;
       text-transform: uppercase;
@@ -419,13 +480,17 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
     td {
       padding: $spacing-4 $spacing-6;
       font-size: 14px;
-      color: $gray-700;
-      border-bottom: 1px solid $gray-200;
+      color: var(--color-text-secondary, #{$gray-700});
+      border-bottom: 1px solid var(--color-border, #{$gray-200});
       text-align: start;
     }
 
     tr:hover {
-      background: $gray-50;
+      background: var(--color-slate-50, #{$gray-50});
+    }
+
+    tr:hover td {
+      color: var(--color-text-primary, #{$gray-900});
     }
   }
 }
@@ -437,12 +502,12 @@ $shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
   gap: $spacing-1;
 
   strong {
-    color: $gray-800;
+    color: var(--color-text-primary, #{$gray-800});
     font-weight: 600;
   }
 
   small {
-    color: $gray-500;
+    color: var(--color-text-muted, #{$gray-500});
     font-size: 12px;
   }
 }

@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: var(--color-background, #f1f5f9);
 }
 
 .main-header {
@@ -19,6 +20,7 @@
   display: flex;
   flex: 1;
   margin-top: 72px;
+  background: var(--color-background, #f1f5f9);
 }
 
 .sidebar-wrapper {
@@ -53,6 +55,7 @@
   margin-inline-start: 272px;
   margin-inline-end: 0;
   padding: 24px;
+  background: var(--color-background, #f1f5f9);
   transition: margin-inline-start 0.3s ease;
   direction: inherit;
   text-align: start;
