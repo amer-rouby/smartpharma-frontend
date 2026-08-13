@@ -656,7 +656,14 @@
     "LOGOUT_SUCCESS": "تم تسجيل الخروج بنجاح",
     "NO_ACCOUNT": "ليس لديك حساب؟",
     "SESSION_EXPIRED": "انتهت الجلسة",
-    "PLEASE_LOGIN_AGAIN": "الرجاء تسجيل الدخول مرة أخرى"
+    "PLEASE_LOGIN_AGAIN": "الرجاء تسجيل الدخول مرة أخرى",
+    "TWO_FACTOR_TITLE": "التحقق بخطوتين",
+    "TWO_FACTOR_PROMPT": "أدخل الكود المكوّن من 6 أرقام من تطبيق المصادقة",
+    "TWO_FACTOR_CODE": "كود التحقق",
+    "VERIFY": "تحقق",
+    "BACK_TO_LOGIN": "العودة لتسجيل الدخول",
+    "INVALID_TWO_FACTOR_CODE": "كود التحقق غير صحيح",
+    "TWO_FACTOR_EXPIRED": "انتهت صلاحية طلب التحقق - الرجاء تسجيل الدخول مرة أخرى"
   },
   "REGISTER": {
     "TITLE": "إنشاء حساب جديد",

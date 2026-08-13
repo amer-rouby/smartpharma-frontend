@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { RegisterData } from '../../../core/models';
+import { RegisterRequest } from '../../../core/models/RegisterRequest.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 
@@ -23,15 +23,21 @@ export class RegisterComponent {
   readonly languageService = inject(LanguageService);
   readonly errorHandler = inject(ErrorHandlerService);
 
-  readonly registerData = signal<RegisterData>({
+  // This form always creates a brand-new pharmacy (pharmacyName + licenseNumber are
+  // both required below), so it never needs a pharmacyId at all - the backend
+  // (AuthenticationServiceImpl.register) creates the Pharmacy row itself in that case.
+  // RegisterRequest deliberately has no pharmacyId field; a hardcoded `pharmacyId: 1`
+  // used to live here and get sent on every registration - harmless today only because
+  // the backend ignores it whenever pharmacyName is present, but misleading and a real
+  // risk if that assumption ever changes.
+  readonly registerData = signal<RegisterRequest>({
     pharmacyName: '',
     licenseNumber: '',
     email: '',
     phone: '',
     username: '',
     password: '',
-    fullName: '',
-    pharmacyId: 1  // ✅ أضف الحقل ده (أو اجعله nullable حسب الـ backend)
+    fullName: ''
   });
 
   readonly loading = signal(false);
@@ -40,7 +46,7 @@ export class RegisterComponent {
   readonly isSubmitted = signal(false);
 
   readonly formFields: Array<{
-    key: keyof RegisterData;
+    key: keyof RegisterRequest;
     label: string;
     icon: string;
     type?: string;
@@ -66,12 +72,7 @@ export class RegisterComponent {
 
     this.loading.set(true);
 
-    const registerPayload = {
-      ...this.registerData(),
-      pharmacyId: this.registerData().pharmacyId ?? 1
-    };
-
-    this.authService.register(registerPayload).subscribe({
+    this.authService.register(this.registerData()).subscribe({
       next: () => {
         this.loading.set(false);
         Swal.fire({
@@ -113,11 +114,11 @@ export class RegisterComponent {
     return true;
   }
 
-  getFieldValue(key: keyof RegisterData): string {
+  getFieldValue(key: keyof RegisterRequest): string {
     return this.registerData()[key] as string;
   }
 
-  setFieldValue(key: keyof RegisterData, value: string): void {
+  setFieldValue(key: keyof RegisterRequest, value: string): void {
     this.registerData.update(data => ({ ...data, [key]: value }));
   }
 
