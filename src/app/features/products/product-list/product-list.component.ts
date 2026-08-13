@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
@@ -24,6 +24,7 @@ export class ProductListComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly dialog = inject(MatDialog);
+  private readonly route = inject(ActivatedRoute);
 
   readonly products = signal<Product[]>([]);
   readonly loading = signal(false);
@@ -43,7 +44,15 @@ export class ProductListComponent implements OnInit {
   readonly isEmpty = computed(() => !this.loading() && this.filteredProducts().length === 0);
 
   ngOnInit(): void {
-    this.loadProducts();
+    this.route.queryParamMap.subscribe(params => {
+      const q = params.get('q');
+      if (q) {
+        this.searchQuery.set(q);
+        this.onSearch();
+      } else {
+        this.loadProducts();
+      }
+    });
   }
 
   loadProducts(): void {
