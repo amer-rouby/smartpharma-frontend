@@ -9,11 +9,12 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/LoginRequest.model';
 import { MaterialModule } from '../../../shared/material.module';
+import { AuthBackgroundComponent } from '../../../shared/components/auth-background/auth-background.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, MaterialModule],
+  imports: [FormsModule, RouterLink, MaterialModule, AuthBackgroundComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })

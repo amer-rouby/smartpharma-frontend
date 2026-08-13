@@ -1,17 +1,18 @@
 .register-container {
+  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-slate-50, #f8fafc);
-  background-image:
-    radial-gradient(circle at 15% 15%, rgba(79, 70, 229, 0.06), transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(79, 70, 229, 0.05), transparent 40%);
+  overflow: hidden;
   padding: 20px;
   direction: inherit;
 }
 
 .register-wrapper {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 500px;
 }
