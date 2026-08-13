@@ -654,7 +654,14 @@
     "LOGOUT_SUCCESS": "Logout successful",
     "NO_ACCOUNT": "Don't have an account?",
     "SESSION_EXPIRED": "Session Expired",
-    "PLEASE_LOGIN_AGAIN": "Please login again"
+    "PLEASE_LOGIN_AGAIN": "Please login again",
+    "TWO_FACTOR_TITLE": "Two-Factor Verification",
+    "TWO_FACTOR_PROMPT": "Enter the 6-digit code from your authenticator app",
+    "TWO_FACTOR_CODE": "Verification Code",
+    "VERIFY": "Verify",
+    "BACK_TO_LOGIN": "Back to login",
+    "INVALID_TWO_FACTOR_CODE": "Invalid verification code",
+    "TWO_FACTOR_EXPIRED": "This verification request expired - please log in again"
   },
   "REGISTER": {
     "TITLE": "Create New Account",

@@ -33,6 +33,13 @@ export class LoginComponent implements OnInit {
 
   sessionExpiredMessage: string | null = null;
 
+  // Second step of login, only entered when the account has 2FA enabled - see
+  // AuthService.login()/completeTwoFactorLogin().
+  twoFactorRequired = false;
+  twoFactorTempToken: string | null = null;
+  twoFactorCode = '';
+  twoFactorSubmitted = false;
+
   ngOnInit(): void {
     // Check for session expiration query params
     this.route.queryParams.subscribe(params => {
@@ -89,20 +96,59 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
         this.loading = false;
-        Swal.fire({
-          icon: 'success',
-          title: this.translate.instant('AUTH.LOGIN_SUCCESS'),
-          text: `${this.translate.instant('COMMON.WELCOME')} ${response.fullName}`,
-          timer: 2000,
-          showConfirmButton: false
-        });
-        this.router.navigate(['/dashboard']);
+
+        if (response.twoFactorRequired) {
+          this.twoFactorRequired = true;
+          this.twoFactorTempToken = response.twoFactorTempToken ?? null;
+          return;
+        }
+
+        this.showLoginSuccessAndNavigate(response.fullName);
       },
       error: (error) => {
         this.loading = false;
         this.errorHandler.handleHttpError(error, 'AUTH.INVALID_CREDENTIALS');
       }
     });
+  }
+
+  onSubmitTwoFactorCode(): void {
+    this.twoFactorSubmitted = true;
+
+    if (!this.twoFactorCode || !this.twoFactorTempToken) {
+      return;
+    }
+
+    this.loading = true;
+
+    this.authService.completeTwoFactorLogin(this.twoFactorTempToken, this.twoFactorCode).subscribe({
+      next: (response) => {
+        this.loading = false;
+        this.showLoginSuccessAndNavigate(response.fullName);
+      },
+      error: (error) => {
+        this.loading = false;
+        this.errorHandler.handleHttpError(error, 'AUTH.INVALID_TWO_FACTOR_CODE');
+      }
+    });
+  }
+
+  backToLogin(): void {
+    this.twoFactorRequired = false;
+    this.twoFactorTempToken = null;
+    this.twoFactorCode = '';
+    this.twoFactorSubmitted = false;
+  }
+
+  private showLoginSuccessAndNavigate(fullName: string): void {
+    Swal.fire({
+      icon: 'success',
+      title: this.translate.instant('AUTH.LOGIN_SUCCESS'),
+      text: `${this.translate.instant('COMMON.WELCOME')} ${fullName}`,
+      timer: 2000,
+      showConfirmButton: false
+    });
+    this.router.navigate(['/dashboard']);
   }
 
   changeLanguage(lang: 'ar' | 'en'): void {

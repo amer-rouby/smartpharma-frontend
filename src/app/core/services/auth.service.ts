@@ -39,6 +39,23 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
+        // A 2FA-enabled account: no accessToken yet, nothing to persist - the caller
+        // must show a code-entry step and call completeTwoFactorLogin() next.
+        if (response.twoFactorRequired) {
+          return;
+        }
+        this.setSession(response);
+        this.startSessionMonitor();
+      })
+    );
+  }
+
+  /**
+   * Second step of login when login() returned twoFactorRequired=true.
+   */
+  completeTwoFactorLogin(tempToken: string, code: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/2fa/login`, { tempToken, code }).pipe(
+      tap(response => {
         this.setSession(response);
         this.startSessionMonitor();
       })
