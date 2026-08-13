@@ -27,6 +27,8 @@ export interface ProductRequest {
   sellPrice: number;
   buyPrice?: number;
   extraAttributes?: Record<string, any>;
+  initialStock?: number;
+  expiryDate?: string;
 }
 
 export interface PaginatedResponse<T> {
