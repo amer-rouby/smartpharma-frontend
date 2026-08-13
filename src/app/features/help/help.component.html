@@ -28,9 +28,7 @@
         <mat-card class="faq-card" [class.expanded]="expandedFaqIndex() === i">
           <mat-card-header (click)="onFaqClick(i)">
             <mat-card-title>
-              <mat-icon>{{item.category === 'products' ? 'inventory_2' :
-                item.category === 'sales' ? 'shopping_cart' :
-                item.category === 'stock' ? 'warehouse' : 'assessment'}}</mat-icon>
+              <mat-icon>{{getCategoryIcon(item.category)}}</mat-icon>
               <span>{{item.question | translate}}</span>
               <mat-icon class="expand-icon">
                 {{expandedFaqIndex() === i ? 'expand_less' : 'expand_more'}}

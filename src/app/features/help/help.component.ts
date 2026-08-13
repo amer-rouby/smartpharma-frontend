@@ -54,14 +54,9 @@ export class HelpComponent {
       answer: 'HELP.FAQ.EDIT_PRODUCT_ANSWER'
     },
     {
-      category: 'sales',
-      question: 'HELP.FAQ.CREATE_SALE',
-      answer: 'HELP.FAQ.CREATE_SALE_ANSWER'
-    },
-    {
-      category: 'sales',
-      question: 'HELP.FAQ.RETURN_SALE',
-      answer: 'HELP.FAQ.RETURN_SALE_ANSWER'
+      category: 'stock',
+      question: 'HELP.FAQ.MANAGE_STOCK',
+      answer: 'HELP.FAQ.MANAGE_STOCK_ANSWER'
     },
     {
       category: 'stock',
@@ -74,6 +69,41 @@ export class HelpComponent {
       answer: 'HELP.FAQ.EXPIRED_PRODUCTS_ANSWER'
     },
     {
+      category: 'stock',
+      question: 'HELP.FAQ.DEMAND_PREDICTION',
+      answer: 'HELP.FAQ.DEMAND_PREDICTION_ANSWER'
+    },
+    {
+      category: 'sales',
+      question: 'HELP.FAQ.CREATE_SALE',
+      answer: 'HELP.FAQ.CREATE_SALE_ANSWER'
+    },
+    {
+      category: 'sales',
+      question: 'HELP.FAQ.RETURN_SALE',
+      answer: 'HELP.FAQ.RETURN_SALE_ANSWER'
+    },
+    {
+      category: 'purchases',
+      question: 'HELP.FAQ.CREATE_PURCHASE_ORDER',
+      answer: 'HELP.FAQ.CREATE_PURCHASE_ORDER_ANSWER'
+    },
+    {
+      category: 'purchases',
+      question: 'HELP.FAQ.MANAGE_SUPPLIERS',
+      answer: 'HELP.FAQ.MANAGE_SUPPLIERS_ANSWER'
+    },
+    {
+      category: 'payments',
+      question: 'HELP.FAQ.RECORD_PAYMENT',
+      answer: 'HELP.FAQ.RECORD_PAYMENT_ANSWER'
+    },
+    {
+      category: 'payments',
+      question: 'HELP.FAQ.TRACK_EXPENSES',
+      answer: 'HELP.FAQ.TRACK_EXPENSES_ANSWER'
+    },
+    {
       category: 'reports',
       question: 'HELP.FAQ.GENERATE_REPORT',
       answer: 'HELP.FAQ.GENERATE_REPORT_ANSWER'
@@ -82,8 +112,55 @@ export class HelpComponent {
       category: 'users',
       question: 'HELP.FAQ.ADD_USER',
       answer: 'HELP.FAQ.ADD_USER_ANSWER'
+    },
+    {
+      category: 'users',
+      question: 'HELP.FAQ.USER_ROLES',
+      answer: 'HELP.FAQ.USER_ROLES_ANSWER'
+    },
+    {
+      category: 'security',
+      question: 'HELP.FAQ.ENABLE_2FA',
+      answer: 'HELP.FAQ.ENABLE_2FA_ANSWER'
+    },
+    {
+      category: 'security',
+      question: 'HELP.FAQ.UNLOCK_ACCOUNT',
+      answer: 'HELP.FAQ.UNLOCK_ACCOUNT_ANSWER'
+    },
+    {
+      category: 'settings',
+      question: 'HELP.FAQ.BACKUP_DATA',
+      answer: 'HELP.FAQ.BACKUP_DATA_ANSWER'
+    },
+    {
+      category: 'settings',
+      question: 'HELP.FAQ.CHANGE_LANGUAGE',
+      answer: 'HELP.FAQ.CHANGE_LANGUAGE_ANSWER'
+    },
+    {
+      category: 'notifications',
+      question: 'HELP.FAQ.MANAGE_NOTIFICATIONS',
+      answer: 'HELP.FAQ.MANAGE_NOTIFICATIONS_ANSWER'
     }
   ];
+
+  private readonly categoryIcons: Record<string, string> = {
+    products: 'inventory_2',
+    stock: 'warehouse',
+    sales: 'shopping_cart',
+    purchases: 'local_shipping',
+    payments: 'payments',
+    reports: 'assessment',
+    users: 'people',
+    security: 'security',
+    settings: 'settings',
+    notifications: 'notifications'
+  };
+
+  getCategoryIcon(category: string): string {
+    return this.categoryIcons[category] || 'help_outline';
+  }
 
   readonly guides: GuideSection[] = [
     {
