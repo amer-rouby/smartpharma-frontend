@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../../core/guards/auth.guard';
+import { roleGuard } from '../../core/guards/role.guard';
 
 export const SETTINGS_ROUTES: Routes = [
   {
@@ -23,7 +24,8 @@ export const SETTINGS_ROUTES: Routes = [
     path: 'users',
     loadChildren: () => import('../users/users.routes')
       .then(m => m.USERS_ROUTES),
-    canActivate: [authGuard]
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] }
   },
   {
     path: 'notifications',
