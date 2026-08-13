@@ -48,6 +48,12 @@ mat-card {
   border-inline-start: 4px solid #667eea;
 }
 
+.section-hint {
+  font-size: 13px;
+  color: var(--color-text-muted, #94a3b8);
+  margin: -8px 0 16px 8px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

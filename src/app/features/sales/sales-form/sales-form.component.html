@@ -138,7 +138,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{'SALES.PAYMENT_METHODS' | translate}}</mat-label>
           <mat-select [(ngModel)]="paymentMethod">
-            @for (method of paymentMethods; track method.value) {
+            @for (method of paymentMethods(); track method.value) {
             <mat-option [value]="method.value">
               <mat-icon>{{method.icon}}</mat-icon>
               {{method.label | translate}}

@@ -11,6 +11,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-purchase-orders',
@@ -26,6 +27,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly loading = signal(false);
   readonly stats = signal<any>(null);
@@ -216,6 +218,6 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   formatAmount(amount: number): string {
-    return amount.toLocaleString('ar-EG', { style: 'currency', currency: 'EGP' });
+    return this.currencyService.format(amount, 'ar');
   }
 }

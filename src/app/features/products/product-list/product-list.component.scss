@@ -90,6 +90,12 @@
         flex-direction: column;
         gap: 8px;
 
+        .badge-row {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+
         .product-name {
           display: flex;
           flex-direction: column;

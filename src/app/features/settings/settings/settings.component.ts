@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface SettingsItem {
   icon: string;
@@ -22,11 +23,12 @@ interface SettingsItem {
 export class SettingsComponent {
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly authService = inject(AuthService);
 
   readonly settingsItems = signal<SettingsItem[]>([
     { icon: 'person', labelKey: 'SETTINGS.PROFILE', route: '/settings/profile' },
     { icon: 'people', labelKey: 'SETTINGS.USERS', route: '/users', roles: ['ADMIN'] },
-    { icon: 'store', labelKey: 'SETTINGS.PHARMACY', route: '/settings/pharmacy' },
+    { icon: 'store', labelKey: 'SETTINGS.PHARMACY', route: '/settings/pharmacy', roles: ['ADMIN'] },
     { icon: 'notifications', labelKey: 'SETTINGS.NOTIFICATIONS', route: '/settings/notifications' },
     { icon: 'security', labelKey: 'SETTINGS.SECURITY', route: '/settings/security' },
     { icon: 'timer', labelKey: 'SETTINGS.SESSION.TITLE', route: '/settings/session' },
@@ -41,7 +43,7 @@ export class SettingsComponent {
   }
 
   filterItemsByRole(): void {
-    const userRole = localStorage.getItem('userRole');
+    const userRole = this.authService.getCurrentUser()?.role;
     const items = this.settingsItems().filter(item =>
       !item.roles || (userRole && item.roles.includes(userRole))
     );

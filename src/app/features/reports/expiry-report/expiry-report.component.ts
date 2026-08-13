@@ -13,6 +13,7 @@ import { ExportService } from '../../../core/services/export.service';
 import { ExpiryData, ReportRequest } from '../../../core/models/Report.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { PrintHelperService } from '../../../core/services/print-helper.service';
 
 
@@ -34,6 +35,7 @@ export class ExpiryReportComponent implements OnInit {
   private readonly exportService = inject(ExportService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly languageService = inject(LanguageService);
+  private readonly currencyService = inject(CurrencyService);
   private readonly printHelper = inject(PrintHelperService);
 
   readonly reportType = signal<'DAILY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM'>('CUSTOM');
@@ -201,12 +203,7 @@ export class ExpiryReportComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 
   private formatDate(date: Date): string {

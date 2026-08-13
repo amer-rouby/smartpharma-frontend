@@ -14,6 +14,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ExportService } from '../../../core/services/export.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { PrintHelperService } from '../../../core/services/print-helper.service';
 import { DailySalesRow, ReportRequest, SalesReportData, TopProductRow } from '../../../core/models/Report.model';
 
@@ -41,6 +42,7 @@ export class SalesReportComponent implements OnInit {
   private readonly exportService = inject(ExportService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly languageService = inject(LanguageService);
+  private readonly currencyService = inject(CurrencyService);
   private readonly printHelper = inject(PrintHelperService);
 
   readonly startDate = signal<string>(this.formatDate(new Date(new Date().setMonth(new Date().getMonth() - 1))));
@@ -265,12 +267,7 @@ export class SalesReportComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 
   formatDateForPrint(dateStr: string): string {

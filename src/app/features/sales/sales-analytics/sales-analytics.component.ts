@@ -12,6 +12,7 @@ import { CategorySales, ProductSales, SalesAnalytics, SalesAnalyticsParams } fro
 import { MaterialModule } from '../../../shared/material.module';
 import { FilterState, PeriodType, StatCard } from '../../../core/models';
 import { environment } from '../../../../environments/environment';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 declare global {
   interface Window {
@@ -33,6 +34,7 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly exportService = inject(ExportService);
   private readonly http = inject(HttpClient);
+  private readonly currencyService = inject(CurrencyService);
   private readonly destroy$ = new Subject<void>();
 
   // ✅ إضافة currentLang signal
@@ -278,7 +280,7 @@ export class SalesAnalyticsComponent implements OnInit, OnDestroy {
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat(this.currentLang() === 'ar' ? 'ar-EG' : 'en-US', {
       style: 'currency',
-      currency: 'EGP',
+      currency: this.currencyService.getCode(),
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amount);

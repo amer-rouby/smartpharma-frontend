@@ -10,6 +10,7 @@ import { PharmacySettings } from '../../../core/models/settings/pharmacy-setting
 import { InvoicePrintService, PrintableSale } from '../../../core/services/invoice-print.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-sale-details-dialog',
@@ -24,6 +25,7 @@ export class SaleDetailsDialogComponent {
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly languageService = inject(LanguageService);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly pharmacySettings = signal<PharmacySettings | null>(null);
 
@@ -78,12 +80,7 @@ export class SaleDetailsDialogComponent {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 
   getPaymentMethodLabel(method: string): string {

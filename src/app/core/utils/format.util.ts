@@ -1,7 +1,7 @@
-export function formatCurrency(amount: number, lang: string): string {
+export function formatCurrency(amount: number, lang: string, currency: string = 'EGP'): string {
   return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
     style: 'currency',
-    currency: 'EGP',
+    currency,
     minimumFractionDigits: 2
   }).format(amount);
 }

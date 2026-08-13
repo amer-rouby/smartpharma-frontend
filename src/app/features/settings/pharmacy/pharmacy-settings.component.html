@@ -113,6 +113,21 @@
           </div>
         </div>
 
+        <!-- Payment Methods Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.PAYMENT_METHODS' | translate}}</h3>
+          <p class="section-hint">{{'SETTINGS.PAYMENT_METHODS_HINT' | translate}}</p>
+
+          <div class="checkbox-grid">
+            @for (method of allPaymentMethods; track method) {
+            <mat-checkbox [checked]="isPaymentMethodEnabled(method)" (change)="togglePaymentMethod(method)"
+              color="primary">
+              {{'PAYMENTS.' + method | translate}}
+            </mat-checkbox>
+            }
+          </div>
+        </div>
+
         <!-- Notifications Section -->
         <div class="form-section">
           <h3 class="section-title">{{'SETTINGS.NOTIFICATIONS' | translate}}</h3>

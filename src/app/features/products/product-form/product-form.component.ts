@@ -11,6 +11,7 @@ import { Category } from '../../../core/models/category';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-product-form',
@@ -26,6 +27,7 @@ export class ProductFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly translate = inject(TranslateService);
   readonly languageService = inject(LanguageService);
@@ -40,6 +42,16 @@ export class ProductFormComponent implements OnInit {
     prescriptionRequired: false,
     sellPrice: 0,
     buyPrice: 0
+  });
+
+  readonly extraFields = signal({
+    manufacturer: '',
+    activeIngredients: '',
+    description: '',
+    usageInstructions: '',
+    storageConditions: '',
+    drugInteractionWarning: '',
+    isControlledSubstance: false
   });
 
   readonly loading = signal(false);
@@ -125,6 +137,18 @@ export class ProductFormComponent implements OnInit {
           sellPrice: data.sellPrice || 0,
           buyPrice: data.buyPrice || 0
         });
+
+        const extra = data.extraAttributes || {};
+        this.extraFields.set({
+          manufacturer: extra['manufacturer'] || '',
+          activeIngredients: extra['activeIngredients'] || '',
+          description: extra['description'] || '',
+          usageInstructions: extra['usageInstructions'] || '',
+          storageConditions: extra['storageConditions'] || '',
+          drugInteractionWarning: extra['drugInteractionWarning'] || '',
+          isControlledSubstance: !!extra['isControlledSubstance']
+        });
+
         this.loading.set(false);
       },
       error: (error) => {
@@ -152,11 +176,33 @@ export class ProductFormComponent implements OnInit {
       return;
     }
 
+    if (!this.isEditMode() && p.initialStock && p.initialStock > 0 && !p.expiryDate) {
+      this.errorHandler.showWarning('PRODUCTS.EXPIRY_DATE_REQUIRED_WITH_STOCK');
+      return;
+    }
+
+    const ef = this.extraFields();
+    const extraAttributes: Record<string, any> = {};
+    if (ef.manufacturer.trim()) extraAttributes['manufacturer'] = ef.manufacturer.trim();
+    if (ef.activeIngredients.trim()) extraAttributes['activeIngredients'] = ef.activeIngredients.trim();
+    if (ef.description.trim()) extraAttributes['description'] = ef.description.trim();
+    if (ef.usageInstructions.trim()) extraAttributes['usageInstructions'] = ef.usageInstructions.trim();
+    if (ef.storageConditions.trim()) extraAttributes['storageConditions'] = ef.storageConditions.trim();
+    if (ef.drugInteractionWarning.trim()) extraAttributes['drugInteractionWarning'] = ef.drugInteractionWarning.trim();
+    if (ef.isControlledSubstance) extraAttributes['isControlledSubstance'] = true;
+
+    const payload: ProductRequest = {
+      ...p,
+      extraAttributes: Object.keys(extraAttributes).length ? extraAttributes : undefined,
+      initialStock: this.isEditMode() ? undefined : p.initialStock,
+      expiryDate: this.isEditMode() ? undefined : this.toLocalDateString(p.expiryDate)
+    };
+
     this.loading.set(true);
 
     const request$ = this.isEditMode() && this.productId()
-      ? this.productService.updateProduct(this.productId()!, p)
-      : this.productService.createProduct(p);
+      ? this.productService.updateProduct(this.productId()!, payload)
+      : this.productService.createProduct(payload);
 
     request$.subscribe({
       next: (response: any) => {
@@ -182,13 +228,18 @@ export class ProductFormComponent implements OnInit {
     this.errorHandler.showSuccess('PRODUCTS.BARCODE_REGENERATED');
   }
 
+  private toLocalDateString(date: string | Date | undefined): string | undefined {
+    if (!date) return undefined;
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) return undefined;
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 
   isArabic(): boolean {
@@ -196,7 +247,7 @@ export class ProductFormComponent implements OnInit {
   }
 
   getCurrencySuffix(): string {
-    return this.isArabic() ? 'ج.م' : 'EGP';
+    return this.currencyService.getSuffix(this.languageService.getCurrentLanguage());
   }
 
   getCategoryName(category: Category): string {

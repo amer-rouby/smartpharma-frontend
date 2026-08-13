@@ -67,10 +67,20 @@
                   <small>{{product.scientificName}}</small>
                   }
                 </div>
-                @if (product.prescriptionRequired) {
-                <mat-chip color="warn" style="font-size: 11px;">
-                  {{'PRODUCTS.PRESCRIPTION_REQUIRED' | translate}}
-                </mat-chip>
+                @if (product.prescriptionRequired || product.extraAttributes?.['isControlledSubstance']) {
+                <div class="badge-row">
+                  @if (product.prescriptionRequired) {
+                  <mat-chip color="warn" style="font-size: 11px;">
+                    {{'PRODUCTS.PRESCRIPTION_REQUIRED' | translate}}
+                  </mat-chip>
+                  }
+                  @if (product.extraAttributes?.['isControlledSubstance']) {
+                  <mat-chip color="warn" style="font-size: 11px;" [matTooltip]="'PRODUCTS.IS_CONTROLLED_SUBSTANCE' | translate">
+                    <mat-icon matChipAvatar style="font-size: 14px; width: 14px; height: 14px;">gpp_maybe</mat-icon>
+                    {{'PRODUCTS.IS_CONTROLLED_SUBSTANCE' | translate}}
+                  </mat-chip>
+                  }
+                </div>
                 }
               </div>
             </td>
@@ -123,6 +133,10 @@
             <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
             <td mat-cell *matCellDef="let product">
               <div class="action-buttons">
+                <button mat-icon-button (click)="viewDetails(product)"
+                  [matTooltip]="'PRODUCTS.PRODUCT_DETAILS' | translate">
+                  <mat-icon>visibility</mat-icon>
+                </button>
                 <button mat-icon-button color="primary" [routerLink]="['/products/edit', product.id]"
                   [matTooltip]="'COMMON.EDIT' | translate">
                   <mat-icon>edit</mat-icon>
