@@ -17,6 +17,7 @@ export interface PharmacySettings {
   smsNotifications: boolean;
   lowStockAlerts: boolean;
   expiryAlerts: boolean;
+  enabledPaymentMethods?: string;
   updatedAt?: string;
 }
 
@@ -37,4 +38,5 @@ export interface PharmacySettingsRequest {
   smsNotifications?: boolean;
   lowStockAlerts?: boolean;
   expiryAlerts?: boolean;
+  enabledPaymentMethods?: string;
 }

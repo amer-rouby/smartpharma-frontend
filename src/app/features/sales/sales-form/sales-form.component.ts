@@ -15,6 +15,8 @@ import { Product } from '../../../core/models/product.model';
 import { PaymentMethod, PaymentRequest, PaymentResponse } from '../../../core/models/payment.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
 
 interface CartItem {
   product: Product;
@@ -51,6 +53,8 @@ export class SalesFormComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly currencyService = inject(CurrencyService);
+  private readonly pharmacySettingsService = inject(PharmacySettingsService);
   private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
@@ -91,7 +95,7 @@ export class SalesFormComponent implements OnInit {
   );
 
   readonly PaymentMethod = PaymentMethod;
-  readonly paymentMethods = [
+  readonly allPaymentMethodOptions = [
     { value: PaymentMethod.CASH, label: 'SALES.CASH', icon: 'payments' },
     { value: PaymentMethod.VISA, label: 'SALES.VISA', icon: 'credit_card' },
     { value: PaymentMethod.INSTAPAY, label: 'SALES.INSTAPAY', icon: 'account_balance' },
@@ -100,9 +104,33 @@ export class SalesFormComponent implements OnInit {
     { value: PaymentMethod.BANK_TRANSFER, label: 'SALES.BANK_TRANSFER', icon: 'transfer_within_a_station' }
   ];
 
+  private readonly enabledPaymentMethodCodes = signal<Set<string>>(new Set(Object.values(PaymentMethod)));
+  readonly paymentMethods = computed(() =>
+    this.allPaymentMethodOptions.filter(m => this.enabledPaymentMethodCodes().has(m.value))
+  );
+
   ngOnInit(): void {
     this.loadProducts();
     this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
+    this.loadEnabledPaymentMethods();
+  }
+
+  private loadEnabledPaymentMethods(): void {
+    this.pharmacySettingsService.getSettings().subscribe({
+      next: (settings) => {
+        if (!settings?.enabledPaymentMethods) return;
+
+        const codes = settings.enabledPaymentMethods.split(',').map(c => c.trim()).filter(Boolean);
+        if (!codes.length) return;
+
+        this.enabledPaymentMethodCodes.set(new Set(codes));
+
+        if (!codes.includes(this.paymentMethod())) {
+          const fallback = this.paymentMethods()[0]?.value ?? PaymentMethod.CASH;
+          this.paymentMethod.set(fallback);
+        }
+      }
+    });
   }
 
   private _filterProducts(value: string): Product[] {
@@ -403,16 +431,11 @@ export class SalesFormComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 
   getCurrencySuffix(): string {
-    return this.languageService.getCurrentLanguage() === 'ar' ? 'ج.م' : 'EGP';
+    return this.currencyService.getSuffix(this.languageService.getCurrentLanguage());
   }
 
   getPaymentMethodLabel(method: string): string {

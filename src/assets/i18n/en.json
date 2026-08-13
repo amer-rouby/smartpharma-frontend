@@ -598,6 +598,8 @@
     "SMS_NOTIFICATIONS": "SMS Notifications",
     "LOW_STOCK_ALERTS": "Low Stock Alerts",
     "EXPIRY_ALERTS": "Expiry Alerts",
+    "PAYMENT_METHODS": "Payment Methods",
+    "PAYMENT_METHODS_HINT": "Choose which payment methods are available at checkout and in the payments screen",
     "LOAD_ERROR": "Failed to load settings",
     "SAVE_SUCCESS": "Settings saved successfully",
     "SAVE_ERROR": "Failed to save settings",

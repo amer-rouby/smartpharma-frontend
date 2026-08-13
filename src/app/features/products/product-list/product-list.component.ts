@@ -10,7 +10,9 @@ import { Product } from '../../../core/models/product.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ProductDetailsDialogComponent } from '../product-details-dialog/product-details-dialog.component';
 
 @Component({
   selector: 'app-product-list',
@@ -24,6 +26,7 @@ export class ProductListComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly currencyService = inject(CurrencyService);
   private readonly dialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
 
@@ -114,6 +117,14 @@ export class ProductListComponent implements OnInit {
     this.page.set(0);
   }
 
+  viewDetails(product: Product): void {
+    this.dialog.open(ProductDetailsDialogComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      data: { product }
+    });
+  }
+
   onDelete(product: Product): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
@@ -158,16 +169,11 @@ export class ProductListComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 
   getCurrencySuffix(): string {
-    return this.languageService.getCurrentLanguage() === 'ar' ? 'ج.م' : 'EGP';
+    return this.currencyService.getSuffix(this.languageService.getCurrentLanguage());
   }
 
   translateCategory(key: string): string {

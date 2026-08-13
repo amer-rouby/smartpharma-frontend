@@ -6,6 +6,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-payment-receipt',
@@ -17,6 +18,7 @@ import Swal from 'sweetalert2';
 export class PaymentReceiptComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly paymentService = inject(PaymentService);
+  private readonly currencyService = inject(CurrencyService);
 
   payment: Payment | null = null;
   loading = true;
@@ -108,12 +110,8 @@ export class PaymentReceiptComponent implements OnInit {
   }
 
   formatAmount(amount: number | undefined): string {
-    if (!amount) return '0.00 ج.م';
-    return new Intl.NumberFormat('ar-EG', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    if (!amount) return this.currencyService.format(0, 'ar');
+    return this.currencyService.format(amount, 'ar');
   }
 
   printReceipt(): void {

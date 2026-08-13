@@ -26,7 +26,7 @@ export class SettingsComponent {
   readonly settingsItems = signal<SettingsItem[]>([
     { icon: 'person', labelKey: 'SETTINGS.PROFILE', route: '/settings/profile' },
     { icon: 'people', labelKey: 'SETTINGS.USERS', route: '/users', roles: ['ADMIN'] },
-    { icon: 'store', labelKey: 'SETTINGS.PHARMACY', route: '/settings/pharmacy' },
+    { icon: 'store', labelKey: 'SETTINGS.PHARMACY', route: '/settings/pharmacy', roles: ['ADMIN'] },
     { icon: 'notifications', labelKey: 'SETTINGS.NOTIFICATIONS', route: '/settings/notifications' },
     { icon: 'security', labelKey: 'SETTINGS.SECURITY', route: '/settings/security' },
     { icon: 'timer', labelKey: 'SETTINGS.SESSION.TITLE', route: '/settings/session' },

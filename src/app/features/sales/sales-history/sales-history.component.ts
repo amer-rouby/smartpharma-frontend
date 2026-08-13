@@ -12,6 +12,7 @@ import { InvoicePrintService, PrintableSale } from '../../../core/services/invoi
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { SaleDetailsDialogComponent } from '../sale-details-dialog/sale-details-dialog.component';
 import { PharmacySettings } from '../../../core/models/settings/pharmacy-settings.model';
 
@@ -27,6 +28,7 @@ export class SalesHistoryComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly currencyService = inject(CurrencyService);
   private readonly dialog = inject(MatDialog);
   private readonly pharmacySettingsService = inject(PharmacySettingsService);
   private readonly invoicePrintService = inject(InvoicePrintService);
@@ -194,9 +196,6 @@ export class SalesHistoryComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency', currency: 'EGP', minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 }

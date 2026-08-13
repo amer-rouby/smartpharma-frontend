@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from './language.service';
+import { CurrencyService } from './currency.service';
 
 export interface PrintOptions {
   title: string;
@@ -30,6 +31,7 @@ export interface PrintSummary {
 export class PrintHelperService {
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
+  private readonly currencyService = inject(CurrencyService);
 
   /**
    * Opens a print-ready window with the report data.
@@ -186,7 +188,7 @@ export class PrintHelperService {
       case 'currency':
         return new Intl.NumberFormat(isArabic ? 'ar-EG' : 'en-US', {
           style: 'currency',
-          currency: 'EGP',
+          currency: this.currencyService.getCode(),
           minimumFractionDigits: 2
         }).format(value);
 

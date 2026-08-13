@@ -10,6 +10,7 @@ import { ExpenseService } from '../../core/services/expense.service';
 import { AddExpenseDialogComponent } from './add-expense-dialog/add-expense-dialog.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ErrorHandlerService } from '../../core/services/error-handler.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
 interface ExpenseRow {
   id: number;
@@ -42,6 +43,7 @@ export class ExpensesComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly expenses = signal<ExpenseRow[]>([]);
   readonly loading = signal(false);
@@ -125,11 +127,7 @@ export class ExpensesComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('ar-EG', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, 'ar');
   }
 
   formatDate(date: string): string {

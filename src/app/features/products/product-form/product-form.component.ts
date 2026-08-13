@@ -11,6 +11,7 @@ import { Category } from '../../../core/models/category';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-product-form',
@@ -26,6 +27,7 @@ export class ProductFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly translate = inject(TranslateService);
   readonly languageService = inject(LanguageService);
@@ -237,12 +239,7 @@ export class ProductFormComponent implements OnInit {
   }
 
   formatCurrency(amount: number): string {
-    const lang = this.languageService.getCurrentLanguage();
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-US', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
   }
 
   isArabic(): boolean {
@@ -250,7 +247,7 @@ export class ProductFormComponent implements OnInit {
   }
 
   getCurrencySuffix(): string {
-    return this.isArabic() ? 'ج.م' : 'EGP';
+    return this.currencyService.getSuffix(this.languageService.getCurrentLanguage());
   }
 
   getCategoryName(category: Category): string {

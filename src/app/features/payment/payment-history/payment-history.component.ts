@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PaymentService } from '../../../core/services/payment.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -56,6 +57,7 @@ export class PaymentHistoryComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
   private readonly router = inject(Router);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly loading = signal(false);
   readonly payments = signal<Payment[]>([]);
@@ -250,11 +252,7 @@ export class PaymentHistoryComponent implements OnInit {
   }
 
   formatAmount(amount: number): string {
-    return new Intl.NumberFormat('ar-EG', {
-      style: 'currency',
-      currency: 'EGP',
-      minimumFractionDigits: 2
-    }).format(amount);
+    return this.currencyService.format(amount, 'ar');
   }
 
   canRefund(payment: Payment): boolean {

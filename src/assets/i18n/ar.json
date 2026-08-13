@@ -598,6 +598,8 @@
     "SMS_NOTIFICATIONS": "إشعارات الرسائل القصيرة",
     "LOW_STOCK_ALERTS": "تنبيهات المخزون المنخفض",
     "EXPIRY_ALERTS": "تنبيهات الصلاحية",
+    "PAYMENT_METHODS": "طرق الدفع",
+    "PAYMENT_METHODS_HINT": "حدد طرق الدفع المتاحة عند البيع وفي شاشة المدفوعات",
     "LOAD_ERROR": "فشل تحميل الإعدادات",
     "SAVE_SUCCESS": "تم حفظ الإعدادات بنجاح",
     "SAVE_ERROR": "فشل حفظ الإعدادات",

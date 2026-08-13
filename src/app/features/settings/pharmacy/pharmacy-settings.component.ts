@@ -7,6 +7,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
 import { PharmacySettings, PharmacySettingsRequest } from '../../../core/models/settings/pharmacy-settings.model';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-pharmacy-settings',
@@ -21,11 +22,15 @@ export class PharmacySettingsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly pharmacySettingsService = inject(PharmacySettingsService);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly loading = signal(false);
   readonly form: FormGroup;
 
-  readonly currencies = ['EGP', 'USD', 'EUR', 'SAR'];
+  readonly currencies = ['EGP', 'USD', 'EUR', 'SAR', 'AED', 'KWD'];
+
+  readonly allPaymentMethods = ['CASH', 'VISA', 'MASTERCARD', 'INSTAPAY', 'FAWRY', 'WALLET', 'BANK_TRANSFER'];
+  readonly selectedPaymentMethods = signal<Set<string>>(new Set(this.allPaymentMethods));
   readonly timezones = [
     { value: 'Africa/Cairo', label: 'القاهرة' },
     { value: 'Asia/Riyadh', label: 'الرياض' },
@@ -66,6 +71,22 @@ export class PharmacySettingsComponent implements OnInit {
     this.loadSettings();
   }
 
+  isPaymentMethodEnabled(method: string): boolean {
+    return this.selectedPaymentMethods().has(method);
+  }
+
+  togglePaymentMethod(method: string): void {
+    this.selectedPaymentMethods.update(current => {
+      const next = new Set(current);
+      if (next.has(method)) {
+        next.delete(method);
+      } else {
+        next.add(method);
+      }
+      return next;
+    });
+  }
+
   loadSettings(): void {
     this.loading.set(true);
 
@@ -89,6 +110,12 @@ export class PharmacySettingsComponent implements OnInit {
           lowStockAlerts: data.lowStockAlerts,
           expiryAlerts: data.expiryAlerts
         });
+
+        const enabled = data.enabledPaymentMethods
+          ? data.enabledPaymentMethods.split(',').map(m => m.trim()).filter(Boolean)
+          : this.allPaymentMethods;
+        this.selectedPaymentMethods.set(new Set(enabled));
+
         this.loading.set(false);
       },
       error: (err) => {
@@ -105,11 +132,15 @@ export class PharmacySettingsComponent implements OnInit {
     }
 
     this.loading.set(true);
-    const request: PharmacySettingsRequest = this.form.value;
+    const request: PharmacySettingsRequest = {
+      ...this.form.value,
+      enabledPaymentMethods: Array.from(this.selectedPaymentMethods()).join(',')
+    };
 
     this.pharmacySettingsService.updateSettings(request).subscribe({
       next: () => {
         this.loading.set(false);
+        this.currencyService.setCode(request.currency || 'EGP');
         this.errorHandler.showSuccess('SETTINGS.SAVE_SUCCESS');
       },
       error: (err) => {

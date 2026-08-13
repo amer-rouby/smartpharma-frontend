@@ -11,6 +11,7 @@ import { PurchaseOrderService } from '../../../core/services/purchase-order.serv
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { CommonModule } from '@angular/common';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
   selector: 'app-purchase-detail',
@@ -27,6 +28,7 @@ export class PurchaseDetailComponent implements OnInit {
   private readonly errorHandler = inject(ErrorHandlerService);
   readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly currencyService = inject(CurrencyService);
 
   readonly loading = signal(false);
   readonly order = signal<PurchaseOrder | null>(null);
@@ -180,6 +182,6 @@ export class PurchaseDetailComponent implements OnInit {
   }
 
   formatAmount(amount: number): string {
-    return amount.toLocaleString('ar-EG', { style: 'currency', currency: 'EGP' });
+    return this.currencyService.format(amount, 'ar');
   }
 }

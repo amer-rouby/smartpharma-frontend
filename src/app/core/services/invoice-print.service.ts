@@ -149,8 +149,8 @@ ${this.getPrintStyles(isArabic)}
           <td>${index + 1}</td>
           <td><strong>${item.productName || t('PRODUCTS.UNNAMED')}</strong></td>
           <td>${item.quantity}</td>
-          <td>${this.formatCurrency(item.unitPrice, isArabic)}</td>
-          <td><strong>${this.formatCurrency(item.totalPrice, isArabic)}</strong></td>
+          <td>${this.formatCurrency(item.unitPrice, isArabic, pharmacy.currency)}</td>
+          <td><strong>${this.formatCurrency(item.totalPrice, isArabic, pharmacy.currency)}</strong></td>
         </tr>
         `).join('')}
       </tbody>
@@ -159,16 +159,16 @@ ${this.getPrintStyles(isArabic)}
     <div class="totals">
       <div class="total-row">
         <span>${t('SALES.SUBTOTAL')}:</span>
-        <span>${this.formatCurrency(sale.subtotal || sale.totalAmount, isArabic)}</span>
+        <span>${this.formatCurrency(sale.subtotal || sale.totalAmount, isArabic, pharmacy.currency)}</span>
       </div>
       ${(sale.discountAmount && sale.discountAmount > 0) ? `
       <div class="total-row">
         <span>${t('SALES.DISCOUNT')}:</span>
-        <span style="color: #ef4444;">-${this.formatCurrency(sale.discountAmount!, isArabic)}</span>
+        <span style="color: #ef4444;">-${this.formatCurrency(sale.discountAmount!, isArabic, pharmacy.currency)}</span>
       </div>` : ''}
       <div class="total-row final">
         <span>${t('SALES.GRAND_TOTAL')}:</span>
-        <span>${this.formatCurrency(sale.totalAmount, isArabic)}</span>
+        <span>${this.formatCurrency(sale.totalAmount, isArabic, pharmacy.currency)}</span>
       </div>
     </div>
 
@@ -268,11 +268,11 @@ ${this.getPrintStyles(isArabic)}
     return fallback[method] || method;
   }
 
-  private formatCurrency(amount: number, isArabic: boolean): string {
+  private formatCurrency(amount: number, isArabic: boolean, currency: string = 'EGP'): string {
     const locale = isArabic ? 'ar-EG' : 'en-US';
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: 'EGP',
+      currency,
       minimumFractionDigits: 2
     }).format(amount);
   }
