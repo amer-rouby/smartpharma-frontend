@@ -8,11 +8,12 @@ import { AuthService } from '../../../core/services/auth.service';
 import { RegisterRequest } from '../../../core/models/RegisterRequest.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
+import { AuthBackgroundComponent } from '../../../shared/components/auth-background/auth-background.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink, MaterialModule],
+  imports: [FormsModule, RouterLink, MaterialModule, AuthBackgroundComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })

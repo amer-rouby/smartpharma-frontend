@@ -49,6 +49,8 @@
   "HEADER": {
     "MENU": "Main Menu",
     "BACK_TO_HOME": "Back to Home",
+    "DARK_MODE": "Switch to dark mode",
+    "LIGHT_MODE": "Switch to light mode",
     "SEARCH_PLACEHOLDER": "Search for product, medicine, or report...",
     "NEW": "New",
     "NOTIFICATIONS": "Notifications",

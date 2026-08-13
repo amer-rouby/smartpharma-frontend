@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: var(--color-background, #f1f5f9);
 }
 
 .main-header {
@@ -9,36 +10,37 @@
   top: 0;
   inset-inline-start: 0;
   inset-inline-end: 0;
-  height: 64px;
+  height: 72px;
   z-index: 1000;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface, white);
+  box-shadow: var(--shadow-xs, 0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .content-area {
   display: flex;
   flex: 1;
-  margin-top: 64px;
+  margin-top: 72px;
+  background: var(--color-background, #f1f5f9);
 }
 
 .sidebar-wrapper {
-  width: 280px;
+  width: 272px;
   position: fixed;
-  top: 64px;
+  top: 72px;
   inset-inline-start: 0;
   bottom: 0;
   z-index: 999;
   overflow-y: auto;
   transition: width 0.3s ease, inset-inline-start 0.3s ease;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-surface, #fff);
   direction: inherit;
 
   &.collapsed {
-    width: 70px;
+    width: 76px;
   }
 
   @media (max-width: 768px) {
-    inset-inline-start: -280px;
+    inset-inline-start: -272px;
 
     &.mobile-open {
       inset-inline-start: 0;
@@ -48,11 +50,12 @@
 
 .main-content {
   flex: 1;
-  margin-inline-start: 280px;
+  display: flex;
+  flex-direction: column;
+  margin-inline-start: 272px;
   margin-inline-end: 0;
   padding: 24px;
-  overflow-y: auto;
-  min-height: calc(100vh - 64px);
+  background: var(--color-background, #f1f5f9);
   transition: margin-inline-start 0.3s ease;
   direction: inherit;
   text-align: start;
@@ -62,16 +65,20 @@
   }
 }
 
+.content-container {
+  flex: 1;
+}
+
 .main-footer {
-  margin-inline-start: 280px;
+  margin-inline-start: 272px;
   margin-inline-end: 0;
-  background: white;
-  border-top: 1px solid #e2e8f0;
+  background: var(--color-surface, white);
+  border-top: 1px solid var(--color-border, #e2e8f0);
   transition: margin-inline-start 0.3s ease;
   direction: inherit;
 
   &.collapsed {
-    margin-inline-start: 70px;
+    margin-inline-start: 76px;
   }
 
   @media (max-width: 768px) {

@@ -57,6 +57,11 @@
       </button>
     </mat-menu>
 
+    <button mat-icon-button (click)="toggleTheme()" class="theme-toggle-btn"
+      [matTooltip]="(isDarkTheme() ? 'HEADER.LIGHT_MODE' : 'HEADER.DARK_MODE') | translate">
+      <mat-icon>{{isDarkTheme() ? 'light_mode' : 'dark_mode'}}</mat-icon>
+    </button>
+
     <app-notification-panel [notifications]="notifications()" [unreadCount]="unreadCount()"
       (onRefreshRequired)="loadNotifications()" (markAllRead)="onMarkAllAsRead()"
       (notificationClick)="onNotificationClick($event)" (viewAll)="onViewAllNotifications()">
