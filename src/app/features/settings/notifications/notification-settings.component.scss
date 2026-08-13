@@ -37,7 +37,7 @@ mat-card {
       font-weight: 600;
 
       mat-icon {
-        color: #667eea;
+        color: var(--color-primary-600, #667eea);
       }
     }
   }
@@ -70,20 +70,20 @@ mat-card {
         font-size: 32px;
         width: 32px;
         height: 32px;
-        color: #667eea;
+        color: var(--color-primary-600, #667eea);
       }
 
       h4 {
         margin: 0 0 4px;
         font-size: 15px;
         font-weight: 600;
-        color: #2d3748;
+        color: var(--color-text-primary, #2d3748);
       }
 
       p {
         margin: 0;
         font-size: 13px;
-        color: #718096;
+        color: var(--color-text-secondary, #718096);
       }
     }
   }
@@ -102,17 +102,17 @@ mat-card {
       margin: 0 0 8px;
       font-size: 15px;
       font-weight: 600;
-      color: #2d3748;
+      color: var(--color-text-primary, #2d3748);
 
       mat-icon {
-        color: #764ba2;
+        color: var(--color-primary-700, #764ba2);
       }
     }
 
     .description {
       margin: 0 0 16px;
       font-size: 13px;
-      color: #718096;
+      color: var(--color-text-secondary, #718096);
     }
 
     .quiet-hours-controls {
@@ -150,7 +150,7 @@ mat-card {
       font-weight: 600;
 
       mat-icon {
-        color: #667eea;
+        color: var(--color-primary-600, #667eea);
       }
     }
   }
@@ -174,11 +174,11 @@ mat-card {
 
       &.active {
         background: rgba(102, 126, 234, 0.1);
-        color: #667eea;
+        color: var(--color-primary-600, #667eea);
         font-weight: 600;
 
         mat-icon {
-          color: #667eea;
+          color: var(--color-primary-600, #667eea);
         }
       }
 
@@ -218,13 +218,13 @@ mat-card {
         margin: 0 0 4px;
         font-size: 15px;
         font-weight: 600;
-        color: #2d3748;
+        color: var(--color-text-primary, #2d3748);
       }
 
       .description {
         margin: 0;
         font-size: 13px;
-        color: #718096;
+        color: var(--color-text-secondary, #718096);
       }
     }
 
@@ -247,7 +247,7 @@ mat-card {
             font-size: 18px;
             width: 18px;
             height: 18px;
-            color: #718096;
+            color: var(--color-text-secondary, #718096);
           }
 
           ::ng-deep .mat-mdc-checkbox-label {
@@ -264,7 +264,7 @@ mat-card {
   justify-content: flex-end;
   gap: 12px;
   padding: 24px;
-  background: white;
+  background: var(--color-surface, white);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   position: sticky;

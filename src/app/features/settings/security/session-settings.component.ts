@@ -147,13 +147,13 @@ import { UserSettings } from '../../../core/models/settings/user-settings.model'
         margin: 0 0 8px 0;
         font-size: 16px;
         font-weight: 500;
-        color: var(--text-primary, #1a1a2e);
+        color: var(--color-text-primary, #1a1a2e);
       }
 
       p {
         margin: 0;
         font-size: 14px;
-        color: var(--text-secondary, #6b7280);
+        color: var(--color-text-secondary, #6b7280);
         line-height: 1.5;
       }
     }
@@ -181,13 +181,13 @@ import { UserSettings } from '../../../core/models/settings/user-settings.model'
 
     .info-label {
       font-size: 12px;
-      color: var(--text-secondary, #6b7280);
+      color: var(--color-text-secondary, #6b7280);
       font-weight: 500;
     }
 
     .info-value {
       font-size: 14px;
-      color: var(--text-primary, #1a1a2e);
+      color: var(--color-text-primary, #1a1a2e);
       font-weight: 500;
     }
 

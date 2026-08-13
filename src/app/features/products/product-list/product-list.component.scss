@@ -53,7 +53,7 @@
     gap: 16px;
 
     p {
-      color: #718096;
+      color: var(--color-text-secondary, #718096);
       font-size: 16px;
       margin: 0;
     }
@@ -66,9 +66,9 @@
       width: 100%;
 
       th {
-        background: #f7fafc;
+        background: var(--color-slate-50, #f7fafc);
         font-weight: 700;
-        color: #2d3748;
+        color: var(--color-text-primary, #2d3748);
         padding: 16px;
         border-bottom: 2px solid #e2e8f0;
         text-align: right;
@@ -77,12 +77,12 @@
       td {
         padding: 16px;
         border-bottom: 1px solid #e2e8f0;
-        color: #4a5568;
+        color: var(--color-text-secondary, #4a5568);
         text-align: right;
       }
 
       tr:hover {
-        background: #f7fafc;
+        background: var(--color-slate-50, #f7fafc);
       }
 
       .product-info {
@@ -96,29 +96,29 @@
           gap: 4px;
 
           strong {
-            color: #2d3748;
+            color: var(--color-text-primary, #2d3748);
             font-size: 15px;
           }
 
           small {
-            color: #718096;
+            color: var(--color-text-secondary, #718096);
             font-size: 12px;
           }
         }
       }
 
       code {
-        background: #edf2f7;
+        background: var(--color-slate-100, #edf2f7);
         padding: 4px 12px;
         border-radius: 6px;
         font-size: 13px;
-        color: #4a5568;
+        color: var(--color-text-secondary, #4a5568);
         direction: ltr;
         display: inline-block;
       }
 
       .text-muted {
-        color: #a0aec0;
+        color: var(--color-text-muted, #a0aec0);
       }
 
       .stock-info {
@@ -128,18 +128,18 @@
 
         .stock-status {
           font-size: 12px;
-          color: #48bb78;
+          color: var(--color-success, #48bb78);
           font-weight: 600;
 
           &.low {
-            color: #f56565;
+            color: var(--color-danger, #f56565);
           }
         }
       }
 
       .price {
         font-weight: 700;
-        color: #667eea;
+        color: var(--color-primary-600, #667eea);
         font-size: 15px;
       }
 
@@ -161,17 +161,17 @@
       font-size: 80px;
       width: 80px;
       height: 80px;
-      color: #cbd5e0;
+      color: var(--color-slate-300, #cbd5e0);
     }
 
     h3 {
       margin: 0;
       font-size: 20px;
-      color: #2d3748;
+      color: var(--color-text-primary, #2d3748);
     }
 
     p {
-      color: #718096;
+      color: var(--color-text-secondary, #718096);
       margin: 0;
     }
 

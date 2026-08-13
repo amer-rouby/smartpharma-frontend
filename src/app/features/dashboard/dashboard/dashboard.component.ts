@@ -119,16 +119,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return colors[method] || 'primary';
   }
 
-  getStatColor(index: number): string {
-    const colors = [
-      'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-      'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-      'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
-    ];
-    return colors[index] ?? colors[0];
-  }
-
   viewLowStockProducts(): void {
     this.errorHandler.showWarning('DASHBOARD.STOCK_ALERTS_BTN');
   }

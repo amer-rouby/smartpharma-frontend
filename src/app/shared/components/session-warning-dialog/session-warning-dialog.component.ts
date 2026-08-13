@@ -63,7 +63,7 @@ import { SessionWarningData } from '../../../core/models/session-status.model';
         margin: 0;
         font-size: 20px;
         font-weight: 600;
-        color: var(--text-primary, #1a1a2e);
+        color: var(--color-text-primary, #1a1a2e);
       }
     }
 
@@ -75,7 +75,7 @@ import { SessionWarningData } from '../../../core/models/session-status.model';
 
     .warning-message {
       font-size: 16px;
-      color: var(--text-secondary, #6b7280);
+      color: var(--color-text-secondary, #6b7280);
       line-height: 1.6;
       margin: 16px 0;
     }
@@ -90,7 +90,7 @@ import { SessionWarningData } from '../../../core/models/session-status.model';
       border-radius: 8px;
       margin: 16px 0;
       font-size: 14px;
-      color: var(--text-primary, #1a1a2e);
+      color: var(--color-text-primary, #1a1a2e);
 
       mat-icon {
         font-size: 20px;
