@@ -38,6 +38,7 @@ export class HelpComponent {
   readonly selectedTab = signal(0);
   readonly expandedFaqIndex = signal<number | null>(null);
   readonly searchQuery = signal('');
+  readonly supportEmail = 'support@smartpharmacy.com';
 
   contactForm: FormGroup;
 
@@ -169,6 +170,10 @@ export class HelpComponent {
     this.expandedFaqIndex.set(this.expandedFaqIndex() === index ? null : index);
   }
 
+  // There's no backend endpoint (or email provider) to actually receive this
+  // message server-side, so submitting hands it off to the user's own email
+  // app via mailto: addressed to the real support address shown on this page,
+  // instead of showing a fake "sent" confirmation that goes nowhere.
   onSubmitContact(): void {
     if (this.contactForm.invalid) {
       this.snackBar.open(
@@ -179,10 +184,19 @@ export class HelpComponent {
       return;
     }
 
+    const { name, email, subject, message } = this.contactForm.value;
+    const subjectLabel = this.translate.instant(`HELP.SUBJECT_${String(subject).toUpperCase()}`);
+    const mailSubject = `[${subjectLabel}] ${name}`;
+    const mailBody = `${message}\n\n${this.translate.instant('HELP.FORM_EMAIL')}: ${email}`;
+
+    window.location.href = `mailto:${this.supportEmail}` +
+      `?subject=${encodeURIComponent(mailSubject)}` +
+      `&body=${encodeURIComponent(mailBody)}`;
+
     this.snackBar.open(
-      this.translate.instant('HELP.CONTACT_FORM_SUCCESS'),
+      this.translate.instant('HELP.CONTACT_FORM_OPENED_EMAIL'),
       this.translate.instant('COMMON.CLOSE'),
-      { duration: 3000, panelClass: ['success-snackbar'] }
+      { duration: 4000, panelClass: ['success-snackbar'] }
     );
 
     this.contactForm.reset();

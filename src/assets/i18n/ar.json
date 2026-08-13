@@ -1233,6 +1233,7 @@
     "CONTACT_INFO": "معلومات الاتصال",
     "SUPPORT_HOURS": "متاح 24/7",
     "CONTACT_FORM_SUCCESS": "تم إرسال رسالتك بنجاح",
+    "CONTACT_FORM_OPENED_EMAIL": "تم فتح برنامج البريد الإلكتروني لإرسال رسالتك لفريق الدعم",
     "CONTACT_FORM_ERROR": "يرجى ملء جميع الحقول المطلوبة"
   },
   "PREDICTIONS": {

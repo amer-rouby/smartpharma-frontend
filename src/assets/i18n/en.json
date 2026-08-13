@@ -1231,6 +1231,7 @@
     "CONTACT_INFO": "Contact Information",
     "SUPPORT_HOURS": "Available 24/7",
     "CONTACT_FORM_SUCCESS": "Your message has been sent successfully",
+    "CONTACT_FORM_OPENED_EMAIL": "Opened your email app to send this message to our support team",
     "CONTACT_FORM_ERROR": "Please fill all required fields"
   },
   "PREDICTIONS": {
