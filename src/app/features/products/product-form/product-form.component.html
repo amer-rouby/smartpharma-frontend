@@ -52,8 +52,10 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.BARCODE' | translate}}</mat-label>
-          <input matInput [(ngModel)]="product().barcode" name="barcode"
-            [placeholder]="'PRODUCTS.BARCODE_PLACEHOLDER' | translate">
+          <input #barcodeInput matInput [(ngModel)]="product().barcode" name="barcode"
+            [placeholder]="'PRODUCTS.BARCODE_PLACEHOLDER' | translate"
+            [matTooltip]="'PRODUCTS.BARCODE_SCAN_HINT' | translate"
+            (focus)="barcodeInput.select()">
           <mat-icon matPrefix>qr_code_2</mat-icon>
           <button mat-icon-button matSuffix type="button" (click)="regenerateBarcode()"
             [matTooltip]="'PRODUCTS.REGENERATE_BARCODE' | translate">

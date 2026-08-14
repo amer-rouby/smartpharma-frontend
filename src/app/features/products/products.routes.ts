@@ -12,6 +12,11 @@ export const PRODUCTS_ROUTES: Routes = [
       .then(m => m.ProductFormComponent)
   },
   {
+    path: 'quick-add',
+    loadComponent: () => import('./quick-add-scan/quick-add-scan.component')
+      .then(m => m.QuickAddScanComponent)
+  },
+  {
     path: 'edit/:id',
     loadComponent: () => import('./product-form/product-form.component')
       .then(m => m.ProductFormComponent)

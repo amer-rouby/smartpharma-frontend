@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,6 +17,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
+import { PrescriptionService } from '../../../core/services/prescription.service';
 
 interface CartItem {
   product: Product;
@@ -36,6 +37,7 @@ interface SaleRequest {
   paymentMethod: string;
   customerPhone: string;
   totalAmount: number;
+  prescriptionImageUrl?: string;
 }
 
 @Component({
@@ -45,7 +47,7 @@ interface SaleRequest {
   templateUrl: './sales-form.component.html',
   styleUrl: './sales-form.component.scss'
 })
-export class SalesFormComponent implements OnInit {
+export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly productService = inject(ProductService);
   private readonly salesService = inject(SalesService);
   private readonly paymentService = inject(PaymentService);
@@ -55,8 +57,12 @@ export class SalesFormComponent implements OnInit {
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);
   private readonly pharmacySettingsService = inject(PharmacySettingsService);
+  private readonly prescriptionService = inject(PrescriptionService);
   private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
+
+  @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
+  readonly barcodeValue = signal('');
 
   readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
   readonly cartItems = signal<CartItem[]>([]);
@@ -66,6 +72,9 @@ export class SalesFormComponent implements OnInit {
   readonly paymentMethod = signal<PaymentMethod>(PaymentMethod.CASH);
   readonly discount = signal(0);
   readonly loading = signal(false);
+
+  readonly prescriptionImageUrl = signal<string | null>(null);
+  readonly prescriptionUploading = signal(false);
 
   private readonly allProducts = signal<Product[]>([]);
   private readonly filteredProductsSubject = new BehaviorSubject<Product[]>([]);
@@ -90,8 +99,13 @@ export class SalesFormComponent implements OnInit {
   );
 
   readonly isCartEmpty = computed(() => this.cartItems().length === 0);
+  readonly hasPrescriptionRequiredItem = computed(() =>
+    this.cartItems().some(item => item.product.prescriptionRequired)
+  );
   readonly isSubmitDisabled = computed(() =>
-    this.loading() || this.isCartEmpty() || this.totalAmount() <= 0
+    this.loading() || this.isCartEmpty() || this.totalAmount() <= 0 ||
+    this.prescriptionUploading() ||
+    (this.hasPrescriptionRequiredItem() && !this.prescriptionImageUrl())
   );
 
   readonly PaymentMethod = PaymentMethod;
@@ -113,6 +127,28 @@ export class SalesFormComponent implements OnInit {
     this.loadProducts();
     this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
     this.loadEnabledPaymentMethods();
+  }
+
+  ngAfterViewInit(): void {
+    this.focusBarcodeInput();
+  }
+
+  private focusBarcodeInput(): void {
+    setTimeout(() => this.barcodeInputRef?.nativeElement.focus(), 0);
+  }
+
+  onBarcodeScan(): void {
+    const code = this.barcodeValue().trim();
+    this.barcodeValue.set('');
+    this.focusBarcodeInput();
+    if (!code) return;
+
+    const product = this.allProducts().find(p => p.barcode?.trim() === code);
+    if (!product) {
+      this.errorHandler.showWarning('SALES.BARCODE_NOT_FOUND', { params: { code } });
+      return;
+    }
+    this.addProductToCart(product);
   }
 
   private loadEnabledPaymentMethods(): void {
@@ -238,6 +274,30 @@ export class SalesFormComponent implements OnInit {
     this.discount.set(0);
     this.customerPhone.set('');
     this.productControl.setValue('');
+    this.prescriptionImageUrl.set(null);
+  }
+
+  onPrescriptionFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.prescriptionUploading.set(true);
+    this.prescriptionService.upload(file).subscribe({
+      next: (result) => {
+        this.prescriptionImageUrl.set(result.url);
+        this.prescriptionUploading.set(false);
+      },
+      error: (error) => {
+        this.prescriptionUploading.set(false);
+        this.errorHandler.handleHttpError(error, 'SALES.PRESCRIPTION_UPLOAD_ERROR');
+      }
+    });
+    input.value = '';
+  }
+
+  removePrescription(): void {
+    this.prescriptionImageUrl.set(null);
   }
 
   async onSubmit(): Promise<void> {
@@ -318,6 +378,10 @@ export class SalesFormComponent implements OnInit {
       this.errorHandler.showWarning('SALES.INVALID_TOTAL');
       return false;
     }
+    if (this.hasPrescriptionRequiredItem() && !this.prescriptionImageUrl()) {
+      this.errorHandler.showWarning('SALES.PRESCRIPTION_REQUIRED');
+      return false;
+    }
     return true;
   }
 
@@ -332,7 +396,8 @@ export class SalesFormComponent implements OnInit {
       discountAmount: this.discount(),
       paymentMethod: this.paymentMethod(),
       customerPhone: this.customerPhone(),
-      totalAmount: this.subtotal()
+      totalAmount: this.subtotal(),
+      prescriptionImageUrl: this.prescriptionImageUrl() || undefined
     };
   }
 

@@ -15,6 +15,16 @@
 
       <mat-card-content>
 
+        <div class="barcode-scan-section">
+          <mat-form-field appearance="outline" class="barcode-field">
+            <mat-label>{{'SALES.SCAN_BARCODE' | translate}}</mat-label>
+            <mat-icon matPrefix>qr_code_scanner</mat-icon>
+            <input #barcodeInput matInput [ngModel]="barcodeValue()" (ngModelChange)="barcodeValue.set($event)"
+              (keydown.enter)="onBarcodeScan()" [placeholder]="'SALES.SCAN_BARCODE_HINT' | translate"
+              autocomplete="off">
+          </mat-form-field>
+        </div>
+
         <div class="add-product-section">
           <mat-form-field appearance="outline" class="product-select">
             <mat-label>{{'PRODUCTS.SEARCH_PLACEHOLDER' | translate}}</mat-label>
@@ -151,6 +161,44 @@
           <mat-label>{{'SALES.CUSTOMER_PHONE' | translate}}</mat-label>
           <input matInput [(ngModel)]="customerPhone" placeholder="01xxxxxxxxx">
         </mat-form-field>
+
+        @if (hasPrescriptionRequiredItem()) {
+        <div class="prescription-section">
+          <div class="prescription-header">
+            <mat-icon>medication</mat-icon>
+            <span>{{'SALES.PRESCRIPTION_SECTION_TITLE' | translate}}</span>
+          </div>
+          <p class="prescription-hint">{{'SALES.PRESCRIPTION_HINT' | translate}}</p>
+
+          @if (!prescriptionImageUrl()) {
+          <button mat-stroked-button color="primary" type="button" class="upload-btn"
+            [disabled]="prescriptionUploading()" (click)="prescriptionFileInput.click()">
+            @if (!prescriptionUploading()) {
+            <ng-container>
+              <mat-icon>upload_file</mat-icon>
+              <span>{{'SALES.PRESCRIPTION_UPLOAD' | translate}}</span>
+            </ng-container>
+            } @else {
+            <ng-container>
+              <mat-spinner diameter="18"></mat-spinner>
+              <span>{{'SALES.PRESCRIPTION_UPLOADING' | translate}}</span>
+            </ng-container>
+            }
+          </button>
+          <input #prescriptionFileInput type="file" accept="image/png,image/jpeg,image/webp" hidden
+            (change)="onPrescriptionFileSelected($event)">
+          } @else {
+          <div class="prescription-attached">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <span>{{'SALES.PRESCRIPTION_UPLOADED' | translate}}</span>
+            <button mat-icon-button color="warn" type="button" (click)="removePrescription()"
+              [matTooltip]="'SALES.PRESCRIPTION_REMOVE' | translate">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          }
+        </div>
+        }
 
         <div class="total-row">
           <span>{{'SALES.GRAND_TOTAL' | translate}}</span>

@@ -1,6 +1,10 @@
 <div class="product-list-container">
   <app-page-header [title]="'PRODUCTS.TITLE' | translate" [subtitle]="'PRODUCTS.MANAGE_SUBTITLE' | translate"
     icon="inventory_2">
+    <button mat-stroked-button color="primary" routerLink="/products/quick-add" class="quick-add-btn">
+      <mat-icon>qr_code_scanner</mat-icon>
+      <span>{{'PRODUCTS.QUICK_ADD_TITLE' | translate}}</span>
+    </button>
     <button mat-raised-button color="primary" routerLink="/products/new" class="add-btn">
       <mat-icon>add</mat-icon>
       <span>{{'PRODUCTS.ADD_NEW' | translate}}</span>

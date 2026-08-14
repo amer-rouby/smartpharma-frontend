@@ -21,10 +21,10 @@
       <p>✉️ {{pharmacySettings()!.email}}</p>
       }
       @if (pharmacySettings()!.taxNumber) {
-      <p>🧾 {{'SALES.TAX_NUMBER' | translate}}: {{pharmacySettings()!.taxNumber}}</p>
+      <p>🧾 {{'SETTINGS.TAX_NUMBER' | translate}}: {{pharmacySettings()!.taxNumber}}</p>
       }
       @if (pharmacySettings()!.commercialRegister) {
-      <p>📋 {{'SALES.COMMERCIAL_REGISTER' | translate}}: {{pharmacySettings()!.commercialRegister}}</p>
+      <p>📋 {{'SETTINGS.COMMERCIAL_REGISTER' | translate}}: {{pharmacySettings()!.commercialRegister}}</p>
       }
     </div>
     } @else {
@@ -108,6 +108,22 @@
     <div class="notes-section">
       <h4>{{'SALES.NOTES' | translate}}</h4>
       <p>{{data.sale.notes}}</p>
+    </div>
+    }
+
+    @if (data.sale?.prescriptionImageUrl) {
+    <div class="prescription-section no-print">
+      <h4>
+        <mat-icon>medication</mat-icon>
+        {{'SALES.PRESCRIPTION_SECTION_TITLE' | translate}}
+      </h4>
+      @if (prescriptionImageBlobUrl()) {
+      <a [href]="prescriptionImageBlobUrl()" target="_blank" rel="noopener">
+        <img [src]="prescriptionImageBlobUrl()" alt="Prescription" class="prescription-thumbnail">
+      </a>
+      } @else {
+      <p class="prescription-loading">{{'COMMON.LOADING' | translate}}</p>
+      }
     </div>
     }
   </div>
