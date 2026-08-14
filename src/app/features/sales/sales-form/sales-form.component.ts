@@ -17,6 +17,7 @@ import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
+import { PrescriptionService } from '../../../core/services/prescription.service';
 
 interface CartItem {
   product: Product;
@@ -36,6 +37,7 @@ interface SaleRequest {
   paymentMethod: string;
   customerPhone: string;
   totalAmount: number;
+  prescriptionImageUrl?: string;
 }
 
 @Component({
@@ -55,6 +57,7 @@ export class SalesFormComponent implements OnInit {
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);
   private readonly pharmacySettingsService = inject(PharmacySettingsService);
+  private readonly prescriptionService = inject(PrescriptionService);
   private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
@@ -66,6 +69,9 @@ export class SalesFormComponent implements OnInit {
   readonly paymentMethod = signal<PaymentMethod>(PaymentMethod.CASH);
   readonly discount = signal(0);
   readonly loading = signal(false);
+
+  readonly prescriptionImageUrl = signal<string | null>(null);
+  readonly prescriptionUploading = signal(false);
 
   private readonly allProducts = signal<Product[]>([]);
   private readonly filteredProductsSubject = new BehaviorSubject<Product[]>([]);
@@ -90,8 +96,13 @@ export class SalesFormComponent implements OnInit {
   );
 
   readonly isCartEmpty = computed(() => this.cartItems().length === 0);
+  readonly hasPrescriptionRequiredItem = computed(() =>
+    this.cartItems().some(item => item.product.prescriptionRequired)
+  );
   readonly isSubmitDisabled = computed(() =>
-    this.loading() || this.isCartEmpty() || this.totalAmount() <= 0
+    this.loading() || this.isCartEmpty() || this.totalAmount() <= 0 ||
+    this.prescriptionUploading() ||
+    (this.hasPrescriptionRequiredItem() && !this.prescriptionImageUrl())
   );
 
   readonly PaymentMethod = PaymentMethod;
@@ -238,6 +249,30 @@ export class SalesFormComponent implements OnInit {
     this.discount.set(0);
     this.customerPhone.set('');
     this.productControl.setValue('');
+    this.prescriptionImageUrl.set(null);
+  }
+
+  onPrescriptionFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.prescriptionUploading.set(true);
+    this.prescriptionService.upload(file).subscribe({
+      next: (result) => {
+        this.prescriptionImageUrl.set(result.url);
+        this.prescriptionUploading.set(false);
+      },
+      error: (error) => {
+        this.prescriptionUploading.set(false);
+        this.errorHandler.handleHttpError(error, 'SALES.PRESCRIPTION_UPLOAD_ERROR');
+      }
+    });
+    input.value = '';
+  }
+
+  removePrescription(): void {
+    this.prescriptionImageUrl.set(null);
   }
 
   async onSubmit(): Promise<void> {
@@ -318,6 +353,10 @@ export class SalesFormComponent implements OnInit {
       this.errorHandler.showWarning('SALES.INVALID_TOTAL');
       return false;
     }
+    if (this.hasPrescriptionRequiredItem() && !this.prescriptionImageUrl()) {
+      this.errorHandler.showWarning('SALES.PRESCRIPTION_REQUIRED');
+      return false;
+    }
     return true;
   }
 
@@ -332,7 +371,8 @@ export class SalesFormComponent implements OnInit {
       discountAmount: this.discount(),
       paymentMethod: this.paymentMethod(),
       customerPhone: this.customerPhone(),
-      totalAmount: this.subtotal()
+      totalAmount: this.subtotal(),
+      prescriptionImageUrl: this.prescriptionImageUrl() || undefined
     };
   }
 

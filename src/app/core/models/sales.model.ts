@@ -7,6 +7,7 @@ export interface SaleTransaction {
   discountAmount: number;
   paymentMethod: PaymentMethod;
   customerPhone?: string;
+  prescriptionImageUrl?: string;
   transactionDate: string;
   items: SaleItem[];
 }
@@ -29,6 +30,7 @@ export interface SaleRequest {
   discountAmount?: number;
   paymentMethod?: string;
   customerPhone?: string;
+  prescriptionImageUrl?: string;
 }
 
 export interface SaleItemRequest {
