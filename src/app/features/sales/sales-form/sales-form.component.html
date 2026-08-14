@@ -15,6 +15,16 @@
 
       <mat-card-content>
 
+        <div class="barcode-scan-section">
+          <mat-form-field appearance="outline" class="barcode-field">
+            <mat-label>{{'SALES.SCAN_BARCODE' | translate}}</mat-label>
+            <mat-icon matPrefix>qr_code_scanner</mat-icon>
+            <input #barcodeInput matInput [ngModel]="barcodeValue()" (ngModelChange)="barcodeValue.set($event)"
+              (keydown.enter)="onBarcodeScan()" [placeholder]="'SALES.SCAN_BARCODE_HINT' | translate"
+              autocomplete="off">
+          </mat-form-field>
+        </div>
+
         <div class="add-product-section">
           <mat-form-field appearance="outline" class="product-select">
             <mat-label>{{'PRODUCTS.SEARCH_PLACEHOLDER' | translate}}</mat-label>

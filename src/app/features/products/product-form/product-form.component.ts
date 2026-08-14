@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -20,7 +20,9 @@ import { CurrencyService } from '../../../core/services/currency.service';
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss'
 })
-export class ProductFormComponent implements OnInit {
+export class ProductFormComponent implements OnInit, AfterViewInit {
+  @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
+
   private readonly productService = inject(ProductService);
   private readonly categoryService = inject(CategoryService);
   private readonly router = inject(Router);
@@ -95,6 +97,12 @@ export class ProductFormComponent implements OnInit {
     this.languageService.currentLang$.subscribe(() => {
       this.loadCategories();
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.isEditMode()) {
+      setTimeout(() => this.barcodeInputRef?.nativeElement.focus(), 0);
+    }
   }
 
   loadCategories(): void {

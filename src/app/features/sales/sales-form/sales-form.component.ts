@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -47,7 +47,7 @@ interface SaleRequest {
   templateUrl: './sales-form.component.html',
   styleUrl: './sales-form.component.scss'
 })
-export class SalesFormComponent implements OnInit {
+export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly productService = inject(ProductService);
   private readonly salesService = inject(SalesService);
   private readonly paymentService = inject(PaymentService);
@@ -60,6 +60,9 @@ export class SalesFormComponent implements OnInit {
   private readonly prescriptionService = inject(PrescriptionService);
   private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
+
+  @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
+  readonly barcodeValue = signal('');
 
   readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
   readonly cartItems = signal<CartItem[]>([]);
@@ -124,6 +127,28 @@ export class SalesFormComponent implements OnInit {
     this.loadProducts();
     this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
     this.loadEnabledPaymentMethods();
+  }
+
+  ngAfterViewInit(): void {
+    this.focusBarcodeInput();
+  }
+
+  private focusBarcodeInput(): void {
+    setTimeout(() => this.barcodeInputRef?.nativeElement.focus(), 0);
+  }
+
+  onBarcodeScan(): void {
+    const code = this.barcodeValue().trim();
+    this.barcodeValue.set('');
+    this.focusBarcodeInput();
+    if (!code) return;
+
+    const product = this.allProducts().find(p => p.barcode?.trim() === code);
+    if (!product) {
+      this.errorHandler.showWarning('SALES.BARCODE_NOT_FOUND', { params: { code } });
+      return;
+    }
+    this.addProductToCart(product);
   }
 
   private loadEnabledPaymentMethods(): void {

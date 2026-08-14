@@ -31,6 +31,28 @@
     mat-card-content {
       padding: 24px;
 
+      .barcode-scan-section {
+        margin-bottom: 16px;
+
+        .barcode-field {
+          width: 100%;
+
+          ::ng-deep .mat-mdc-text-field-wrapper {
+            background: var(--color-primary-50, #eef2ff);
+          }
+
+          mat-icon {
+            color: var(--color-primary-600, #4f46e5);
+          }
+
+          input {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            letter-spacing: 1px;
+          }
+        }
+      }
+
       .add-product-section {
         display: flex;
         gap: 12px;
