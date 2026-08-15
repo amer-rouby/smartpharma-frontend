@@ -63,7 +63,9 @@ export class PharmacySettingsComponent implements OnInit {
       emailNotifications: [true],
       smsNotifications: [false],
       lowStockAlerts: [true],
-      expiryAlerts: [true]
+      expiryAlerts: [true],
+      largeSaleThreshold: [5000, [Validators.required, Validators.min(0)]],
+      largeExpenseThreshold: [2000, [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -108,7 +110,9 @@ export class PharmacySettingsComponent implements OnInit {
           emailNotifications: data.emailNotifications,
           smsNotifications: data.smsNotifications,
           lowStockAlerts: data.lowStockAlerts,
-          expiryAlerts: data.expiryAlerts
+          expiryAlerts: data.expiryAlerts,
+          largeSaleThreshold: data.largeSaleThreshold ?? 5000,
+          largeExpenseThreshold: data.largeExpenseThreshold ?? 2000
         });
 
         const enabled = data.enabledPaymentMethods

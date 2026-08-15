@@ -33,10 +33,15 @@ export class NotificationService {
   public getTypeIcon(type: string): string {
     const icons: Record<string, string> = {
       'LOW_STOCK': 'inventory_2',
+      'OUT_OF_STOCK': 'remove_shopping_cart',
       'EXPIRY_WARNING': 'warning',
       'EXPIRED': 'error',
       'SALE_COMPLETED': 'check_circle',
+      'LARGE_SALE': 'check_circle',
       'EXPENSE_ADDED': 'receipt_long',
+      'LARGE_EXPENSE': 'receipt_long',
+      'BACKUP_REMINDER': 'backup',
+      'SECURITY_ALERT': 'gpp_maybe',
       'SYSTEM': 'info'
     };
     return icons[type] || 'notifications';
@@ -249,10 +254,15 @@ export class NotificationService {
   public getTypeLabel(type: string): string {
     const labels: Record<string, string> = {
       'LOW_STOCK': 'مخزون منخفض',
+      'OUT_OF_STOCK': 'نفاد المخزون',
       'EXPIRY_WARNING': 'صلاحية قريبة',
       'EXPIRED': 'منتهية الصلاحية',
       'SALE_COMPLETED': 'تمت عملية بيع',
+      'LARGE_SALE': 'عملية بيع كبيرة',
       'EXPENSE_ADDED': 'تم إضافة مصروف',
+      'LARGE_EXPENSE': 'مصروف كبير',
+      'BACKUP_REMINDER': 'تذكير بالنسخ الاحتياطي',
+      'SECURITY_ALERT': 'تنبيه أمني',
       'SYSTEM': 'نظام'
     };
     return labels[type] || type;

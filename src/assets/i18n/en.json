@@ -633,6 +633,10 @@
     "EXPIRY_ALERTS": "Expiry Alerts",
     "PAYMENT_METHODS": "Payment Methods",
     "PAYMENT_METHODS_HINT": "Choose which payment methods are available at checkout and in the payments screen",
+    "NOTIFICATION_THRESHOLDS": "Notification Thresholds",
+    "NOTIFICATION_THRESHOLDS_HINT": "The amount above which a sale or expense is considered \"large\" for notification purposes",
+    "LARGE_SALE_THRESHOLD": "Large Sale Threshold",
+    "LARGE_EXPENSE_THRESHOLD": "Large Expense Threshold",
     "LOAD_ERROR": "Failed to load settings",
     "SAVE_SUCCESS": "Settings saved successfully",
     "SAVE_ERROR": "Failed to save settings",
@@ -967,7 +971,7 @@
     },
     "DESC": {
       "EMAIL_NOTIFICATIONS": "Receive notifications via email",
-      "SMS_NOTIFICATIONS": "Receive notifications via SMS",
+      "SMS_NOTIFICATIONS": "Receive notifications via SMS (not available yet)",
       "PUSH_NOTIFICATIONS": "Receive instant notifications in browser",
       "SOUND_ENABLED": "Play sound when receiving notification",
       "VIBRATION_ENABLED": "Vibrate device when receiving notification",
@@ -1435,7 +1439,7 @@
     },
     "DESC": {
       "EMAIL_NOTIFICATIONS": "Receive notifications via email",
-      "SMS_NOTIFICATIONS": "Receive notifications via SMS",
+      "SMS_NOTIFICATIONS": "Receive notifications via SMS (not available yet)",
       "PUSH_NOTIFICATIONS": "Receive instant notifications in browser",
       "SOUND_ENABLED": "Play sound when receiving notification",
       "VIBRATION_ENABLED": "Vibrate device when receiving notification",

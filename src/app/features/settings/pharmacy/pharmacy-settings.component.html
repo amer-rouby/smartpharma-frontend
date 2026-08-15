@@ -148,6 +148,26 @@
           </div>
         </div>
 
+        <!-- Notification Thresholds Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.NOTIFICATION_THRESHOLDS' | translate}}</h3>
+          <p class="section-hint">{{'SETTINGS.NOTIFICATION_THRESHOLDS_HINT' | translate}}</p>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.LARGE_SALE_THRESHOLD' | translate}}</mat-label>
+              <input matInput type="number" min="0" formControlName="largeSaleThreshold">
+              <span matSuffix>{{form.value.currency}}</span>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'SETTINGS.LARGE_EXPENSE_THRESHOLD' | translate}}</mat-label>
+              <input matInput type="number" min="0" formControlName="largeExpenseThreshold">
+              <span matSuffix>{{form.value.currency}}</span>
+            </mat-form-field>
+          </div>
+        </div>
+
         <!-- Form Actions -->
         <div class="form-actions">
           <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading()">

@@ -7,8 +7,6 @@ import { MaterialModule } from '../../../shared/material.module';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { NotificationSettingsService } from '../../../core/services/settings/notification-settings.service';
 
-type ChannelType = 'email' | 'sms' | 'push';
-
 interface NotificationCategory {
   id: string;
   title: string;
@@ -21,11 +19,6 @@ interface NotificationSetting {
   label: string;
   description: string;
   enabled: boolean;
-  channels: {
-    email: boolean;
-    sms: boolean;
-    push: boolean;
-  };
 }
 
 @Component({
@@ -60,8 +53,6 @@ export class NotificationSettingsComponent implements OnInit {
 
   categories: NotificationCategory[] = [];
 
-  readonly channelTypes: ChannelType[] = ['email', 'sms', 'push'];
-
   ngOnInit(): void {
     this.loadNotificationSettings();
   }
@@ -94,29 +85,25 @@ export class NotificationSettingsComponent implements OnInit {
                 key: 'notifyLowStock',
                 label: 'NOTIFICATIONS.SETTINGS.LOW_STOCK',
                 description: 'NOTIFICATIONS.DESC.LOW_STOCK',
-                enabled: settings.notifyLowStock,
-                channels: { email: settings.emailNotifications, sms: false, push: true }
+                enabled: settings.notifyLowStock
               },
               {
                 key: 'notifyOutOfStock',
                 label: 'NOTIFICATIONS.SETTINGS.OUT_OF_STOCK',
                 description: 'NOTIFICATIONS.DESC.OUT_OF_STOCK',
-                enabled: settings.notifyOutOfStock,
-                channels: { email: settings.emailNotifications, sms: settings.smsNotifications, push: true }
+                enabled: settings.notifyOutOfStock
               },
               {
                 key: 'notifyExpiryWarning',
                 label: 'NOTIFICATIONS.SETTINGS.EXPIRY_WARNING',
                 description: 'NOTIFICATIONS.DESC.EXPIRY_WARNING',
-                enabled: settings.notifyExpiryWarning,
-                channels: { email: settings.emailNotifications, sms: false, push: true }
+                enabled: settings.notifyExpiryWarning
               },
               {
                 key: 'notifyExpiredProducts',
                 label: 'NOTIFICATIONS.SETTINGS.EXPIRED_PRODUCTS',
                 description: 'NOTIFICATIONS.DESC.EXPIRED_PRODUCTS',
-                enabled: settings.notifyExpiredProducts,
-                channels: { email: settings.emailNotifications, sms: settings.smsNotifications, push: true }
+                enabled: settings.notifyExpiredProducts
               }
             ]
           },
@@ -129,22 +116,13 @@ export class NotificationSettingsComponent implements OnInit {
                 key: 'notifyNewSale',
                 label: 'NOTIFICATIONS.SETTINGS.NEW_SALE',
                 description: 'NOTIFICATIONS.DESC.NEW_SALE',
-                enabled: settings.notifyNewSale,
-                channels: { email: false, sms: false, push: false }
+                enabled: settings.notifyNewSale
               },
               {
                 key: 'notifyLargeSale',
                 label: 'NOTIFICATIONS.SETTINGS.LARGE_SALE',
                 description: 'NOTIFICATIONS.DESC.LARGE_SALE',
-                enabled: settings.notifyLargeSale,
-                channels: { email: settings.emailNotifications, sms: false, push: true }
-              },
-              {
-                key: 'notifyRefund',
-                label: 'NOTIFICATIONS.SETTINGS.REFUND',
-                description: 'NOTIFICATIONS.DESC.REFUND',
-                enabled: settings.notifyRefund,
-                channels: { email: settings.emailNotifications, sms: false, push: true }
+                enabled: settings.notifyLargeSale
               }
             ]
           },
@@ -157,15 +135,13 @@ export class NotificationSettingsComponent implements OnInit {
                 key: 'notifyNewExpense',
                 label: 'NOTIFICATIONS.SETTINGS.NEW_EXPENSE',
                 description: 'NOTIFICATIONS.DESC.NEW_EXPENSE',
-                enabled: settings.notifyNewExpense,
-                channels: { email: settings.emailNotifications, sms: false, push: true }
+                enabled: settings.notifyNewExpense
               },
               {
                 key: 'notifyLargeExpense',
                 label: 'NOTIFICATIONS.SETTINGS.LARGE_EXPENSE',
                 description: 'NOTIFICATIONS.DESC.LARGE_EXPENSE',
-                enabled: settings.notifyLargeExpense,
-                channels: { email: settings.emailNotifications, sms: settings.smsNotifications, push: true }
+                enabled: settings.notifyLargeExpense
               }
             ]
           },
@@ -175,25 +151,16 @@ export class NotificationSettingsComponent implements OnInit {
             icon: 'settings',
             settings: [
               {
-                key: 'notifySystemUpdates',
-                label: 'NOTIFICATIONS.SETTINGS.SYSTEM_UPDATES',
-                description: 'NOTIFICATIONS.DESC.SYSTEM_UPDATES',
-                enabled: settings.notifySystemUpdates,
-                channels: { email: settings.emailNotifications, sms: false, push: true }
-              },
-              {
                 key: 'notifyBackupReminder',
                 label: 'NOTIFICATIONS.SETTINGS.BACKUP_REMINDER',
                 description: 'NOTIFICATIONS.DESC.BACKUP_REMINDER',
-                enabled: settings.notifyBackupReminder,
-                channels: { email: settings.emailNotifications, sms: false, push: false }
+                enabled: settings.notifyBackupReminder
               },
               {
                 key: 'notifySecurityAlerts',
                 label: 'NOTIFICATIONS.SETTINGS.SECURITY_ALERTS',
                 description: 'NOTIFICATIONS.DESC.SECURITY_ALERTS',
-                enabled: settings.notifySecurityAlerts,
-                channels: { email: settings.emailNotifications, sms: settings.smsNotifications, push: true }
+                enabled: settings.notifySecurityAlerts
               }
             ]
           }
@@ -208,22 +175,11 @@ export class NotificationSettingsComponent implements OnInit {
     });
   }
 
-  toggleAllChannels(category: NotificationCategory, channel: ChannelType): void {
-    const allEnabled = category.settings.every(setting => setting.channels[channel]);
-    category.settings.forEach(setting => {
-      setting.channels[channel] = !allEnabled;
-    });
-  }
-
   toggleAllSettings(category: NotificationCategory): void {
     const allEnabled = category.settings.every(setting => setting.enabled);
     category.settings.forEach(setting => {
       setting.enabled = !allEnabled;
     });
-  }
-
-  isAllChannelsEnabled(category: NotificationCategory, channel: ChannelType): boolean {
-    return category.settings.every(setting => setting.channels[channel]);
   }
 
   areAllSettingsEnabled(category: NotificationCategory): boolean {
@@ -276,23 +232,5 @@ export class NotificationSettingsComponent implements OnInit {
   onReset(): void {
     this.loadNotificationSettings();
     this.errorHandler.showSuccess('COMMON.RESET');
-  }
-
-  getChannelIcon(channel: ChannelType): string {
-    const icons: Record<ChannelType, string> = {
-      email: 'email',
-      sms: 'sms',
-      push: 'notifications'
-    };
-    return icons[channel];
-  }
-
-  getChannelLabel(channel: ChannelType): string {
-    const labels: Record<ChannelType, string> = {
-      email: 'NOTIFICATIONS.CHANNELS.EMAIL',
-      sms: 'NOTIFICATIONS.CHANNELS.SMS',
-      push: 'NOTIFICATIONS.CHANNELS.PUSH'
-    };
-    return labels[channel];
   }
 }
