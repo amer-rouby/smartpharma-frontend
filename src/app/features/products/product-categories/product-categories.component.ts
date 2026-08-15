@@ -1,8 +1,10 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { CategoryService } from '../../../core/services/category.service';
@@ -11,6 +13,8 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Category, CategoryRequest } from '../../../core/models/category';
 import { CategoryDialogComponent } from '../category-dialog/category-dialog.component';
+
+const SEARCH_DEBOUNCE_MS = 350;
 
 @Component({
   selector: 'app-product-categories',
@@ -23,7 +27,7 @@ import { CategoryDialogComponent } from '../category-dialog/category-dialog.comp
   templateUrl: './product-categories.component.html',
   styleUrl: './product-categories.component.scss'
 })
-export class ProductCategoriesComponent implements OnInit {
+export class ProductCategoriesComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -34,19 +38,39 @@ export class ProductCategoriesComponent implements OnInit {
   readonly categories = signal<Category[]>([]);
   readonly loading = signal(false);
   readonly searchQuery = signal('');
+  readonly page = signal(0);
+  readonly size = signal(10);
+  readonly totalElements = signal(0);
 
   readonly displayedColumns = ['icon', 'name', 'description', 'isActive', 'actions'];
 
+  readonly hasPagination = computed(() => this.totalElements() > this.size());
+
+  private readonly searchInput$ = new Subject<string>();
+
   ngOnInit(): void {
-    this.loadCategories();
+    this.searchInput$.pipe(
+      debounceTime(SEARCH_DEBOUNCE_MS),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.page.set(0);
+      this.fetchCategories();
+    });
+
+    this.fetchCategories();
   }
 
-  loadCategories(): void {
+  ngOnDestroy(): void {
+    this.searchInput$.complete();
+  }
+
+  fetchCategories(): void {
     this.loading.set(true);
 
-    this.categoryService.getCategories().subscribe({
-      next: (data) => {
-        this.categories.set(data);
+    this.categoryService.getCategoriesPaged(this.page(), this.size(), this.searchQuery()).subscribe({
+      next: (response) => {
+        this.categories.set(response.content || []);
+        this.totalElements.set(response.totalElements || 0);
         this.loading.set(false);
       },
       error: (error) => {
@@ -56,17 +80,20 @@ export class ProductCategoriesComponent implements OnInit {
     });
   }
 
-  onSearch(): void {
-    const query = this.searchQuery();
+  onSearchInput(): void {
+    this.searchInput$.next(this.searchQuery());
+  }
 
-    if (query.trim()) {
-      this.categoryService.searchCategories(query).subscribe({
-        next: (data) => this.categories.set(data),
-        error: (error) => this.errorHandler.handleHttpError(error, 'CATEGORIES.LOAD_ERROR')
-      });
-    } else {
-      this.loadCategories();
-    }
+  onPageChange(event: PageEvent): void {
+    this.page.set(event.pageIndex);
+    this.size.set(event.pageSize);
+    this.fetchCategories();
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+    this.page.set(0);
+    this.fetchCategories();
   }
 
   onAdd(): void {
@@ -80,7 +107,7 @@ export class ProductCategoriesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadCategories();
+        this.fetchCategories();
       }
     });
   }
@@ -97,7 +124,7 @@ export class ProductCategoriesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadCategories();
+        this.fetchCategories();
       }
     });
   }
@@ -118,7 +145,7 @@ export class ProductCategoriesComponent implements OnInit {
       if (confirmed) {
         this.categoryService.deleteCategory(category.id).subscribe({
           next: () => {
-            this.categories.update(cats => cats.filter(c => c.id !== category.id));
+            this.fetchCategories();
             this.errorHandler.showSuccess('CATEGORIES.DELETE_SUCCESS');
           },
           error: (error) => {
