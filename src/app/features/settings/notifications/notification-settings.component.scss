@@ -57,6 +57,11 @@ mat-card {
     border-radius: 12px;
     transition: all 0.2s ease;
 
+    .language-select {
+      width: 140px;
+      margin-bottom: -1.25em;
+    }
+
     &:hover {
       background: rgba(102, 126, 234, 0.06);
     }

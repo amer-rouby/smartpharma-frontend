@@ -18,6 +18,8 @@ export interface PharmacySettings {
   lowStockAlerts: boolean;
   expiryAlerts: boolean;
   enabledPaymentMethods?: string;
+  largeSaleThreshold?: number;
+  largeExpenseThreshold?: number;
   updatedAt?: string;
 }
 
@@ -39,4 +41,6 @@ export interface PharmacySettingsRequest {
   lowStockAlerts?: boolean;
   expiryAlerts?: boolean;
   enabledPaymentMethods?: string;
+  largeSaleThreshold?: number;
+  largeExpenseThreshold?: number;
 }

@@ -57,6 +57,22 @@
 
           <div class="setting-item">
             <div class="setting-info">
+              <mat-icon>language</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.LANGUAGE' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.LANGUAGE' | translate}}</p>
+              </div>
+            </div>
+            <mat-form-field appearance="outline" class="language-select">
+              <mat-select formControlName="preferredLanguage">
+                <mat-option value="ar">العربية</mat-option>
+                <mat-option value="en">English</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
               <mat-icon>volume_up</mat-icon>
               <div>
                 <h4>{{'NOTIFICATIONS.SOUND_ENABLED' | translate}}</h4>
@@ -125,16 +141,6 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class="channel-toggles">
-          @for (channel of channelTypes; track channel) {
-          <button mat-button type="button" (click)="toggleAllChannels(category, channel)"
-            [class.active]="isAllChannelsEnabled(category, channel)">
-            <mat-icon>{{getChannelIcon(channel)}}</mat-icon>
-            <span>{{getChannelLabel(channel) | translate}}</span>
-          </button>
-          }
-        </div>
-
         <div class="settings-list">
           @for (setting of category.settings; track setting.key) {
           <div class="setting-row" [class.disabled]="!setting.enabled">
@@ -147,17 +153,6 @@
               <mat-slide-toggle [(ngModel)]="setting.enabled" [ngModelOptions]="{standalone: true}" color="primary">
                 {{'COMMON.ENABLED' | translate}}
               </mat-slide-toggle>
-
-              @if (setting.enabled) {
-              <div class="channel-checkboxes">
-                @for (channel of channelTypes; track channel) {
-                <mat-checkbox [(ngModel)]="setting.channels[channel]" [ngModelOptions]="{standalone: true}"
-                  [disabled]="!notificationForm.get(channel + 'Notifications')?.value">
-                  <mat-icon>{{getChannelIcon(channel)}}</mat-icon>
-                </mat-checkbox>
-                }
-              </div>
-              }
             </div>
           </div>
           }
