@@ -57,6 +57,22 @@
 
           <div class="setting-item">
             <div class="setting-info">
+              <mat-icon>language</mat-icon>
+              <div>
+                <h4>{{'NOTIFICATIONS.LANGUAGE' | translate}}</h4>
+                <p>{{'NOTIFICATIONS.DESC.LANGUAGE' | translate}}</p>
+              </div>
+            </div>
+            <mat-form-field appearance="outline" class="language-select">
+              <mat-select formControlName="preferredLanguage">
+                <mat-option value="ar">العربية</mat-option>
+                <mat-option value="en">English</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
               <mat-icon>volume_up</mat-icon>
               <div>
                 <h4>{{'NOTIFICATIONS.SOUND_ENABLED' | translate}}</h4>

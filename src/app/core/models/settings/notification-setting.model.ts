@@ -4,6 +4,7 @@ export interface NotificationSettings {
   emailNotifications: boolean;
   smsNotifications: boolean;
   pushNotifications: boolean;
+  preferredLanguage: string;
   soundEnabled: boolean;
   vibrationEnabled: boolean;
   quietHoursEnabled: boolean;
@@ -28,6 +29,7 @@ export interface NotificationSettingsRequest {
   emailNotifications?: boolean;
   smsNotifications?: boolean;
   pushNotifications?: boolean;
+  preferredLanguage?: string;
   soundEnabled?: boolean;
   vibrationEnabled?: boolean;
   quietHoursEnabled?: boolean;

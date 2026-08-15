@@ -2,7 +2,10 @@ export interface NotificationModel {
   id: number;
   title: string;
   message: string;
-  type: 'LOW_STOCK' | 'EXPIRY_WARNING' | 'EXPIRED' | 'SALE_COMPLETED' | 'EXPENSE_ADDED' | 'SYSTEM';
+  titleEn?: string;
+  messageEn?: string;
+  type: 'LOW_STOCK' | 'OUT_OF_STOCK' | 'EXPIRY_WARNING' | 'EXPIRED' | 'SALE_COMPLETED' | 'LARGE_SALE'
+    | 'EXPENSE_ADDED' | 'LARGE_EXPENSE' | 'BACKUP_REMINDER' | 'SECURITY_ALERT' | 'SYSTEM';
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   read: boolean;
   createdAt: string;

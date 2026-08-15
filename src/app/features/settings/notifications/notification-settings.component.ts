@@ -42,6 +42,7 @@ export class NotificationSettingsComponent implements OnInit {
     emailNotifications: [true],
     smsNotifications: [false],
     pushNotifications: [true],
+    preferredLanguage: ['ar'],
     soundEnabled: [true],
     vibrationEnabled: [true],
     quietHours: this.fb.group({
@@ -66,6 +67,7 @@ export class NotificationSettingsComponent implements OnInit {
           emailNotifications: settings.emailNotifications,
           smsNotifications: settings.smsNotifications,
           pushNotifications: settings.pushNotifications,
+          preferredLanguage: settings.preferredLanguage || 'ar',
           soundEnabled: settings.soundEnabled,
           vibrationEnabled: settings.vibrationEnabled,
           quietHours: {
@@ -204,6 +206,7 @@ export class NotificationSettingsComponent implements OnInit {
       emailNotifications: formValue.emailNotifications,
       smsNotifications: formValue.smsNotifications,
       pushNotifications: formValue.pushNotifications,
+      preferredLanguage: formValue.preferredLanguage,
       soundEnabled: formValue.soundEnabled,
       vibrationEnabled: formValue.vibrationEnabled,
       quietHoursEnabled: formValue.quietHours?.enabled,

@@ -80,6 +80,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.langSubscription = this.languageService.currentLang$.subscribe(lang => {
       this.currentLang.set(lang);
+      // Already-fetched notifications were mapped to title/message in the previous
+      // language - refetch so the bell picks up the new one immediately instead of
+      // waiting for the next natural reload.
+      this.loadNotifications();
     });
 
     this.themeSubscription = this.themeService.currentTheme$.subscribe(theme => {

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, map, catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { LanguageService } from './language.service';
 import { environment } from '../../../environments/environment';
 import { NotificationModel, NotificationsResponse } from '../models/Notification.model';
 
@@ -16,6 +17,7 @@ export interface NotificationStreamEvent {
 export class NotificationService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly languageService = inject(LanguageService);
   private readonly apiUrl = `${environment.apiUrl}/notifications`;
 
   private getAuthHeaders(): HttpHeaders {
@@ -65,6 +67,14 @@ export class NotificationService {
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
+    const isEn = this.languageService.getCurrentLanguage() === 'en';
+    if (isEn) {
+      if (diffMins < 1) return 'now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays < 7) return `${diffDays}d ago`;
+      return date.toLocaleDateString('en-US');
+    }
     if (diffMins < 1) return 'الآن';
     if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
     if (diffHours < 24) return `منذ ${diffHours} ساعة`;
@@ -73,10 +83,13 @@ export class NotificationService {
   }
 
   private mapNotification(n: any): NotificationModel {
+    const isEn = this.languageService.getCurrentLanguage() === 'en';
     return {
       id: n.id,
-      title: n.title,
-      message: n.message,
+      title: (isEn && n.titleEn) ? n.titleEn : n.title,
+      message: (isEn && n.messageEn) ? n.messageEn : n.message,
+      titleEn: n.titleEn,
+      messageEn: n.messageEn,
       type: n.type,
       priority: n.priority,
       read: n.read,
@@ -252,6 +265,22 @@ export class NotificationService {
   }
 
   public getTypeLabel(type: string): string {
+    if (this.languageService.getCurrentLanguage() === 'en') {
+      const labelsEn: Record<string, string> = {
+        'LOW_STOCK': 'Low Stock',
+        'OUT_OF_STOCK': 'Out of Stock',
+        'EXPIRY_WARNING': 'Expiring Soon',
+        'EXPIRED': 'Expired',
+        'SALE_COMPLETED': 'Sale Completed',
+        'LARGE_SALE': 'Large Sale',
+        'EXPENSE_ADDED': 'Expense Added',
+        'LARGE_EXPENSE': 'Large Expense',
+        'BACKUP_REMINDER': 'Backup Reminder',
+        'SECURITY_ALERT': 'Security Alert',
+        'SYSTEM': 'System'
+      };
+      return labelsEn[type] || type;
+    }
     const labels: Record<string, string> = {
       'LOW_STOCK': 'مخزون منخفض',
       'OUT_OF_STOCK': 'نفاد المخزون',
