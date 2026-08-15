@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse } from '../models';
 import { Category, CategoryRequest, CategoriesCountResponse } from '../models/category';
+import { PaginatedResponse } from '../models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -58,6 +59,39 @@ export class CategoryService {
       map(response => response.data || []),
       catchError(this.handleError<Category[]>('getActiveCategories', []))
     );
+  }
+
+  getCategoriesPaged(page: number, size: number, search?: string): Observable<PaginatedResponse<Category>> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return of(this.getEmptyPaginatedResponse<Category>());
+    }
+
+    let params = new HttpParams()
+      .set('pharmacyId', pharmacyId)
+      .set('page', page)
+      .set('size', size);
+
+    if (search?.trim()) params = params.set('search', search.trim());
+
+    return this.http.get<ApiResponse<PaginatedResponse<Category>>>(`${this.apiUrl}/page`, { params }).pipe(
+      map(response => response.data || this.getEmptyPaginatedResponse<Category>()),
+      catchError(this.handleError<PaginatedResponse<Category>>('getCategoriesPaged', this.getEmptyPaginatedResponse()))
+    );
+  }
+
+  private getEmptyPaginatedResponse<T>(): PaginatedResponse<T> {
+    return {
+      content: [],
+      totalPages: 0,
+      totalElements: 0,
+      size: 0,
+      number: 0,
+      first: true,
+      last: true,
+      empty: true
+    };
   }
 
   getCategory(id: number): Observable<Category> {

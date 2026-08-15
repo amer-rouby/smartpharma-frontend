@@ -3,7 +3,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, BehaviorSubject, startWith, map } from 'rxjs';
+import { BehaviorSubject, startWith } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
@@ -80,16 +80,6 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly filteredProductsSubject = new BehaviorSubject<Product[]>([]);
   readonly currentFilteredProducts$ = this.filteredProductsSubject.asObservable();
 
-  readonly filteredProducts: Observable<Product[]> = this.productControl.valueChanges.pipe(
-    startWith(''),
-    map(value => {
-      const searchValue = typeof value === 'string' ? value : value?.name || '';
-      const filtered = this._filterProducts(searchValue);
-      this.filteredProductsSubject.next(filtered);
-      return filtered;
-    })
-  );
-
   readonly subtotal = computed(() =>
     this.cartItems().reduce((sum, item) => sum + item.totalPrice, 0)
   );
@@ -127,6 +117,11 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.loadProducts();
     this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
     this.loadEnabledPaymentMethods();
+
+    this.productControl.valueChanges.pipe(startWith('')).subscribe(value => {
+      const searchValue = typeof value === 'string' ? value : value?.name || '';
+      this.filteredProductsSubject.next(this._filterProducts(searchValue));
+    });
   }
 
   ngAfterViewInit(): void {

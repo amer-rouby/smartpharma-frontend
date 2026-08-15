@@ -15,17 +15,17 @@
       <div class="filters-grid">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>{{'COMMON.SEARCH' | translate}}</mat-label>
-          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()"
+          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="onSearchInput()"
             [placeholder]="'CATEGORIES.SEARCH_PLACEHOLDER' | translate">
-          <mat-icon matSuffix>search</mat-icon>
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchQuery()) {
+          <button mat-icon-button matSuffix (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+          }
         </mat-form-field>
 
-        <button mat-raised-button color="primary" (click)="onSearch()" [disabled]="loading()">
-          <mat-icon>search</mat-icon>
-          {{'COMMON.SEARCH' | translate}}
-        </button>
-
-        <button mat-button (click)="loadCategories()" [disabled]="loading()">
+        <button mat-button (click)="fetchCategories()" [disabled]="loading()">
           <mat-icon>refresh</mat-icon>
           {{'COMMON.REFRESH' | translate}}
         </button>
@@ -46,7 +46,7 @@
   <mat-card class="table-card">
     <mat-card-header>
       <mat-card-title>{{'CATEGORIES.ALL_CATEGORIES' | translate}}</mat-card-title>
-      <mat-card-subtitle>{{categories().length}} {{'CATEGORIES.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{totalElements()}} {{'CATEGORIES.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
@@ -119,6 +119,12 @@
           </tr>
         </table>
       </div>
+
+      @if (hasPagination()) {
+      <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+        [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+      }
     </mat-card-content>
   </mat-card>
   }

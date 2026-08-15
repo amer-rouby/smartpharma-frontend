@@ -13,15 +13,6 @@
         }
         <span>{{ 'REPORTS.EXPORT_PDF' | translate }}</span>
       </button>
-
-      <button mat-raised-button color="accent" (click)="exportExcel()" [disabled]="exportLoading()">
-        @if (exportLoading()) {
-        <mat-spinner diameter="20"></mat-spinner>
-        } @else {
-        <mat-icon>download</mat-icon>
-        }
-        <span>{{ 'REPORTS.EXPORT_EXCEL' | translate }}</span>
-      </button>
     </div>
 
   </app-page-header>

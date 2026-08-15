@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from './language.service';
 import { PharmacySettings } from '../models/settings/pharmacy-settings.model';
+import { getPrintDocumentStyles, getPrintFooterHtml, getPrintLetterheadHtml } from './print-document.util';
 
 export interface PrintableSale {
   id: number;
@@ -98,6 +99,11 @@ export class InvoicePrintService {
       return val && val !== key ? val : key;
     };
 
+    const pharmacyMeta = [
+      pharmacy.taxNumber ? `${t('SETTINGS.TAX_NUMBER')}: ${pharmacy.taxNumber}` : '',
+      t('SALES.INVOICE_NUMBER') + ': ' + sale.invoiceNumber
+    ].filter(Boolean).join('&nbsp;&nbsp;&middot;&nbsp;&nbsp;');
+
     return `<!DOCTYPE html>
 <html dir="${dir}" lang="${lang}">
 <head>
@@ -106,17 +112,13 @@ export class InvoicePrintService {
 ${this.getPrintStyles(isArabic)}
 </head>
 <body>
-  <div class="invoice-container">
-    <div class="header">
-      <div class="pharmacy-name">${pharmacy.pharmacyName || t('APP.NAME')}</div>
-      <div class="pharmacy-info">
-        ${pharmacy.address ? `<div>📍 ${pharmacy.address}</div>` : ''}
-        ${pharmacy.phone ? `<div>📞 ${pharmacy.phone}</div>` : ''}
-        ${pharmacy.email ? `<div>✉️ ${pharmacy.email}</div>` : ''}
-      </div>
-    </div>
-
-    <div class="invoice-title">${t('SALES.INVOICE_DETAILS')}</div>
+  <div class="print-doc">
+    ${getPrintLetterheadHtml(
+      { name: pharmacy.pharmacyName || t('APP.NAME'), address: pharmacy.address, phone: pharmacy.phone, email: pharmacy.email },
+      t('SALES.INVOICE_DETAILS'),
+      undefined,
+      pharmacyMeta
+    )}
 
     <div class="invoice-info">
       <div class="info-box">
@@ -133,7 +135,7 @@ ${this.getPrintStyles(isArabic)}
       </div>
     </div>
 
-    <table class="items-table">
+    <table class="data-table">
       <thead>
         <tr>
           <th>#</th>
@@ -164,7 +166,7 @@ ${this.getPrintStyles(isArabic)}
       ${(sale.discountAmount && sale.discountAmount > 0) ? `
       <div class="total-row">
         <span>${t('SALES.DISCOUNT')}:</span>
-        <span style="color: #ef4444;">-${this.formatCurrency(sale.discountAmount!, isArabic, pharmacy.currency)}</span>
+        <span style="color: #b91c1c;">-${this.formatCurrency(sale.discountAmount!, isArabic, pharmacy.currency)}</span>
       </div>` : ''}
       <div class="total-row final">
         <span>${t('SALES.GRAND_TOTAL')}:</span>
@@ -172,65 +174,28 @@ ${this.getPrintStyles(isArabic)}
       </div>
     </div>
 
-    <div class="footer">
-      <p><strong>${t('PAYMENTS.THANK_YOU')}</strong></p>
-      ${pharmacy.taxNumber ? `<p>${t('SETTINGS.TAX_NUMBER')}: ${pharmacy.taxNumber}</p>` : ''}
-      ${pharmacy.phone ? `<p>${t('SETTINGS.PHARMACY_PHONE')}: ${pharmacy.phone}</p>` : ''}
-      <p style="margin-top: 10px; font-size: 12px; color: #999;">
-        ${t('PAYMENTS.RECEIPT_FOOTER')} - ${new Date().toLocaleDateString(isArabic ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-      </p>
-    </div>
+    <p class="thank-you">${t('PAYMENTS.THANK_YOU')}</p>
+
+    ${getPrintFooterHtml(pharmacy.pharmacyName || t('APP.NAME'), t('PAYMENTS.RECEIPT_FOOTER'), isArabic)}
   </div>
 </body>
 </html>`;
   }
 
   private getPrintStyles(isArabic: boolean): string {
-    const fontFamily = isArabic
-      ? "'Cairo', 'Segoe UI', Tahoma, sans-serif"
-      : "'Segoe UI', Roboto, Arial, sans-serif";
-    const textAlign = isArabic ? 'right' : 'left';
-
     return `<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: ${fontFamily}; }
-  body { padding: 20px; background: #fff; direction: ${isArabic ? 'rtl' : 'ltr'}; }
-  .invoice-container {
-    max-width: 800px; margin: 0 auto;
-    border: 2px solid #667eea; border-radius: 12px; padding: 30px;
-  }
-  .header { text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 20px; margin-bottom: 30px; }
-  .pharmacy-name { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: #1a1a2e; }
-  .pharmacy-info { font-size: 14px; color: #666; line-height: 1.8; }
-  .invoice-title { font-size: 24px; color: #333; margin: 20px 0 15px; text-align: center; font-weight: bold; }
-  .invoice-info {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;
-  }
-  .info-box { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: ${textAlign}; }
-  .info-label { font-size: 12px; color: #999; margin-bottom: 5px; }
-  .info-value { font-size: 15px; font-weight: bold; color: #333; }
-  .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-  .items-table thead th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white; padding: 12px 10px; text-align: ${textAlign}; font-weight: 600; font-size: 13px;
-  }
-  .items-table tbody tr:nth-child(even) { background: #f8f9fa; }
-  .items-table tbody tr:nth-child(odd) { background: #ffffff; }
-  .items-table td { padding: 10px; border-bottom: 1px solid #e9ecef; text-align: ${textAlign}; font-size: 13px; }
-  .totals { background: #f8f9fa; padding: 20px; border-radius: 8px; }
-  .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
+  ${getPrintDocumentStyles(isArabic)}
+  .invoice-info { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; flex: 1; min-width: 140px; }
+  .info-label { font-size: 10px; color: #64748b; margin-bottom: 4px; }
+  .info-value { font-size: 13px; font-weight: 700; color: #1e293b; }
+  .totals { margin-top: 14px; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; }
+  .total-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
   .total-row.final {
-    font-size: 20px; font-weight: bold; color: #667eea; padding-top: 10px;
-    border-top: 2px solid #e9ecef; margin-top: 10px;
+    font-size: 16px; font-weight: 700; color: #4338ca; padding-top: 8px;
+    border-top: 1px solid #cbd5e1; margin-top: 8px; margin-bottom: 0;
   }
-  .footer {
-    text-align: center; margin-top: 40px; padding-top: 20px;
-    border-top: 2px solid #e9ecef; color: #666; font-size: 13px;
-  }
-  @media print {
-    body { padding: 0; }
-    .invoice-container { border: none; border-radius: 0; }
-  }
+  .thank-you { text-align: center; font-weight: 700; margin-top: 18px; font-size: 13px; }
 </style>`;
   }
 

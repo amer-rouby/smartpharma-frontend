@@ -40,6 +40,10 @@
             </mat-error>
           </mat-form-field>
 
+          <mat-checkbox [(ngModel)]="credentials.rememberMe" name="rememberMe" class="remember-me-checkbox">
+            {{'AUTH.REMEMBER_ME' | translate}}
+          </mat-checkbox>
+
           <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="loading">
             @if (loading) {
             <mat-icon class="spin-icon">refresh</mat-icon>

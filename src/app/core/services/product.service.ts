@@ -49,6 +49,30 @@ export class ProductService {
     );
   }
 
+  getProductsPaged(page: number, size: number, search?: string, category?: string,
+                    sortBy = 'name', sortDirection = 'asc'): Observable<PaginatedResponse<Product>> {
+    const pharmacyId = this.getPharmacyId();
+
+    if (!pharmacyId) {
+      return of(this.getEmptyPaginatedResponse<Product>());
+    }
+
+    let params = new HttpParams()
+      .set('pharmacyId', pharmacyId)
+      .set('page', page)
+      .set('size', size)
+      .set('sortBy', sortBy)
+      .set('sortDirection', sortDirection);
+
+    if (search?.trim()) params = params.set('search', search.trim());
+    if (category && category !== 'all') params = params.set('category', category);
+
+    return this.http.get<ApiResponse<PaginatedResponse<Product>>>(`${this.apiUrl}/page`, { params }).pipe(
+      map(response => response.data || this.getEmptyPaginatedResponse<Product>()),
+      catchError(this.handleError<PaginatedResponse<Product>>('getProductsPaged', this.getEmptyPaginatedResponse()))
+    );
+  }
+
   getProductsList(): Observable<Product[]> {
     const pharmacyId = this.getPharmacyId();
 
