@@ -15,8 +15,9 @@ import { Observable, firstValueFrom } from 'rxjs';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
-import { MAT_PAGINATOR_DEFAULT_OPTIONS } from '@angular/material/paginator';
+import { MAT_PAGINATOR_DEFAULT_OPTIONS, MatPaginatorIntl } from '@angular/material/paginator';
 import { LanguageService } from './core/services/language.service';
+import { AppPaginatorIntl } from './core/services/app-paginator-intl.service';
 
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) { }
@@ -70,6 +71,7 @@ export const appConfig: ApplicationConfig = {
         pageSizeOptions: [5, 10, 20, 50],
         formFieldAppearance: 'outline'
       }
-    }
+    },
+    { provide: MatPaginatorIntl, useClass: AppPaginatorIntl }
   ]
 };

@@ -5,6 +5,15 @@
     "VERSION": "الإصدار 1.0.0",
     "COPYRIGHT": "© 2026 صيدليتي الذكية - جميع الحقوق محفوظة"
   },
+  "PAGINATOR": {
+    "ITEMS_PER_PAGE": "عناصر في الصفحة",
+    "NEXT_PAGE": "الصفحة التالية",
+    "PREVIOUS_PAGE": "الصفحة السابقة",
+    "FIRST_PAGE": "الصفحة الأولى",
+    "LAST_PAGE": "الصفحة الأخيرة",
+    "RANGE": "{{start}} - {{end}} من {{length}}",
+    "RANGE_EMPTY": "0 من {{length}}"
+  },
   "NAV": {
     "DASHBOARD": "لوحة التحكم",
     "PRODUCTS": "المنتجات",
