@@ -1550,6 +1550,10 @@
       "TOTAL": "Total Orders"
     },
     "SEND_WHATSAPP": "Send via WhatsApp",
+    "SEND_EMAIL": "Send via Email",
+    "SEND_EMAIL_CONFIRM": "Send this order to {{supplier}}'s email address?",
+    "SEND_EMAIL_SUCCESS": "Order sent to {{email}} successfully",
+    "SEND_EMAIL_ERROR": "Failed to send email",
     "WHATSAPP_SENT": "Order sent via WhatsApp successfully",
     "WHATSAPP_ERROR": "Failed to send via WhatsApp",
     "WHATSAPP_NOT_ALLOWED": "Supplier phone number not allowed",

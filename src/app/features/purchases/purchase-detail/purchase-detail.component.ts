@@ -32,6 +32,7 @@ export class PurchaseDetailComponent implements OnInit {
 
   readonly loading = signal(false);
   readonly order = signal<PurchaseOrder | null>(null);
+  readonly emailSending = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -133,6 +134,53 @@ export class PurchaseDetailComponent implements OnInit {
         orderNumber: order.orderNumber,
         supplierName: order.supplierName
       }
+    });
+  }
+
+  /**
+   * Confirms, then sends the purchase order to the supplier's email directly
+   * (unlike WhatsApp's click-to-chat link, this is a real server-side send).
+   */
+  onSendEmail(): void {
+    const order = this.order();
+    if (!order) return;
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translate.instant('PURCHASES.SEND_EMAIL'),
+        message: this.translate.instant('PURCHASES.SEND_EMAIL_CONFIRM', { supplier: order.supplierName }),
+        confirmText: this.translate.instant('PURCHASES.SEND_EMAIL'),
+        cancelText: this.translate.instant('COMMON.CANCEL')
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.emailSending.set(true);
+      this.purchaseService.sendEmail(order.id).subscribe({
+        next: (response) => {
+          this.emailSending.set(false);
+          this.snackBar.open(
+            this.translate.instant('PURCHASES.SEND_EMAIL_SUCCESS', { email: response.recipientEmail }),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 4000, panelClass: ['success-snackbar'] }
+          );
+        },
+        error: (err) => {
+          this.emailSending.set(false);
+          // The backend's message ("Supplier has no email on file", SMTP not
+          // configured, etc.) is actionable and specific - worth showing directly
+          // instead of a generic "failed to send" the pharmacist can't act on.
+          const backendMessage = err?.error?.message;
+          if (backendMessage) {
+            this.errorHandler.show(backendMessage, { panelClass: ['error-snackbar'] });
+          } else {
+            this.errorHandler.handleHttpError(err, 'PURCHASES.SEND_EMAIL_ERROR');
+          }
+        }
+      });
     });
   }
 

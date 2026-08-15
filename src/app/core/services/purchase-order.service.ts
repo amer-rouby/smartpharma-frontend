@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { ApiResponse, PaginatedResponse } from '../models';
 import { PharmacyContextService } from './pharmacy-context.service';
 import { withHttpErrorFallback } from '../utils/http-error.util';
-import { PurchaseOrder, PurchaseOrderStats } from '../models/purchase-order.model';
+import { PurchaseOrder, PurchaseOrderStats, SendEmailResponse } from '../models/purchase-order.model';
 import { PurchaseOrderRequest } from '../models/purchase-request.model';
 
 @Injectable({ providedIn: 'root' })
@@ -137,5 +137,16 @@ export class PurchaseOrderService {
         map((response) => response.data),
         withHttpErrorFallback<PurchaseOrder>('createFromPrediction')
       );
+  }
+
+  // Deliberately no withHttpErrorFallback here - unlike a fetch, a failed send (no
+  // supplier email on file, SMTP down, etc.) needs its real error message to reach
+  // the caller so the UI can show *why* it failed, not swallow it into a generic result.
+  sendEmail(orderId: number): Observable<SendEmailResponse> {
+    return this.http
+      .post<ApiResponse<SendEmailResponse>>(`${this.apiUrl}/${orderId}/send-email`, null, {
+        params: this.pharmacy.pharmacyParams()
+      })
+      .pipe(map((response) => response.data));
   }
 }

@@ -45,6 +45,19 @@
         <mat-icon>chat</mat-icon>
         <span>{{'PURCHASES.SEND_WHATSAPP' | translate}}</span>
       </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="emailSending()"
+        (click)="onSendEmail()"
+      >
+        @if (emailSending()) {
+        <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+        <mat-icon>mail</mat-icon>
+        }
+        <span>{{'PURCHASES.SEND_EMAIL' | translate}}</span>
+      </button>
       }
     </div>
   </app-page-header>

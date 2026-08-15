@@ -54,6 +54,12 @@ export interface PurchaseOrderStats {
   received: number;
 }
 
+export interface SendEmailResponse {
+  success: boolean;
+  recipientEmail: string;
+  message: string;
+}
+
 export interface Supplier {
   id: number;
   name: string;
