@@ -60,10 +60,6 @@ export class PharmacySettingsComponent implements OnInit {
       timezone: ['Africa/Cairo'],
       dateFormat: ['dd/MM/yyyy'],
       timeFormat: ['24h'],
-      emailNotifications: [true],
-      smsNotifications: [false],
-      lowStockAlerts: [true],
-      expiryAlerts: [true],
       largeSaleThreshold: [5000, [Validators.required, Validators.min(0)]],
       largeExpenseThreshold: [2000, [Validators.required, Validators.min(0)]]
     });
@@ -107,10 +103,6 @@ export class PharmacySettingsComponent implements OnInit {
           timezone: data.timezone,
           dateFormat: data.dateFormat,
           timeFormat: data.timeFormat,
-          emailNotifications: data.emailNotifications,
-          smsNotifications: data.smsNotifications,
-          lowStockAlerts: data.lowStockAlerts,
-          expiryAlerts: data.expiryAlerts,
           largeSaleThreshold: data.largeSaleThreshold ?? 5000,
           largeExpenseThreshold: data.largeExpenseThreshold ?? 2000
         });

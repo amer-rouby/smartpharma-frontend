@@ -13,10 +13,6 @@ export interface PharmacySettings {
   timezone: string;
   dateFormat: string;
   timeFormat: string;
-  emailNotifications: boolean;
-  smsNotifications: boolean;
-  lowStockAlerts: boolean;
-  expiryAlerts: boolean;
   enabledPaymentMethods?: string;
   largeSaleThreshold?: number;
   largeExpenseThreshold?: number;
@@ -36,10 +32,6 @@ export interface PharmacySettingsRequest {
   timezone?: string;
   dateFormat?: string;
   timeFormat?: string;
-  emailNotifications?: boolean;
-  smsNotifications?: boolean;
-  lowStockAlerts?: boolean;
-  expiryAlerts?: boolean;
   enabledPaymentMethods?: string;
   largeSaleThreshold?: number;
   largeExpenseThreshold?: number;

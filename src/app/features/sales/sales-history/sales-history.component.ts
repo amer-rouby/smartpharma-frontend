@@ -78,11 +78,7 @@ export class SalesHistoryComponent implements OnInit {
       currency: 'EGP',
       timezone: 'Africa/Cairo',
       dateFormat: 'dd/MM/yyyy',
-      timeFormat: '24h',
-      emailNotifications: true,
-      smsNotifications: true,
-      lowStockAlerts: true,
-      expiryAlerts: true
+      timeFormat: '24h'
     };
   }
 
