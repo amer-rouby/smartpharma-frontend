@@ -81,33 +81,6 @@ export class BackupSettingsComponent implements OnInit {
     });
   }
 
-  onRestoreBackup(backup: Backup): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: this.translate.instant('BACKUP.CONFIRM_RESTORE_TITLE'),
-        message: this.translate.instant('BACKUP.CONFIRM_RESTORE', { name: backup.backupName }),
-        confirmText: this.translate.instant('COMMON.YES'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.backupService.restoreBackup(backup.id).subscribe({
-          next: () => {
-            this.loadBackups();
-            this.errorHandler.showSuccess('BACKUP.RESTORE_SUCCESS');
-          },
-          error: (err) => {
-            this.errorHandler.handleHttpError(err, 'BACKUP.RESTORE_ERROR');
-          }
-        });
-      }
-    });
-  }
-
   onDeleteBackup(backup: Backup): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
