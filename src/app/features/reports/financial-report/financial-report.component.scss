@@ -30,6 +30,9 @@
   .filters-card {
     margin: 24px 0;
     border-radius: 16px;
+    background: var(--color-surface, #fff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
     direction: inherit;
 
     mat-card-content {
@@ -59,27 +62,27 @@
       font-size: 64px;
       width: 64px;
       height: 64px;
-      color: #cbd5e0;
+      color: var(--color-text-muted, #cbd5e0);
     }
 
     p {
       margin: 0;
       font-size: 16px;
-      color: #666;
+      color: var(--color-text-secondary, #666);
     }
   }
 
   .error-card {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
+    background: var(--color-danger-bg, #fef2f2);
+    border: 1px solid var(--color-danger-border, #fecaca);
     border-radius: 12px;
 
     mat-icon {
-      color: #ef4444;
+      color: var(--color-danger, #ef4444);
     }
 
     p {
-      color: #dc2626;
+      color: var(--color-danger, #dc2626);
     }
   }
 
@@ -91,7 +94,16 @@
 
     .stat-card {
       border-radius: 16px;
+      background: var(--color-surface, #fff);
+      border: 1px solid var(--color-border, #e2e8f0);
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
       direction: inherit;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md, 0 4px 12px rgba(15, 23, 42, 0.08));
+      }
 
       mat-card-content {
         display: flex;
@@ -122,13 +134,13 @@
             margin: 0 0 4px;
             font-size: 24px;
             font-weight: 700;
-            color: #1a1a1a;
+            color: var(--color-text-primary, #1a1a1a);
           }
 
           p {
             margin: 0;
             font-size: 14px;
-            color: #666;
+            color: var(--color-text-secondary, #666);
           }
         }
       }
@@ -143,11 +155,20 @@
 
     .chart-card {
       border-radius: 16px;
+      background: var(--color-surface, #fff);
+      border: 1px solid var(--color-border, #e2e8f0);
+      box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
       direction: inherit;
 
       mat-card-header {
         padding: 20px 24px;
-        border-bottom: 1px solid #e9ecef;
+        border-bottom: 1px solid var(--color-border, #e9ecef);
+
+        mat-card-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--color-text-primary, #1a1a1a);
+        }
       }
 
       mat-card-content {

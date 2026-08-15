@@ -8,7 +8,6 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, ChartDataset } from 'chart.js';
 import { ReportService } from '../../../core/services/report.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { ExportService } from '../../../core/services/export.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -29,7 +28,6 @@ export class FinancialReportComponent implements OnInit {
   private readonly reportService = inject(ReportService);
   private readonly authService = inject(AuthService);
   private readonly translate = inject(TranslateService);
-  private readonly exportService = inject(ExportService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);
@@ -180,33 +178,6 @@ export class FinancialReportComponent implements OnInit {
     }
   }
 
-  exportExcel(): void {
-    this.exportLoading.set(true);
-    this.exportService.exportReport({
-      fileName: `financial_report_${this.startDate()}_to_${this.endDate()}.xlsx`,
-      fileType: 'excel',
-      endpoint: '/financial/excel',
-      params: {
-        pharmacyId: this.getPharmacyId(),
-        startDate: this.startDate(),
-        endDate: this.endDate()
-      },
-      preview: false,
-      onError: () => {
-        this.exportLoading.set(false);
-        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
-      }
-    }).subscribe({
-      next: () => {
-        this.exportLoading.set(false);
-        this.errorHandler.showSuccess('REPORTS.EXPORT_SUCCESS');
-      },
-      error: () => {
-        this.exportLoading.set(false);
-        this.errorHandler.showError('REPORTS.EXPORT_ERROR');
-      }
-    });
-  }
 
   formatCurrency(amount: number): string {
     return this.currencyService.format(amount, this.languageService.getCurrentLanguage());
