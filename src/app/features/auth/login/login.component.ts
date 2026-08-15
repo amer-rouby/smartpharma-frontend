@@ -11,6 +11,13 @@ import { LoginRequest } from '../../../core/models/LoginRequest.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { AuthBackgroundComponent } from '../../../shared/components/auth-background/auth-background.component';
 
+// Only the username is persisted here - never the password. Storing a real password
+// in localStorage is a plaintext-credential exposure (readable by any XSS, or anyone
+// with device access), so "remember me" only spares retyping the username; the
+// password itself should come from the browser's own password manager instead (the
+// inputs already carry autocomplete="username"/"current-password" for that).
+const REMEMBERED_USERNAME_KEY = 'rememberedUsername';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -27,7 +34,7 @@ export class LoginComponent implements OnInit {
   readonly languageService = inject(LanguageService);
   readonly errorHandler = inject(ErrorHandlerService);
 
-  credentials: LoginRequest = { username: '', password: '' };
+  credentials: LoginRequest = { username: '', password: '', rememberMe: false };
   loading = false;
   hidePassword = true;
   isSubmitted = false;
@@ -42,6 +49,12 @@ export class LoginComponent implements OnInit {
   twoFactorSubmitted = false;
 
   ngOnInit(): void {
+    const rememberedUsername = localStorage.getItem(REMEMBERED_USERNAME_KEY);
+    if (rememberedUsername) {
+      this.credentials.username = rememberedUsername;
+      this.credentials.rememberMe = true;
+    }
+
     // Check for session expiration query params
     this.route.queryParams.subscribe(params => {
       if (params['expired']) {
@@ -86,6 +99,7 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     Swal.close();
     this.isSubmitted = true;
+    this.credentials.username = this.credentials.username?.trim();
 
     if (!this.credentials.username || !this.credentials.password) {
       this.errorHandler.showWarning('AUTH.LOGIN_FAILED');
@@ -142,6 +156,12 @@ export class LoginComponent implements OnInit {
   }
 
   private showLoginSuccessAndNavigate(fullName: string): void {
+    if (this.credentials.rememberMe) {
+      localStorage.setItem(REMEMBERED_USERNAME_KEY, this.credentials.username);
+    } else {
+      localStorage.removeItem(REMEMBERED_USERNAME_KEY);
+    }
+
     Swal.fire({
       icon: 'success',
       title: this.translate.instant('AUTH.LOGIN_SUCCESS'),

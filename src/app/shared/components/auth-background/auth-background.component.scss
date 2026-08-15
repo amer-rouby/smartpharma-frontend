@@ -208,3 +208,21 @@
     filter: blur(40px);
   }
 }
+
+// Light backgrounds wash the low-opacity blobs/icons out almost completely;
+// boost contrast so the pattern stays visible against --color-slate-50.
+:host-context(body.light-theme) {
+  .blob {
+    opacity: 0.55;
+  }
+
+  .floating-icon {
+    color: var(--color-primary-600, #4f46e5);
+    opacity: 0.28;
+  }
+
+  .grid-overlay {
+    background-image: radial-gradient(var(--color-primary-400, #818cf8) 1.5px, transparent 1.5px);
+    opacity: 0.3;
+  }
+}

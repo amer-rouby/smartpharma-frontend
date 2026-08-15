@@ -105,6 +105,15 @@
         }
       }
 
+      .remember-me-checkbox {
+        margin-top: -6px;
+
+        ::ng-deep .mdc-label {
+          font-size: 14px;
+          color: var(--color-text-secondary, #64748b);
+        }
+      }
+
       .two-factor-prompt {
         margin: 0 0 4px;
         font-size: 14px;

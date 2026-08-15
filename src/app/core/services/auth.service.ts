@@ -431,15 +431,29 @@ export class AuthService {
     if (msUntilWarning <= 0) {
       this.showLocalSessionWarning(expiresAtMs, warningThresholdMinutes);
     } else {
-      this.warningTimeoutId = setTimeout(() => {
+      this.warningTimeoutId = this.safeSetTimeout(() => {
         this.showLocalSessionWarning(expiresAtMs, warningThresholdMinutes);
       }, msUntilWarning);
     }
 
-    this.expiryTimeoutId = setTimeout(() => {
+    this.expiryTimeoutId = this.safeSetTimeout(() => {
       this.forceLogout();
       this.router.navigate(['/auth/login'], { queryParams: { expired: true } });
     }, msUntilExpiry);
+  }
+
+  // setTimeout's delay is a 32-bit signed int internally - anything past ~24.8 days
+  // overflows and fires almost immediately instead of waiting. A 30-day "remember me"
+  // session blows well past that, so long delays get chained: re-run the monitor after
+  // the safe max, which recomputes both timers fresh against the still-current
+  // expiresAt rather than trying to carry the original callback across the gap.
+  private static readonly MAX_TIMEOUT_MS = 2147483647;
+
+  private safeSetTimeout(callback: () => void, delayMs: number): ReturnType<typeof setTimeout> {
+    if (delayMs > AuthService.MAX_TIMEOUT_MS) {
+      return setTimeout(() => this.startSessionMonitor(), AuthService.MAX_TIMEOUT_MS);
+    }
+    return setTimeout(callback, delayMs);
   }
 
   private stopSessionMonitor(): void {
