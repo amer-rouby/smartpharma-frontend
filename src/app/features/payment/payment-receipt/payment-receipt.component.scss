@@ -233,6 +233,11 @@
   }
 }
 
+@page {
+  size: A4;
+  margin: 12mm 10mm;
+}
+
 @media print {
   .no-print {
     display: none !important;
@@ -240,8 +245,23 @@
 
   .receipt-container {
     box-shadow: none;
+    border-radius: 0;
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .receipt-info,
+  .payment-details,
+  .customer-info {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+  }
+
+  .receipt-header,
+  .receipt-footer {
+    border-color: #4338ca;
   }
 
   body * {

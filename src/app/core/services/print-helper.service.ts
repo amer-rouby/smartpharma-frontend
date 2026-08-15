@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { LanguageService } from './language.service';
 import { CurrencyService } from './currency.service';
+import { AuthService } from './auth.service';
+import { getPrintDocumentStyles, getPrintFooterHtml, getPrintLetterheadHtml } from './print-document.util';
 
 export interface PrintOptions {
   title: string;
@@ -32,6 +34,7 @@ export class PrintHelperService {
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);
+  private readonly authService = inject(AuthService);
 
   /**
    * Opens a print-ready window with the report data.
@@ -82,14 +85,8 @@ export class PrintHelperService {
     dir: string,
     lang: string
   ): string {
-    const fontFamily = isArabic
-      ? "'Cairo', 'Segoe UI', Tahoma, sans-serif"
-      : "'Segoe UI', Roboto, Arial, sans-serif";
-    const textAlign = isArabic ? 'right' : 'left';
-
     const summaryHtml = options.summary?.length ? `
       <div class="summary-section">
-        <h3>${t('REPORTS.SUMMARY') || 'Summary'}</h3>
         <div class="summary-grid">
           ${options.summary.map(item => `
             <div class="summary-item">
@@ -111,8 +108,8 @@ export class PrintHelperService {
           </tr>
         </thead>
         <tbody>
-          ${options.data.map((row, index) => `
-            <tr class="${index % 2 === 0 ? 'even' : 'odd'}">
+          ${options.data.map(row => `
+            <tr>
               ${options.columns.map(col => `
                 <td>${this.formatValue(row[col.key], col.type || 'text', isArabic)}</td>
               `).join('')}
@@ -126,56 +123,33 @@ export class PrintHelperService {
       </div>
     `;
 
+    const pharmacyName = this.authService.getPharmacyInfo()?.name || t('APP.NAME');
+    const generatedMeta = `${t('REPORTS.GENERATED') || 'Generated'}: ${new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+
     return `<!DOCTYPE html>
 <html dir="${dir}" lang="${lang}">
 <head>
   <meta charset="UTF-8">
   <title>${options.title}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: ${fontFamily}; }
-    body { padding: 30px; background: #fff; direction: ${dir}; }
-    .report-container { max-width: 900px; margin: 0 auto; }
-    .header { text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 20px; margin-bottom: 30px; }
-    .report-title { font-size: 28px; font-weight: bold; color: #1a1a2e; margin-bottom: 10px; }
-    .report-subtitle { font-size: 14px; color: #666; }
-    .report-date { font-size: 12px; color: #999; margin-top: 5px; }
-    ${summaryHtml}
-    .table-section { margin-top: 30px; }
-    .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    .data-table thead th {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white; padding: 14px 12px; text-align: ${textAlign}; font-weight: 600; font-size: 13px;
+    ${getPrintDocumentStyles(isArabic)}
+    .summary-section { margin-bottom: 20px; }
+    .summary-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .summary-item {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;
+      padding: 10px 16px; min-width: 130px; text-align: center;
     }
-    .data-table tbody tr:nth-child(even) { background: #f8f9fa; }
-    .data-table tbody tr:nth-child(odd) { background: #ffffff; }
-    .data-table td { padding: 12px; border-bottom: 1px solid #e9ecef; text-align: ${textAlign}; font-size: 13px; }
-    .data-table tbody tr:hover { background: #e3f2fd; }
-    .no-data { text-align: center; padding: 40px; color: #999; font-size: 14px; }
-    .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px solid #e9ecef; color: #666; font-size: 12px; }
-    @media print {
-      body { padding: 0; }
-      .report-container { max-width: 100%; }
-      .data-table tbody tr:hover { background: inherit; }
-    }
+    .summary-label { font-size: 10px; color: #64748b; margin-bottom: 4px; }
+    .summary-value { font-size: 15px; font-weight: 700; color: #1e293b; }
+    .no-data { text-align: center; padding: 40px; color: #94a3b8; font-size: 13px; }
   </style>
 </head>
 <body>
-  <div class="report-container">
-    <div class="header">
-      <div class="report-title">${options.title}</div>
-      ${options.subtitle ? `<div class="report-subtitle">${options.subtitle}</div>` : ''}
-      <div class="report-date">${t('REPORTS.GENERATED') || 'Generated'}: ${new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
-    </div>
-
+  <div class="print-doc">
+    ${getPrintLetterheadHtml({ name: pharmacyName }, options.title, options.subtitle, generatedMeta)}
     ${summaryHtml}
-    <div class="table-section">
-      ${tableHtml}
-    </div>
-
-    <div class="footer">
-      <p>${t('APP.NAME')} - ${t('FOOTER.COPYRIGHT')}</p>
-    </div>
+    ${tableHtml}
+    ${getPrintFooterHtml(t('APP.NAME'), t('REPORTS.GENERATED') || 'Generated', isArabic)}
   </div>
 </body>
 </html>`;
