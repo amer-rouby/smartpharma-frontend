@@ -66,13 +66,17 @@
 
             <mat-form-field appearance="outline" class="product-field">
               <mat-label>{{'PURCHASES.COLUMN.PRODUCT' | translate}} *</mat-label>
-              <mat-select formControlName="productId" (selectionChange)="onProductChange($index, $event.value)">
-                @for (product of products(); track product.id) {
-                <mat-option [value]="product.id">{{product.name}}</mat-option>
+              <input matInput [formControl]="productSearchControls[$index]" [matAutocomplete]="productAuto"
+                [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate">
+              <mat-icon matPrefix>search</mat-icon>
+              <mat-autocomplete #productAuto="matAutocomplete" [displayWith]="displayProductName"
+                (optionSelected)="onProductSelectedForRow($index, $event.option.value)">
+                @for (product of filteredProductsPerRow[$index] | async; track product.id) {
+                <mat-option [value]="product">{{product.name}}</mat-option>
                 } @empty {
                 <mat-option disabled>{{'PRODUCTS.NO_PRODUCTS' | translate}}</mat-option>
                 }
-              </mat-select>
+              </mat-autocomplete>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
