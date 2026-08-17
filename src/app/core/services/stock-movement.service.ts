@@ -7,6 +7,20 @@ import { ApiResponse } from '../models';
 import { CreateMovementRequest, StockMovement, StockMovementStats } from '../models/Stock-movement.model';
 import { environment } from '../../../environments/environment';
 
+export interface StockMovementPage {
+  content: StockMovement[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+}
+
+const EMPTY_PAGE: StockMovementPage = {
+  content: [], totalElements: 0, totalPages: 0, number: 0, size: 20, first: true, last: true
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,48 +33,52 @@ export class StockMovementService {
     return this.authService.getPharmacyId() || 1;
   }
 
-  getMovements(page: number = 0, size: number = 20): Observable<StockMovement[]> {
+  getMovements(page: number = 0, size: number = 20): Observable<StockMovementPage> {
     const pharmacyId = this.getPharmacyId();
 
-    return this.http.get<ApiResponse<StockMovement[]>>(`${this.apiUrl}/pharmacy/${pharmacyId}`, {
+    return this.http.get<ApiResponse<StockMovementPage>>(`${this.apiUrl}/pharmacy/${pharmacyId}`, {
       params: new HttpParams()
         .set('page', page)
         .set('size', size)
     }).pipe(
       map(response => response.data),
-      catchError(this.handleError<StockMovement[]>('getMovements', []))
+      catchError(this.handleError<StockMovementPage>('getMovements', EMPTY_PAGE))
     );
   }
 
-  getMovementsByBatch(batchId: number, page: number = 0, size: number = 20): Observable<StockMovement[]> {
-    return this.http.get<ApiResponse<StockMovement[]>>(`${this.apiUrl}/batch/${batchId}`, {
+  getMovementsByBatch(batchId: number, page: number = 0, size: number = 20): Observable<StockMovementPage> {
+    return this.http.get<ApiResponse<StockMovementPage>>(`${this.apiUrl}/batch/${batchId}`, {
       params: new HttpParams()
         .set('page', page)
         .set('size', size)
     }).pipe(
       map(response => response.data),
-      catchError(this.handleError<StockMovement[]>('getMovementsByBatch', []))
+      catchError(this.handleError<StockMovementPage>('getMovementsByBatch', EMPTY_PAGE))
     );
   }
 
   getMovementsByDateRange(
     startDate: string,
     endDate: string,
+    movementType?: string,
     page: number = 0,
     size: number = 20
-  ): Observable<StockMovement[]> {
+  ): Observable<StockMovementPage> {
     const pharmacyId = this.getPharmacyId();
 
-    return this.http.get<ApiResponse<StockMovement[]>>(`${this.apiUrl}/date-range`, {
-      params: new HttpParams()
-        .set('pharmacyId', pharmacyId)
-        .set('startDate', startDate)
-        .set('endDate', endDate)
-        .set('page', page)
-        .set('size', size)
-    }).pipe(
+    let params = new HttpParams()
+      .set('pharmacyId', pharmacyId)
+      .set('startDate', startDate)
+      .set('endDate', endDate)
+      .set('page', page)
+      .set('size', size);
+    if (movementType && movementType !== 'all') {
+      params = params.set('movementType', movementType);
+    }
+
+    return this.http.get<ApiResponse<StockMovementPage>>(`${this.apiUrl}/date-range`, { params }).pipe(
       map(response => response.data),
-      catchError(this.handleError<StockMovement[]>('getMovementsByDateRange', []))
+      catchError(this.handleError<StockMovementPage>('getMovementsByDateRange', EMPTY_PAGE))
     );
   }
 
