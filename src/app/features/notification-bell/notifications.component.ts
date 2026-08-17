@@ -24,6 +24,7 @@ export class NotificationsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
 
   readonly notifications = signal<NotificationModel[]>([]);
+  readonly unreadNotifications = signal<NotificationModel[]>([]);
   readonly loading = signal(false);
   readonly selectedTab = signal(0);
 
@@ -31,28 +32,22 @@ export class NotificationsComponent implements OnInit {
   readonly pageSize = signal(10);
   readonly totalElements = signal(0);
 
-  // ✅ computed signal للفلترة حسب التبويب
+  // Tab 0 ("all") is real backend pagination; tab 1 ("unread") is its own
+  // dedicated, unpaginated list - the two datasets aren't the same rows, so
+  // pagination only makes sense (and is only shown) for the "all" tab.
   readonly filteredNotifications = computed(() => {
-    const allNotifications = this.notifications();
-    const tab = this.selectedTab();
-
-    if (tab === 0) {
-      // التبويب الأول: الكل
-      return allNotifications;
-    } else if (tab === 1) {
-      // التبويب الثاني: غير المقروءة فقط
-      return allNotifications.filter(n => !n.read);
-    }
-
-    return allNotifications;
+    return this.selectedTab() === 0 ? this.notifications() : this.unreadNotifications();
   });
 
-  readonly unreadBadgeCount = computed(() => {
-    return this.notifications().filter(n => !n.read).length;
+  readonly hasPagination = computed(() => {
+    return this.selectedTab() === 0 && this.totalElements() > this.pageSize();
   });
+
+  readonly unreadBadgeCount = computed(() => this.unreadNotifications().length);
 
   ngOnInit(): void {
     this.loadNotifications();
+    this.loadUnreadNotifications();
   }
 
   loadNotifications(): void {
@@ -73,9 +68,15 @@ export class NotificationsComponent implements OnInit {
       });
   }
 
+  loadUnreadNotifications(): void {
+    this.notificationService.getUnreadNotifications().subscribe({
+      next: (list) => this.unreadNotifications.set(list),
+      error: (err) => this.errorHandler.handleHttpError(err, 'NOTIFICATIONS.LOAD_ERROR')
+    });
+  }
+
   onTabChange(index: number): void {
     this.selectedTab.set(index);
-    // مفيش داعي نعيد التحميل، الـ computed signal هيفلتر تلقائياً
   }
 
   onPageChange(event: any): void {
@@ -86,6 +87,7 @@ export class NotificationsComponent implements OnInit {
 
   markAsRead(id: number): void {
     this.notifications.update(list => list.map(n => n.id === id ? { ...n, read: true } : n));
+    this.unreadNotifications.update(list => list.filter(n => n.id !== id));
     this.notificationService.markAsRead(id).subscribe({
       error: (err) => this.errorHandler.handleHttpError(err, 'NOTIFICATIONS.MARK_READ_ERROR')
     });
@@ -93,6 +95,7 @@ export class NotificationsComponent implements OnInit {
 
   markAllAsRead(): void {
     this.notifications.update(list => list.map(n => ({ ...n, read: true })));
+    this.unreadNotifications.set([]);
     this.notificationService.markAllAsRead().subscribe({
       next: () => {
         this.errorHandler.showSuccess('NOTIFICATIONS.MARK_ALL_SUCCESS');
@@ -119,6 +122,7 @@ export class NotificationsComponent implements OnInit {
         this.notificationService.deleteNotification(id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('NOTIFICATIONS.DELETE_SUCCESS');
+            this.unreadNotifications.update(list => list.filter(n => n.id !== id));
             if (this.notifications().length === 1 && this.pageIndex() > 0) {
               this.pageIndex.update(v => v - 1);
             }
