@@ -90,7 +90,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
 
   readonly isCartEmpty = computed(() => this.cartItems().length === 0);
   readonly hasPrescriptionRequiredItem = computed(() =>
-    this.cartItems().some(item => item.product.prescriptionRequired)
+    this.requirePrescriptionUpload() && this.cartItems().some(item => item.product.prescriptionRequired)
   );
   readonly isSubmitDisabled = computed(() =>
     this.loading() || this.isCartEmpty() || this.totalAmount() <= 0 ||
@@ -112,6 +112,10 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   readonly paymentMethods = computed(() =>
     this.allPaymentMethodOptions.filter(m => this.enabledPaymentMethodCodes().has(m.value))
   );
+
+  // Defaults to true (the historical, always-on behavior) until the real
+  // pharmacy setting loads, so checkout isn't briefly unguarded on first render.
+  private readonly requirePrescriptionUpload = signal(true);
 
   ngOnInit(): void {
     this.loadProducts();
@@ -149,6 +153,8 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private loadEnabledPaymentMethods(): void {
     this.pharmacySettingsService.getSettings().subscribe({
       next: (settings) => {
+        this.requirePrescriptionUpload.set(settings?.requirePrescriptionUpload ?? true);
+
         if (!settings?.enabledPaymentMethods) return;
 
         const codes = settings.enabledPaymentMethods.split(',').map(c => c.trim()).filter(Boolean);

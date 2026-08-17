@@ -148,6 +148,16 @@
           </div>
         </div>
 
+        <!-- Sales Section -->
+        <div class="form-section">
+          <h3 class="section-title">{{'SETTINGS.SALES' | translate}}</h3>
+          <p class="section-hint">{{'SETTINGS.REQUIRE_PRESCRIPTION_UPLOAD_HINT' | translate}}</p>
+
+          <mat-checkbox formControlName="requirePrescriptionUpload" color="primary">
+            {{'SETTINGS.REQUIRE_PRESCRIPTION_UPLOAD' | translate}}
+          </mat-checkbox>
+        </div>
+
         <!-- Form Actions -->
         <div class="form-actions">
           <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading()">

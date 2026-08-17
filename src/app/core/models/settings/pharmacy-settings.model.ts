@@ -16,6 +16,7 @@ export interface PharmacySettings {
   enabledPaymentMethods?: string;
   largeSaleThreshold?: number;
   largeExpenseThreshold?: number;
+  requirePrescriptionUpload?: boolean;
   updatedAt?: string;
 }
 
@@ -35,4 +36,5 @@ export interface PharmacySettingsRequest {
   enabledPaymentMethods?: string;
   largeSaleThreshold?: number;
   largeExpenseThreshold?: number;
+  requirePrescriptionUpload?: boolean;
 }

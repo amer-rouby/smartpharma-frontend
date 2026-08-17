@@ -61,7 +61,8 @@ export class PharmacySettingsComponent implements OnInit {
       dateFormat: ['dd/MM/yyyy'],
       timeFormat: ['24h'],
       largeSaleThreshold: [5000, [Validators.required, Validators.min(0)]],
-      largeExpenseThreshold: [2000, [Validators.required, Validators.min(0)]]
+      largeExpenseThreshold: [2000, [Validators.required, Validators.min(0)]],
+      requirePrescriptionUpload: [true]
     });
   }
 
@@ -104,7 +105,8 @@ export class PharmacySettingsComponent implements OnInit {
           dateFormat: data.dateFormat,
           timeFormat: data.timeFormat,
           largeSaleThreshold: data.largeSaleThreshold ?? 5000,
-          largeExpenseThreshold: data.largeExpenseThreshold ?? 2000
+          largeExpenseThreshold: data.largeExpenseThreshold ?? 2000,
+          requirePrescriptionUpload: data.requirePrescriptionUpload ?? true
         });
 
         const enabled = data.enabledPaymentMethods
