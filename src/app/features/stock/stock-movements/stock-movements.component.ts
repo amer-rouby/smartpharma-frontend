@@ -26,6 +26,7 @@ export class StockMovementsComponent implements OnInit {
   readonly page = signal(0);
   readonly size = signal(20);
   readonly totalElements = signal(0);
+  readonly isFiltered = signal(false);
   readonly hasPagination = computed(() => this.totalElements() > this.size());
 
   readonly filterForm: FormGroup = this.fb.group({
@@ -50,24 +51,13 @@ export class StockMovementsComponent implements OnInit {
   }
 
   loadMovements(): void {
+    this.isFiltered.set(false);
     this.loading.set(true);
 
     this.stockMovementService.getMovements(this.page(), this.size()).subscribe({
-      next: (response: any) => {
-        let movementsData: any[] = [];
-        let total = 0;
-        if (response?.data?.content && Array.isArray(response.data.content)) {
-          movementsData = response.data.content;
-          total = response.data.totalElements || 0;
-        } else if (response?.content && Array.isArray(response.content)) {
-          movementsData = response.content;
-          total = response.totalElements || 0;
-        } else if (Array.isArray(response)) {
-          movementsData = response;
-          total = response.length;
-        }
-        this.movements.set(movementsData);
-        this.totalElements.set(total);
+      next: (pageResult) => {
+        this.movements.set(pageResult.content);
+        this.totalElements.set(pageResult.totalElements);
         this.loading.set(false);
       },
       error: (error) => {
@@ -85,7 +75,11 @@ export class StockMovementsComponent implements OnInit {
   onPageChange(event: PageEvent): void {
     this.page.set(event.pageIndex);
     this.size.set(event.pageSize);
-    this.loadMovements();
+    if (this.isFiltered()) {
+      this.applyDateFilter();
+    } else {
+      this.loadMovements();
+    }
   }
 
   loadStats(): void {
@@ -113,45 +107,52 @@ export class StockMovementsComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  /** Backend's /date-range endpoint expects a full ISO date-time, not just a date. */
+  private formatDateTimeForAPI(date: Date, endOfDay: boolean): string {
+    const datePart = this.formatDateForAPI(date);
+    return endOfDay ? `${datePart}T23:59:59` : `${datePart}T00:00:00`;
+  }
+
   onFilter(): void {
     const startDate = this.filterForm.get('startDate')?.value;
     const endDate = this.filterForm.get('endDate')?.value;
-    const movementType = this.filterForm.get('movementType')?.value;
 
     if (startDate && endDate) {
-      this.loading.set(true);
+      this.isFiltered.set(true);
+      this.page.set(0);
+      this.applyDateFilter();
+    } else {
+      this.loadMovements();
+    }
+  }
 
-      this.stockMovementService.getMovementsByDateRange(startDate, endDate).subscribe({
-        next: (response: any) => {
-          let movementsData: any[] = [];
+  private applyDateFilter(): void {
+    const startDate: Date = this.filterForm.get('startDate')?.value;
+    const endDate: Date = this.filterForm.get('endDate')?.value;
+    const movementType = this.filterForm.get('movementType')?.value;
 
-          if (response?.data?.content && Array.isArray(response.data.content)) {
-            movementsData = response.data.content;
-          } else if (response?.content && Array.isArray(response.content)) {
-            movementsData = response.content;
-          } else if (Array.isArray(response)) {
-            movementsData = response;
-          }
+    const startIso = this.formatDateTimeForAPI(startDate, false);
+    const endIso = this.formatDateTimeForAPI(endDate, true);
 
-          let filtered = movementsData;
-
-          if (movementType !== 'all') {
-            filtered = movementsData.filter(m => m.movementType === movementType);
-          }
-
-          this.movements.set(filtered);
-          this.totalElements.set(filtered.length);
-          this.page.set(0);
+    this.loading.set(true);
+    this.stockMovementService
+      .getMovementsByDateRange(startIso, endIso, movementType, this.page(), this.size())
+      .subscribe({
+        next: (pageResult) => {
+          this.movements.set(pageResult.content);
+          this.totalElements.set(pageResult.totalElements);
           this.loading.set(false);
         },
         error: (error) => {
           console.error('Error filtering movements:', error);
+          this.snackBar.open(
+            this.translate.instant('STOCK_MOVEMENTS.LOAD_ERROR'),
+            this.translate.instant('COMMON.CLOSE'),
+            { duration: 3000 }
+          );
           this.loading.set(false);
         }
       });
-    } else {
-      this.loadMovements();
-    }
   }
 
   getMovementTypeLabel(type: string): string {
