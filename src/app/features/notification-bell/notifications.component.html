@@ -45,7 +45,7 @@
     <mat-card class="notification-card"
       [ngClass]="[getPriorityClass(notification.priority), notification.read ? 'is-read' : '']">
       <div class="notification-content-wrapper">
-        <div class="icon-box" [style.background]="getPriorityColor(notification.priority)">
+        <div class="icon-box">
           <mat-icon>{{getTypeIcon(notification.type)}}</mat-icon>
         </div>
 
