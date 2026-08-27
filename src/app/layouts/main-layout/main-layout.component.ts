@@ -1,10 +1,17 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { LanguageService } from '../../core/services/language.service';
+import { SmartFeatureSettingsService } from '../../core/services/settings/smart-feature-settings.service';
+import { AssistantChatDialogComponent } from '../../features/assistant/assistant-chat-dialog/assistant-chat-dialog.component';
 import { inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -16,13 +23,21 @@ import { Subscription } from 'rxjs';
     HeaderComponent,
     SidebarComponent,
     FooterComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {
   private readonly languageService = inject(LanguageService);
+  private readonly smartFeatureSettingsService = inject(SmartFeatureSettingsService);
+  private readonly dialog = inject(MatDialog);
+
+  readonly aiAssistantEnabled = computed(() => this.smartFeatureSettingsService.flags().aiAssistantEnabled);
 
   readonly currentLang = signal<string>(this.languageService.getCurrentLanguage());
   readonly isSidebarCollapsed = signal(false);
@@ -34,6 +49,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkScreenSize();
     window.addEventListener('resize', () => this.checkScreenSize());
+    this.smartFeatureSettingsService.getSettings().subscribe();
 
     this.langSubscription = this.languageService.currentLang$.subscribe(lang => {
       this.currentLang.set(lang);
@@ -64,5 +80,14 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.langSubscription?.unsubscribe();
+  }
+
+  openAssistant(): void {
+    this.dialog.open(AssistantChatDialogComponent, {
+      width: '420px',
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100vh - 48px)',
+      panelClass: 'assistant-dialog-panel'
+    });
   }
 }

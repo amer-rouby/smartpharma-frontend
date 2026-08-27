@@ -950,7 +950,9 @@
     "FEATURE_DISABLED_SUPPLIER_RECOMMENDATIONS": "توصيات طلبات الموردين معطّلة لصيدليتك",
     "FEATURE_DISABLED_DASHBOARD_INSIGHTS": "رؤى لوحة التحكم معطّلة لصيدليتك",
     "FEATURE_DISABLED_ANOMALY_DETECTION": "رصد النشاط غير المعتاد معطّل لصيدليتك",
-    "ANOMALY_NOT_FOUND": "سجل النشاط غير المعتاد غير موجود"
+    "ANOMALY_NOT_FOUND": "سجل النشاط غير المعتاد غير موجود",
+    "FEATURE_DISABLED_AI_ASSISTANT": "المساعد الذكي معطّل لصيدليتك",
+    "ASSISTANT_QUESTION_REQUIRED": "من فضلك اكتب سؤالاً"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
@@ -1276,6 +1278,12 @@
     "CONFIRM_MARK_ALL_READ_MSG": "هل تريد تحديد جميع التنبيهات كمقروءة؟",
     "DELETE_ERROR": "فشل حذف التنبيه",
     "RESOLVE_ERROR": "فشل حل التنبيه"
+  },
+  "ASSISTANT": {
+    "TITLE": "المساعد الذكي",
+    "WELCOME": "اسألني عن بيانات صيدليتك - المبيعات، المخزون، الصلاحية، وأكثر.",
+    "PLACEHOLDER": "اكتب سؤالك...",
+    "ERROR": "حدث خطأ ما. حاول مرة أخرى."
   },
   "ANOMALIES": {
     "TITLE": "نشاط غير معتاد",
