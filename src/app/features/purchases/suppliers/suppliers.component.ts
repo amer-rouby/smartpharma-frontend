@@ -13,6 +13,7 @@ import { SupplierService } from '../../../core/services/supplier.service';
 import { Supplier } from '../../../core/models/purchase-order.model';
 import { SupplierRequest } from '../../../core/models/purchase-request.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { DemandPredictionService, SupplierReorderGroup } from '../../../core/services/demand-prediction.service';
 
 @Component({
   selector: 'app-suppliers',
@@ -35,8 +36,12 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly predictionService = inject(DemandPredictionService);
 
   readonly loading = signal(false);
+  readonly recommendationGroups = signal<SupplierReorderGroup[]>([]);
+  readonly recommendationsLoading = signal(false);
+  readonly recommendationsLoaded = signal(false);
   readonly showDialog = signal(false);
   readonly isEditMode = signal(false);
   readonly editingSupplierId = signal<number | null>(null);
@@ -80,6 +85,47 @@ export class SuppliersComponent implements OnInit, AfterViewInit {
         this.errorHandler.handleHttpError(err, 'SUPPLIERS.LOAD_ERROR');
       }
     });
+  }
+
+  onTabChange(index: number): void {
+    if (index === 1 && !this.recommendationsLoaded()) {
+      this.loadRecommendations();
+    }
+  }
+
+  loadRecommendations(): void {
+    this.recommendationsLoading.set(true);
+    this.predictionService.getReorderRecommendationsBySupplier().subscribe({
+      next: (data) => {
+        this.recommendationGroups.set(data);
+        this.recommendationsLoaded.set(true);
+        this.recommendationsLoading.set(false);
+      },
+      error: () => {
+        this.recommendationsLoading.set(false);
+      }
+    });
+  }
+
+  onReviewRecommendation(rec: { productId: number; recommendedQuantity: number; supplierId: number | null; predictionId: number }): void {
+    this.router.navigate(['/purchases/new'], {
+      queryParams: {
+        productId: rec.productId,
+        quantity: rec.recommendedQuantity,
+        supplierId: rec.supplierId ?? undefined,
+        predictionId: rec.predictionId,
+        source: 'prediction'
+      }
+    });
+  }
+
+  getPriorityColor(priority: string): string {
+    const colors: Record<string, string> = {
+      'HIGH': '#ef4444',
+      'MEDIUM': '#f59e0b',
+      'LOW': '#10b981'
+    };
+    return colors[priority] || '#6b7280';
   }
 
   onAdd(): void {
