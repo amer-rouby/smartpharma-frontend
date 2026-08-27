@@ -537,6 +537,16 @@
     "EXPIRING_PRODUCTS": "Expired Products",
     "NO_EXPIRING_PRODUCTS": "No expired products",
     "PRODUCTS_FOUND": "products found",
+    "PRICING": {
+      "TITLE": "Smart Pricing Recommendations",
+      "SUBTITLE": "Suggested discounts for near-expiry or slow-moving stock",
+      "REASON": "Reason",
+      "REASON_EXPIRING": "Near Expiry",
+      "REASON_SLOW_MOVING": "Slow Moving",
+      "SUGGESTED_DISCOUNT": "Suggested Discount",
+      "DETAILS": "Details",
+      "NO_RECOMMENDATIONS": "No pricing recommendations right now"
+    },
     "PROFIT": "Profit",
     "SALES_BY_CATEGORY": "Sales by Category",
     "NO_TREND_DATA": "No trend data available",
@@ -912,7 +922,8 @@
     "USER_ID_REQUIRED": "User identification is required for this action",
     "USER_ID_REQUIRED_FOR_ADJUSTMENT": "User identification is required to adjust stock",
     "INVALID_ADJUSTMENT_TYPE": "Invalid stock adjustment type",
-    "FEATURE_DISABLED_REORDER_RECOMMENDATIONS": "Reorder recommendations are turned off for your pharmacy"
+    "FEATURE_DISABLED_REORDER_RECOMMENDATIONS": "Reorder recommendations are turned off for your pharmacy",
+    "FEATURE_DISABLED_PRICING_RECOMMENDATIONS": "Pricing recommendations are turned off for your pharmacy"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
