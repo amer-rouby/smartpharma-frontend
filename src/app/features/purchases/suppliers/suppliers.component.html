@@ -7,13 +7,16 @@
     </button>
   </app-page-header>
 
-  @if (loading()) {
+  @if (loading() && !dataSource.data.length) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
   </div>
   } @else {
   <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
     <mat-card-header>
       <mat-card-title>
         <mat-icon>business</mat-icon>
@@ -22,7 +25,7 @@
       <mat-card-subtitle>{{dataSource.data.length}} {{'SUPPLIERS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
         <table mat-table [dataSource]="dataSource" class="suppliers-table">
 

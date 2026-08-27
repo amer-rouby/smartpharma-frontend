@@ -34,13 +34,16 @@
     </mat-tab>
   </mat-tab-group>
 
-  @if (loading()) {
+  @if (loading() && !filteredNotifications().length) {
   <div class="loading-container">
     <mat-spinner diameter="40"></mat-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
   </div>
   } @else {
-  <div class="notifications-list">
+  @if (loading()) {
+  <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+  }
+  <div class="notifications-list" [class.list-content-refreshing]="loading()">
     @for (notification of filteredNotifications(); track notification.id) {
     <mat-card class="notification-card"
       [ngClass]="[getPriorityClass(notification.priority), notification.read ? 'is-read' : '']">
@@ -87,7 +90,7 @@
   @if (hasPagination()) {
   <div class="pagination-container">
     <mat-paginator [length]="totalElements()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
-      [pageSizeOptions]="[5, 10, 20, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+      [pageSizeOptions]="[5, 10, 20, 50]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
     </mat-paginator>
   </div>
   }

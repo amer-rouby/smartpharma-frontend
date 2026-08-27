@@ -51,13 +51,16 @@
   </div>
   }
 
-  @if (loading()) {
+  @if (loading() && !totalElements()) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
   </div>
   } @else {
   <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
     <mat-card-header>
       <mat-card-title>
         <mat-icon>shopping_cart</mat-icon>
@@ -66,7 +69,7 @@
       <mat-card-subtitle>{{totalElements()}} {{'PURCHASES.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
         <table mat-table [dataSource]="dataSource" class="purchase-orders-table">
 
@@ -158,7 +161,7 @@
 
         <div class="pagination-container">
           <mat-paginator [length]="totalElements()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
-            [pageSizeOptions]="[5, 10, 20, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+            [pageSizeOptions]="[5, 10, 20, 50]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
           </mat-paginator>
         </div>
       </div>

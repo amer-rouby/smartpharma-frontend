@@ -104,8 +104,8 @@
     </mat-card-content>
   </mat-card>
 
-  <!-- Loading State -->
-  @if (loading()) {
+  <!-- Loading State (first load only, no data on screen yet) -->
+  @if (loading() && !movements().length) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
@@ -113,14 +113,17 @@
   }
 
   <!-- Movements Table -->
-  @if (!loading() && movements().length) {
+  @if (movements().length) {
   <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
     <mat-card-header>
       <mat-card-title>{{'STOCK_MOVEMENTS.MOVEMENTS_LIST' | translate}}</mat-card-title>
       <mat-card-subtitle>{{totalElements() || movements().length}} {{'STOCK_MOVEMENTS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
         <table mat-table [dataSource]="movements()" class="movements-table">
 
@@ -197,11 +200,9 @@
         </table>
       </div>
 
-      @if (hasPagination()) {
       <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
-        [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPageChange($event)" showFirstLastButtons>
+        [pageSizeOptions]="[10, 20, 50, 100]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
       </mat-paginator>
-      }
     </mat-card-content>
   </mat-card>
   } @else if (!loading()) {

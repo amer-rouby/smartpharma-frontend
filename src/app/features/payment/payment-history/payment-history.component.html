@@ -53,7 +53,10 @@
   </mat-card>
 
   <mat-card class="table-card">
-    <mat-card-content>
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <table mat-table [dataSource]="payments()" class="payments-table">
         <ng-container matColumnDef="referenceNumber">
           <th mat-header-cell *matHeaderCellDef>{{'PAYMENTS.REFERENCE' | translate}}</th>
@@ -119,12 +122,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      @if (loading()) {
-      <div class="loading-state">
-        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
-        <p>{{'COMMON.LOADING' | translate}}</p>
-      </div>
-      } @else if (payments().length === 0) {
+      @if (!loading() && payments().length === 0) {
       <div class="empty-state">
         <mat-icon>receipt_long</mat-icon>
         <p>{{'PAYMENTS.NO_PAYMENTS' | translate}}</p>
@@ -132,7 +130,7 @@
       }
 
       <mat-paginator [length]="totalItems()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
-        [pageSizeOptions]="[10, 20, 50]" (page)="onPageChange($event)">
+        [pageSizeOptions]="[10, 20, 50]" [disabled]="loading()" (page)="onPageChange($event)">
       </mat-paginator>
     </mat-card-content>
   </mat-card>

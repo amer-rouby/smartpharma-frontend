@@ -118,21 +118,24 @@
     </mat-card-content>
   </mat-card>
 
-  @if (loading()) {
+  @if (loading() && !getFilteredAlertsCount()) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
   </div>
   }
 
-  @if (!loading() && getFilteredAlertsCount()) {
+  @if (getFilteredAlertsCount()) {
   <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
     <mat-card-header>
       <mat-card-title>{{'STOCK_ALERTS.ALERTS_LIST' | translate}}</mat-card-title>
       <mat-card-subtitle>{{getFilteredAlertsCount()}} {{'STOCK_ALERTS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
         <table mat-table [dataSource]="getFilteredAlerts()" class="alerts-table">
 
@@ -231,7 +234,7 @@
     </mat-card-content>
 
     <mat-paginator [length]="getFilteredAlertsCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
-      [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" aria-label="Select page of alerts">
+      [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)" aria-label="Select page of alerts">
     </mat-paginator>
   </mat-card>
   } @else if (!loading()) {

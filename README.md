@@ -130,7 +130,9 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 
 ### 💰 Integrated Sales & POS
 - **Fast POS Interface** — optimized for quick transactions
-- **Multi-Payment Support** — Cash, Visa, InstaPay, Fawry, Wallet, Bank Transfer
+- **Barcode Scanning** — dedicated auto-focused scanner input plus a "Quick Add via Scan" flow for fast initial catalog setup
+- **Prescription Capture** — required photo upload for prescription-only products, with a per-pharmacy toggle to make it optional
+- **Multi-Payment Support** — Cash, Visa, InstaPay, Fawry, Wallet, Bank Transfer — filterable per pharmacy
 - **Discount Management** — flexible discount application
 - **Customer Tracking** — phone-based customer identification
 - **Sales History** — advanced search with filters
@@ -183,11 +185,11 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 - **Slide-Out Panel** — intuitive notification center
 
 ### ⚙️ Advanced Settings
-- **Pharmacy Profile** — business information management
-- **Security Settings** — password policies & session management
-- **Notification Preferences** — per-user customization
-- **Backup Management** — data protection
-- **User Profile** — personal settings
+- **Pharmacy Profile** — business information management, currency, and enabled payment methods (propagates app-wide instantly)
+- **Security Settings** — password policies, session timeout & session management, real TOTP-based 2FA
+- **Notification Preferences** — per-user channel toggles, quiet hours, and preferred language for bilingual (Arabic/English) notification content
+- **Backup Management** — self-service per-pharmacy data export (whole-database backup/restore is a separate, platform-operator-only tool)
+- **User Profile** — personal settings, photo upload, password change
 
 ### 🌍 Internationalization (i18n)
 - **Full Arabic RTL** — complete right-to-left layout
@@ -237,7 +239,6 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 ### Utilities
 | Technology | Version | Purpose |
 |:-----------|:--------|:--------|
-| **Axios** | 1.13 | Supplementary HTTP client |
 | **SweetAlert2** | 11.26 | Beautiful alert dialogs |
 | **ngx-translate** | 17.0 | Complete i18n translation system |
 
@@ -531,7 +532,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:8081/api',
   appVersion: '1.0.0',
-  appName: 'SmartPharma'
+  appName: 'صيدليتي الذكية'
 };
 ```
 
@@ -541,9 +542,11 @@ export const environment = {
   production: true,
   apiUrl: 'https://api.smartpharma.eg/api',
   appVersion: '1.0.0',
-  appName: 'SmartPharma'
+  appName: 'صيدليتي الذكية'
 };
 ```
+
+The backend must be running (default `http://localhost:8081`) for the dev server to have anything to talk to — see the [backend repository](https://github.com/amer-rouby/smartpharma-backend).
 
 ---
 
@@ -600,6 +603,13 @@ smartpharma-frontend/
 
 ---
 
+## 🔗 Related Repositories
+
+- **Backend API**: [smartpharma-backend](https://github.com/amer-rouby/smartpharma-backend) — Spring Boot
+- **Mobile app**: [smartpharma-mobile](https://github.com/amer-rouby/smartpharma-mobile) — Ionic + Angular
+
+---
+
 ## 👨‍💻 Contributing
 
 Contributions are welcome! To add new features or fix issues:
@@ -634,6 +644,6 @@ This project is proprietary and protected by intellectual property rights.
 
 ---
 
-*Last Updated: July 2025 | Version 1.0.0*
+*Version 1.0.0*
 
 </div>

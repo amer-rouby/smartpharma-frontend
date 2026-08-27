@@ -34,7 +34,7 @@
   </mat-card>
 
   <!-- Loading State -->
-  @if (loading()) {
+  @if (loading() && !categories().length) {
   <div class="loading-overlay">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
@@ -42,14 +42,17 @@
   }
 
   <!-- Categories Table -->
-  @if (!loading() && categories().length) {
+  @if (categories().length) {
   <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
     <mat-card-header>
       <mat-card-title>{{'CATEGORIES.ALL_CATEGORIES' | translate}}</mat-card-title>
       <mat-card-subtitle>{{totalElements()}} {{'CATEGORIES.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
         <table mat-table [dataSource]="categories()" class="data-table" matSort>
 
@@ -122,7 +125,7 @@
 
       @if (hasPagination()) {
       <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
-        [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+        [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
       </mat-paginator>
       }
     </mat-card-content>

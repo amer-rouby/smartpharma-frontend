@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PageEvent } from '@angular/material/paginator';
@@ -24,10 +24,9 @@ export class StockMovementsComponent implements OnInit {
   readonly movements = signal<any[]>([]);
   readonly stats = signal<any>(null);
   readonly page = signal(0);
-  readonly size = signal(20);
+  readonly size = signal(10);
   readonly totalElements = signal(0);
   readonly isFiltered = signal(false);
-  readonly hasPagination = computed(() => this.totalElements() > this.size());
 
   readonly filterForm: FormGroup = this.fb.group({
     startDate: [''],

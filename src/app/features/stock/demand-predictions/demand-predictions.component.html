@@ -41,7 +41,7 @@
   </div>
   }
 
-  @if (loading()) {
+  @if (loading() && !predictions().length) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
@@ -49,6 +49,9 @@
   } @else if (predictions().length) {
 
   <mat-card class="table-card">
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
     <mat-card-header>
       <mat-card-title>
         <mat-icon>psychology</mat-icon>
@@ -57,7 +60,7 @@
       <mat-card-subtitle>{{stats()!.totalPredictions}} {{'PREDICTIONS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
-    <mat-card-content>
+    <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
         <table mat-table [dataSource]="predictions()" class="predictions-table">
 
@@ -218,8 +221,8 @@
         </table>
 
         <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
-          [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="true" (page)="onPageChange($event)"
-          aria-label="Select page" class="predictions-paginator">
+          [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="true" [disabled]="loading()"
+          (page)="onPageChange($event)" aria-label="Select page" class="predictions-paginator">
         </mat-paginator>
       </div>
     </mat-card-content>
