@@ -48,6 +48,12 @@
               }
             </mat-autocomplete>
           </mat-form-field>
+          @if (voiceSearchSupported()) {
+          <button type="button" mat-icon-button class="voice-search-btn" [class.listening]="isListening()"
+            (click)="startVoiceSearch()" [matTooltip]="'SALES.VOICE_SEARCH' | translate">
+            <mat-icon>{{isListening() ? 'mic' : 'mic_none'}}</mat-icon>
+          </button>
+          }
         </div>
 
         <div class="cart-table-container">

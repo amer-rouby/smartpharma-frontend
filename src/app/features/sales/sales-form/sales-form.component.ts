@@ -64,6 +64,10 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
   readonly barcodeValue = signal('');
 
+  readonly voiceSearchSupported = signal(false);
+  readonly isListening = signal(false);
+  private speechRecognition: any = null;
+
   readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
   readonly cartItems = signal<CartItem[]>([]);
   readonly productControl = new FormControl();
@@ -121,11 +125,47 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.loadProducts();
     this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
     this.loadEnabledPaymentMethods();
+    this.voiceSearchSupported.set(!!this.getSpeechRecognitionCtor());
 
     this.productControl.valueChanges.pipe(startWith('')).subscribe(value => {
       const searchValue = typeof value === 'string' ? value : value?.name || '';
       this.filteredProductsSubject.next(this._filterProducts(searchValue));
     });
+  }
+
+  private getSpeechRecognitionCtor(): any {
+    return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
+  }
+
+  startVoiceSearch(): void {
+    if (this.isListening()) return;
+
+    const SpeechRecognitionCtor = this.getSpeechRecognitionCtor();
+    if (!SpeechRecognitionCtor) return;
+
+    const recognition = new SpeechRecognitionCtor();
+    this.speechRecognition = recognition;
+    recognition.lang = this.languageService.getCurrentLanguage() === 'ar' ? 'ar-EG' : 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => this.isListening.set(true);
+    recognition.onend = () => this.isListening.set(false);
+    recognition.onerror = () => this.isListening.set(false);
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results?.[0]?.[0]?.transcript;
+      if (transcript) {
+        this.productControl.setValue(transcript.trim());
+      }
+    };
+
+    recognition.start();
+  }
+
+  stopVoiceSearch(): void {
+    this.speechRecognition?.stop();
   }
 
   ngAfterViewInit(): void {
