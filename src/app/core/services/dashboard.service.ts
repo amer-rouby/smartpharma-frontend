@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
-import { DashboardStats } from '../models/dashboard.model';
+import { DashboardStats, SmartInsights } from '../models/dashboard.model';
 import { ApiResponse } from '../models';
 
 @Injectable({
@@ -42,6 +42,18 @@ export class DashboardService {
         console.error('Error fetching dashboard stats:', error);
         return throwError(() => new Error('Failed to load dashboard stats'));
       })
+    );
+  }
+
+  getSmartInsights(): Observable<SmartInsights | null> {
+    const pharmacyId = this.getPharmacyId();
+
+    return this.http.get<ApiResponse<SmartInsights>>(
+      `${this.baseUrl}/smart-insights?pharmacyId=${pharmacyId}`,
+      this.getAuthHeaders()
+    ).pipe(
+      map(response => response.data),
+      catchError(() => of(null))
     );
   }
 }
