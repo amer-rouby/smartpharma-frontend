@@ -105,6 +105,16 @@ export class PredictionDetailComponent implements OnInit {
     return colors[trend] || '#6b7280';
   }
 
+  getRiskColor(riskLevel: string | null): string {
+    const colors: Record<string, string> = {
+      'CRITICAL': '#dc2626',
+      'HIGH': '#ef4444',
+      'MEDIUM': '#f59e0b',
+      'LOW': '#10b981'
+    };
+    return riskLevel ? colors[riskLevel] || '#6b7280' : '#6b7280';
+  }
+
   private showSuccess(message: string, params?: any): void {
     this.snackBar.open(
       this.translate.instant(message, params),

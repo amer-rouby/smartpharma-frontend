@@ -21,6 +21,8 @@ export interface DemandPrediction {
   trend: 'increasing' | 'decreasing' | 'stable';
   seasonalityFactor: 'high' | 'medium' | 'low';
   recommendation: string;
+  daysUntilStockout: number | null;
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null;
   createdAt: string;
 }
 
