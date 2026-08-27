@@ -26,6 +26,21 @@ export interface DemandPrediction {
   createdAt: string;
 }
 
+export interface ReorderRecommendation {
+  predictionId: number;
+  productId: number;
+  productName: string;
+  productCode?: string;
+  currentStock: number;
+  recommendedQuantity: number;
+  supplierId: number | null;
+  supplierName: string | null;
+  reason: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null;
+  daysUntilStockout: number | null;
+}
+
 export interface PredictionStats {
   averageAccuracy: number;
   totalPredictions: number;
@@ -157,6 +172,15 @@ export class DemandPredictionService {
     return this.http
       .get(`${this.apiUrl}/${predictionId}/export/excel`, { responseType: 'blob' })
       .pipe(withHttpErrorFallback<Blob>('exportToExcel'));
+  }
+
+  getReorderRecommendations(): Observable<ReorderRecommendation[]> {
+    return this.http.get<ApiResponse<ReorderRecommendation[]>>(`${this.apiUrl}/reorder-recommendations`, {
+      params: this.pharmacy.pharmacyParams()
+    }).pipe(
+      map((response) => response.data || []),
+      withHttpErrorFallback<ReorderRecommendation[]>('getReorderRecommendations', [])
+    );
   }
 
   sharePrediction(predictionId: number): Observable<{ shareUrl: string; expiresAt: string }> {

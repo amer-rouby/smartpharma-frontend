@@ -913,7 +913,8 @@
     "BATCH_NOT_BELONGS_TO_PHARMACY": "دفعة المخزون هذه لا تنتمي لصيدليتك",
     "USER_ID_REQUIRED": "معرّف المستخدم مطلوب لتنفيذ هذا الإجراء",
     "USER_ID_REQUIRED_FOR_ADJUSTMENT": "معرّف المستخدم مطلوب لتعديل المخزون",
-    "INVALID_ADJUSTMENT_TYPE": "نوع تعديل المخزون غير صالح"
+    "INVALID_ADJUSTMENT_TYPE": "نوع تعديل المخزون غير صالح",
+    "FEATURE_DISABLED_REORDER_RECOMMENDATIONS": "توصيات إعادة الطلب معطّلة لصيدليتك"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
@@ -1478,7 +1479,20 @@
       "MEDIUM": "متوسط",
       "HIGH": "مرتفع",
       "CRITICAL": "حرج"
-    }
+    },
+    "REORDER_RECOMMENDATIONS": "توصيات إعادة الطلب",
+    "NO_RECOMMENDATIONS": "لا توجد توصيات لإعادة الطلب",
+    "NO_RECOMMENDATIONS_DESC": "مستويات المخزون الحالية تبدو كافية لجميع المنتجات",
+    "SUPPLIER": "المورد",
+    "UNKNOWN_SUPPLIER": "لا يوجد سجل مورد",
+    "PRIORITY": "الأولوية",
+    "PRIORITY_LEVEL": {
+      "HIGH": "مرتفعة",
+      "MEDIUM": "متوسطة",
+      "LOW": "منخفضة"
+    },
+    "REASON": "السبب",
+    "REVIEW": "مراجعة"
   },
   "NOTIFICATION_SETTINGS": {
     "TITLE": "إعدادات الإشعارات",
