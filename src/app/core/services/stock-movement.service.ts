@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse } from '../models';
 import { CreateMovementRequest, StockMovement, StockMovementStats } from '../models/Stock-movement.model';
@@ -41,8 +41,7 @@ export class StockMovementService {
         .set('page', page)
         .set('size', size)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<StockMovementPage>('getMovements', EMPTY_PAGE))
+      map(response => response.data)
     );
   }
 
@@ -52,8 +51,7 @@ export class StockMovementService {
         .set('page', page)
         .set('size', size)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<StockMovementPage>('getMovementsByBatch', EMPTY_PAGE))
+      map(response => response.data)
     );
   }
 
@@ -77,8 +75,7 @@ export class StockMovementService {
     }
 
     return this.http.get<ApiResponse<StockMovementPage>>(`${this.apiUrl}/date-range`, { params }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<StockMovementPage>('getMovementsByDateRange', EMPTY_PAGE))
+      map(response => response.data)
     );
   }
 
@@ -91,29 +88,13 @@ export class StockMovementService {
         .set('startDate', startDate)
         .set('endDate', endDate)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<StockMovementStats>('getStats', {
-        totalMovements: 0,
-        totalStockIn: 0,
-        totalStockOut: 0,
-        totalAdjustments: 0,
-        totalExpired: 0,
-        totalTransferred: 0
-      }))
+      map(response => response.data)
     );
   }
 
   createMovement(request: CreateMovementRequest): Observable<StockMovement> {
     return this.http.post<ApiResponse<StockMovement>>(this.apiUrl, request).pipe(
-      map(response => response.data),
-      catchError(this.handleError<StockMovement>('createMovement'))
+      map(response => response.data)
     );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
   }
 }

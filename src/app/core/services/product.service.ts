@@ -44,9 +44,7 @@ export class ProductService {
         .set('pharmacyId', pharmacyId)
         .set('page', page)
         .set('size', size)
-    }).pipe(
-      catchError(this.handleError<PaginatedResponse<Product>>('getProducts', this.getEmptyPaginatedResponse()))
-    );
+    });
   }
 
   getProductsPaged(page: number, size: number, search?: string, category?: string,
@@ -68,8 +66,7 @@ export class ProductService {
     if (category && category !== 'all') params = params.set('category', category);
 
     return this.http.get<ApiResponse<PaginatedResponse<Product>>>(`${this.apiUrl}/page`, { params }).pipe(
-      map(response => response.data || this.getEmptyPaginatedResponse<Product>()),
-      catchError(this.handleError<PaginatedResponse<Product>>('getProductsPaged', this.getEmptyPaginatedResponse()))
+      map(response => response.data || this.getEmptyPaginatedResponse<Product>())
     );
   }
 
@@ -82,9 +79,7 @@ export class ProductService {
 
     return this.http.get<Product[]>(this.apiUrl, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<Product[]>('getProductsList', []))
-    );
+    });
   }
 
   getProduct(id: number): Observable<Product> {
@@ -96,9 +91,7 @@ export class ProductService {
 
     return this.http.get<Product>(`${this.apiUrl}/${id}`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<Product>(`getProduct id=${id}`))
-    );
+    });
   }
 
   createProduct(product: ProductRequest): Observable<Product> {
@@ -110,9 +103,7 @@ export class ProductService {
 
     return this.http.post<Product>(this.apiUrl, product, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<Product>('createProduct'))
-    );
+    });
   }
 
   updateProduct(id: number, product: ProductRequest): Observable<Product> {
@@ -124,9 +115,7 @@ export class ProductService {
 
     return this.http.put<Product>(`${this.apiUrl}/${id}`, product, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<Product>(`updateProduct id=${id}`))
-    );
+    });
   }
 
   deleteProduct(id: number): Observable<void> {
@@ -138,9 +127,7 @@ export class ProductService {
 
     return this.http.delete<void>(`${this.apiUrl}/${id}`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<void>(`deleteProduct id=${id}`))
-    );
+    });
   }
 
   searchProducts(query: string, page: number = 0, size: number = 10): Observable<PaginatedResponse<Product>> {
@@ -156,9 +143,7 @@ export class ProductService {
         .set('query', query.trim())
         .set('page', page)
         .set('size', size)
-    }).pipe(
-      catchError(this.handleError<PaginatedResponse<Product>>('searchProducts', this.getEmptyPaginatedResponse()))
-    );
+    });
   }
 
   getLowStockProducts(): Observable<Product[]> {
@@ -170,9 +155,7 @@ export class ProductService {
 
     return this.http.get<Product[]>(`${this.apiUrl}/low-stock`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<Product[]>('getLowStockProducts', []))
-    );
+    });
   }
 
   searchByBarcode(barcode: string): Observable<Product | null> {
@@ -204,10 +187,4 @@ export class ProductService {
     };
   }
 
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
-  }
 }

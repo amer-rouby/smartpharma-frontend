@@ -41,8 +41,7 @@ export class CategoryService {
     return this.http.get<ApiResponse<Category[]>>(this.apiUrl, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data || []),
-      catchError(this.handleError<Category[]>('getCategories', []))
+      map(response => response.data || [])
     );
   }
 
@@ -56,8 +55,7 @@ export class CategoryService {
     return this.http.get<ApiResponse<Category[]>>(`${this.apiUrl}/active`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data || []),
-      catchError(this.handleError<Category[]>('getActiveCategories', []))
+      map(response => response.data || [])
     );
   }
 
@@ -76,8 +74,7 @@ export class CategoryService {
     if (search?.trim()) params = params.set('search', search.trim());
 
     return this.http.get<ApiResponse<PaginatedResponse<Category>>>(`${this.apiUrl}/page`, { params }).pipe(
-      map(response => response.data || this.getEmptyPaginatedResponse<Category>()),
-      catchError(this.handleError<PaginatedResponse<Category>>('getCategoriesPaged', this.getEmptyPaginatedResponse()))
+      map(response => response.data || this.getEmptyPaginatedResponse<Category>())
     );
   }
 
@@ -104,8 +101,7 @@ export class CategoryService {
     return this.http.get<ApiResponse<Category>>(`${this.apiUrl}/${id}`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<Category>(`getCategory id=${id}`))
+      map(response => response.data)
     );
   }
 
@@ -124,8 +120,7 @@ export class CategoryService {
     };
 
     return this.http.post<ApiResponse<Category>>(this.apiUrl, request).pipe(
-      map(response => response.data),
-      catchError(this.handleError<Category>('createCategory'))
+      map(response => response.data)
     );
   }
 
@@ -146,8 +141,7 @@ export class CategoryService {
     return this.http.put<ApiResponse<Category>>(`${this.apiUrl}/${id}`, request, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<Category>(`updateCategory id=${id}`))
+      map(response => response.data)
     );
   }
 
@@ -160,9 +154,7 @@ export class CategoryService {
 
     return this.http.delete<void>(`${this.apiUrl}/${id}`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<void>(`deleteCategory id=${id}`))
-    );
+    });
   }
 
   searchCategories(query: string): Observable<Category[]> {
@@ -177,15 +169,7 @@ export class CategoryService {
         .set('pharmacyId', pharmacyId)
         .set('query', query.trim())
     }).pipe(
-      map(response => response.data || []),
-      catchError(this.handleError<Category[]>('searchCategories', []))
+      map(response => response.data || [])
     );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
   }
 }
