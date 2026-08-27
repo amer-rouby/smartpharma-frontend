@@ -1,9 +1,11 @@
-import { Component, inject, signal, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject, takeUntil } from 'rxjs';
+import { NotificationService, StockChangedEvent } from '../../../core/services/notification.service';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
@@ -31,7 +33,7 @@ import { PharmacyContextService } from '../../../core/services/pharmacy-context.
   templateUrl: './stock-management.component.html',
   styleUrl: './stock-management.component.scss'
 })
-export class StockManagementComponent implements OnInit, AfterViewInit {
+export class StockManagementComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
@@ -39,6 +41,8 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly pharmacyContext = inject(PharmacyContextService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly destroy$ = new Subject<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -59,14 +63,44 @@ export class StockManagementComponent implements OnInit, AfterViewInit {
     this.loadStockBatches();
 
     // Reload data when language changes
-    this.languageService.currentLang$.subscribe(() => {
+    this.languageService.currentLang$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadStockBatches();
+    });
+
+    this.notificationService.stockChanged$.pipe(takeUntil(this.destroy$)).subscribe((event) => {
+      this.applyRealtimeStockChange(event);
     });
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private applyRealtimeStockChange(event: StockChangedEvent): void {
+    const current = this.dataSource.data;
+    const idx = current.findIndex(b => b.id === event.batch.id);
+
+    if (event.changeType === 'DELETED') {
+      if (idx > -1) {
+        const updated = [...current];
+        updated.splice(idx, 1);
+        this.dataSource.data = updated;
+        this.totalElements.update(n => Math.max(0, n - 1));
+      }
+      return;
+    }
+
+    if (idx > -1) {
+      const updated = [...current];
+      updated[idx] = { ...updated[idx], quantityCurrent: event.batch.quantityCurrent, status: event.batch.status as StockBatch['status'] };
+      this.dataSource.data = updated;
+    }
   }
 
   loadStockBatches(): void {

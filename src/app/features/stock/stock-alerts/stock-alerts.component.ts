@@ -1,12 +1,14 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { StockAlertService } from '../../../core/services/stock-alert.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { NotificationService } from '../../../core/services/notification.service';
 
 interface StockAlert {
   id: number; productId: number; productName: string; batchNumber?: string;
@@ -27,12 +29,14 @@ interface AlertStats {
   templateUrl: './stock-alerts.component.html',
   styleUrl: './stock-alerts.component.scss'
 })
-export class StockAlertsComponent implements OnInit {
+export class StockAlertsComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly stockAlertService = inject(StockAlertService);
   private readonly dialog = inject(MatDialog);
+  private readonly notificationService = inject(NotificationService);
+  private readonly destroy$ = new Subject<void>();
 
   readonly loading = signal(false);
   readonly alerts = signal<StockAlert[]>([]);
@@ -46,7 +50,24 @@ export class StockAlertsComponent implements OnInit {
   readonly displayedColumns = ['alertType', 'product', 'message', 'severity', 'status', 'createdAt', 'actions'];
   readonly filterForm: FormGroup = this.fb.group({ alertType: ['all'], status: ['all'] });
 
-  ngOnInit(): void { this.loadAlerts(); this.loadStats(); }
+  ngOnInit(): void {
+    this.loadAlerts();
+    this.loadStats();
+
+    this.notificationService.stockChanged$.pipe(takeUntil(this.destroy$)).subscribe((event) => {
+      this.alerts.update(alerts => alerts.map(a =>
+        a.productId === event.batch.productId
+          ? { ...a, currentStock: event.batch.quantityCurrent }
+          : a
+      ));
+      this.loadStats();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   loadAlerts(): void {
     this.loading.set(true);
