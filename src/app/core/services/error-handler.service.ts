@@ -20,6 +20,10 @@ export class ErrorHandlerService {
   };
 
   handleHttpError(error: HttpErrorResponse, fallbackKey: string = 'COMMON.ERROR'): void {
+    if (this.showByCode(error.error?.code, error.error?.params)) {
+      return;
+    }
+
     let messageKey = fallbackKey;
 
     switch (error.status) {
@@ -43,6 +47,21 @@ export class ErrorHandlerService {
     }
 
     this.show(messageKey, this.defaultConfig);
+  }
+
+  // A backend error carrying a stable `code` (+ interpolation `params`) resolves
+  // to ERRORS.<code> in ar.json/en.json - shared by handleHttpError and by any
+  // caller that only has a plain {code, params} pair (e.g. an error wrapped by
+  // a service before it reaches the component). Returns false (shows nothing)
+  // when there's no code or no matching translation, so the caller can fall
+  // back to its own generic message.
+  showByCode(code: string | undefined, params?: Record<string, any>): boolean {
+    if (!code) return false;
+    const key = `ERRORS.${code}`;
+    const translated = this.translate.instant(key, params);
+    if (translated === key) return false;
+    this.show(key, { ...this.defaultConfig, params });
+    return true;
   }
 
   show(messageKey: string, config?: ErrorConfig): void {

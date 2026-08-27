@@ -46,7 +46,13 @@ export class PaymentService {
     if (error.error instanceof ErrorEvent) {
       return throwError(() => new Error(`Client error: ${error.error.message}`));
     }
-    return throwError(() => new Error(error.error?.message || `Server error: ${error.status}`));
+    // Preserve the backend's stable error `code`/`params` (LocalizedException)
+    // so a caller can resolve ERRORS.<code> instead of showing this raw message.
+    const wrapped: Error & { code?: string; params?: Record<string, any> } =
+      new Error(error.error?.message || `Server error: ${error.status}`);
+    wrapped.code = error.error?.code;
+    wrapped.params = error.error?.params;
+    return throwError(() => wrapped);
   }
 
   processPayment(request: PaymentRequest): Observable<PaymentResponse> {
