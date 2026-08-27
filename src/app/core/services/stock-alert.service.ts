@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ApiResponse } from '../models';
 import { AlertStats, StockAlert } from '../models/stock-alert.model';
@@ -24,8 +24,7 @@ export class StockAlertService {
     return this.http.get<ApiResponse<StockAlert[]>>(this.apiUrl, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<StockAlert[]>('getAlerts', []))
+      map(response => response.data)
     );
   }
 
@@ -35,15 +34,7 @@ export class StockAlertService {
     return this.http.get<ApiResponse<AlertStats>>(`${this.apiUrl}/stats`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<AlertStats>('getStats', {
-        totalAlerts: 0,
-        unreadAlerts: 0,
-        lowStockAlerts: 0,
-        expiredAlerts: 0,
-        expiringSoonAlerts: 0,
-        outOfStockAlerts: 0
-      }))
+      map(response => response.data)
     );
   }
 
@@ -53,8 +44,7 @@ export class StockAlertService {
     return this.http.post<ApiResponse<void>>(`${this.apiUrl}/${alertId}/read`, null, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<void>('markAsRead'))
+      map(response => response.data)
     );
   }
 
@@ -64,8 +54,7 @@ export class StockAlertService {
     return this.http.post<ApiResponse<void>>(`${this.apiUrl}/read-all`, null, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<void>('markAllAsRead'))
+      map(response => response.data)
     );
   }
 
@@ -75,8 +64,7 @@ export class StockAlertService {
     return this.http.post<ApiResponse<void>>(`${this.apiUrl}/${alertId}/resolve`, null, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<void>('resolveAlert'))
+      map(response => response.data)
     );
   }
 
@@ -86,15 +74,7 @@ export class StockAlertService {
     return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${alertId}`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<void>('deleteAlert'))
+      map(response => response.data)
     );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthService } from '../auth.service';
 import { PasswordChangeRequest, Profile, ProfileUpdateRequest } from '../../models/settings/profile.model';
 import { ApiResponse } from '../../models/sale.model';
@@ -24,8 +24,7 @@ export class ProfileService {
     return this.http.get<ApiResponse<Profile>>(this.apiUrl, {
       params: new HttpParams().set('userId', userId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<Profile>('getProfile'))
+      map(response => response.data)
     );
   }
 
@@ -35,8 +34,7 @@ export class ProfileService {
     return this.http.put<ApiResponse<Profile>>(this.apiUrl, request, {
       params: new HttpParams().set('userId', userId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<Profile>('updateProfile'))
+      map(response => response.data)
     );
   }
 
@@ -49,15 +47,7 @@ export class ProfileService {
     }, {
       params: new HttpParams().set('userId', userId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<Profile>('changePassword'))
+      map(response => response.data)
     );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
   }
 }

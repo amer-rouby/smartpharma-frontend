@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiResponse } from '../../models';
 import { NotificationSettings, NotificationSettingsRequest } from '../../models/settings/notification-setting.model';
 import { environment } from '../../../../environments/environment';
@@ -15,22 +15,13 @@ export class NotificationSettingsService {
 
   getSettings(): Observable<NotificationSettings> {
     return this.http.get<ApiResponse<NotificationSettings>>(this.apiUrl).pipe(
-      map(response => response.data),
-      catchError(this.handleError<NotificationSettings>('getSettings'))
+      map(response => response.data)
     );
   }
 
   updateSettings(request: NotificationSettingsRequest): Observable<NotificationSettings> {
     return this.http.put<ApiResponse<NotificationSettings>>(this.apiUrl, request).pipe(
-      map(response => response.data),
-      catchError(this.handleError<NotificationSettings>('updateSettings'))
+      map(response => response.data)
     );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
   }
 }

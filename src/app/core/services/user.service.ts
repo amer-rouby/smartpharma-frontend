@@ -40,8 +40,7 @@ export class UserService {
     return this.http.get<ApiResponse<User[]>>(this.apiUrl, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data || []),
-      catchError(this.handleError<User[]>('getUsers', []))
+      map(response => response.data || [])
     );
   }
 
@@ -55,8 +54,7 @@ export class UserService {
     return this.http.get<ApiResponse<User[]>>(`${this.apiUrl}/active`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data || []),
-      catchError(this.handleError<User[]>('getActiveUsers', []))
+      map(response => response.data || [])
     );
   }
 
@@ -70,8 +68,7 @@ export class UserService {
     return this.http.get<ApiResponse<User>>(`${this.apiUrl}/${id}`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<User>(`getUser id=${id}`))
+      map(response => response.data)
     );
   }
 
@@ -88,8 +85,7 @@ export class UserService {
     };
 
     return this.http.post<ApiResponse<User>>(this.apiUrl, request).pipe(
-      map(response => response.data),
-      catchError(this.handleError<User>('createUser'))
+      map(response => response.data)
     );
   }
 
@@ -103,8 +99,7 @@ export class UserService {
     return this.http.put<ApiResponse<User>>(`${this.apiUrl}/${id}`, user, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
     }).pipe(
-      map(response => response.data),
-      catchError(this.handleError<User>(`updateUser id=${id}`))
+      map(response => response.data)
     );
   }
 
@@ -117,9 +112,7 @@ export class UserService {
 
     return this.http.delete<void>(`${this.apiUrl}/${id}`, {
       params: new HttpParams().set('pharmacyId', pharmacyId)
-    }).pipe(
-      catchError(this.handleError<void>(`deleteUser id=${id}`))
-    );
+    });
   }
 
   searchUsers(query: string): Observable<User[]> {
@@ -134,15 +127,7 @@ export class UserService {
         .set('pharmacyId', pharmacyId)
         .set('query', query.trim())
     }).pipe(
-      map(response => response.data || []),
-      catchError(this.handleError<User[]>('searchUsers', []))
+      map(response => response.data || [])
     );
-  }
-
-  private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      console.error(`${operation} failed:`, error);
-      return of(result as T);
-    };
   }
 }
