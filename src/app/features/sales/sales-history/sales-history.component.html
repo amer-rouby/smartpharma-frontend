@@ -23,17 +23,21 @@
         }
       </mat-form-field>
 
-      <!-- Loading State -->
-      @if (loading()) {
+      <!-- Loading State (first load only, no data on screen yet) -->
+      @if (loading() && !sales().length) {
       <div class="loading-state">
         <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
         <p>{{'COMMON.LOADING' | translate}}</p>
       </div>
       }
 
+      @if (loading() && sales().length) {
+      <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+      }
+
       <!-- Table Container -->
-      @if (!loading()) {
-      <div class="table-container">
+      @if (sales().length || !loading()) {
+      <div class="table-container" [class.list-content-refreshing]="loading()">
         <table mat-table [dataSource]="sales()" class="data-table">
 
           <!-- Invoice Number Column -->
@@ -112,7 +116,7 @@
         <!-- Paginator -->
         @if (hasPagination()) {
         <mat-paginator [length]="totalElements()" [pageSize]="size()" [pageSizeOptions]="[5, 10, 25]"
-          (page)="onPageChange($event)" showFirstLastButtons>
+          [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
         </mat-paginator>
         }
       </div>

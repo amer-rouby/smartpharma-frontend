@@ -52,10 +52,13 @@
   </mat-card>
 
   <mat-card class="table-card">
-    <mat-card-content>
+    @if (loading()) {
+    <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
+    }
+    <mat-card-content [class.list-content-refreshing]="loading()">
 
-      <!-- Loading State -->
-      @if (loading()) {
+      <!-- Loading State (first load only, no data on screen yet) -->
+      @if (loading() && !products().length) {
       <div class="loading-state">
         <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
         <p>{{'COMMON.LOADING' | translate}}</p>
@@ -63,7 +66,7 @@
       }
 
       <!-- Products Table -->
-      @if (!loading()) {
+      @if (products().length || !loading()) {
       <div class="table-container">
         <table mat-table [dataSource]="products()" class="data-table">
 
@@ -179,7 +182,7 @@
 
         @if (hasPagination()) {
         <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
-          [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange($event)" showFirstLastButtons>
+          [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
         </mat-paginator>
         }
       </div>

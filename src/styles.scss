@@ -633,6 +633,23 @@ code {
   }
 }
 
+// List refresh indicator - a thin progress bar pinned above content that's
+// already on screen while a page/filter change reloads it, instead of
+// unmounting the whole table (which read as the page reloading). Pair with
+// .list-content-refreshing on the content wrapper so it dims slightly and
+// ignores clicks mid-fetch, and disable the paginator while it's active.
+.list-refresh-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.list-content-refreshing {
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
 // Paginator Styles
 //
 // Every screen's own SCSS either left mat-paginator fully unstyled (blends in
