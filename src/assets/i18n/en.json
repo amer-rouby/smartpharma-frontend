@@ -911,7 +911,8 @@
     "BATCH_NOT_BELONGS_TO_PHARMACY": "This stock batch does not belong to your pharmacy",
     "USER_ID_REQUIRED": "User identification is required for this action",
     "USER_ID_REQUIRED_FOR_ADJUSTMENT": "User identification is required to adjust stock",
-    "INVALID_ADJUSTMENT_TYPE": "Invalid stock adjustment type"
+    "INVALID_ADJUSTMENT_TYPE": "Invalid stock adjustment type",
+    "FEATURE_DISABLED_REORDER_RECOMMENDATIONS": "Reorder recommendations are turned off for your pharmacy"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
@@ -1476,7 +1477,20 @@
       "MEDIUM": "Medium",
       "HIGH": "High",
       "CRITICAL": "Critical"
-    }
+    },
+    "REORDER_RECOMMENDATIONS": "Reorder Recommendations",
+    "NO_RECOMMENDATIONS": "No reorder recommendations",
+    "NO_RECOMMENDATIONS_DESC": "Stock levels currently look sufficient for all products",
+    "SUPPLIER": "Supplier",
+    "UNKNOWN_SUPPLIER": "No supplier history",
+    "PRIORITY": "Priority",
+    "PRIORITY_LEVEL": {
+      "HIGH": "High",
+      "MEDIUM": "Medium",
+      "LOW": "Low"
+    },
+    "REASON": "Reason",
+    "REVIEW": "Review"
   },
   "NOTIFICATION_SETTINGS": {
     "TITLE": "Notification Settings",

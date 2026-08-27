@@ -9,7 +9,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ShareDialogComponent } from '../../../shared/components/share-dialog/share-dialog.component';
-import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO } from '../../../core/services/demand-prediction.service';
+import { DemandPredictionService, DemandPrediction, PredictionStats, UpdatePredictionDTO, ReorderRecommendation } from '../../../core/services/demand-prediction.service';
 import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-prediction-dialog.component';
 
 @Component({
@@ -46,9 +46,57 @@ export class DemandPredictionsComponent implements OnInit {
     'currentStock', 'recommendedOrder', 'trend', 'risk', 'confidence', 'actions'
   ];
 
+  readonly reorderRecommendations = signal<ReorderRecommendation[]>([]);
+  readonly reorderLoading = signal(false);
+  readonly reorderLoaded = signal(false);
+  readonly reorderColumns = [
+    'productName', 'currentStock', 'recommendedQuantity', 'supplierName', 'priority', 'reason', 'actions'
+  ];
+
   ngOnInit(): void {
     this.loadPredictions();
     this.loadStats();
+  }
+
+  onTabChange(index: number): void {
+    if (index === 1 && !this.reorderLoaded()) {
+      this.loadReorderRecommendations();
+    }
+  }
+
+  loadReorderRecommendations(): void {
+    this.reorderLoading.set(true);
+    this.predictionService.getReorderRecommendations().subscribe({
+      next: (data) => {
+        this.reorderRecommendations.set(data);
+        this.reorderLoaded.set(true);
+        this.reorderLoading.set(false);
+      },
+      error: () => {
+        this.reorderLoading.set(false);
+      }
+    });
+  }
+
+  onReviewRecommendation(rec: ReorderRecommendation): void {
+    this.router.navigate(['/purchases/new'], {
+      queryParams: {
+        productId: rec.productId,
+        quantity: rec.recommendedQuantity,
+        supplierId: rec.supplierId ?? undefined,
+        predictionId: rec.predictionId,
+        source: 'prediction'
+      }
+    });
+  }
+
+  getPriorityColor(priority: string): string {
+    const colors: Record<string, string> = {
+      'HIGH': '#ef4444',
+      'MEDIUM': '#f59e0b',
+      'LOW': '#10b981'
+    };
+    return colors[priority] || '#6b7280';
   }
 
   loadPredictions(): void {

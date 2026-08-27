@@ -79,12 +79,42 @@ export class PurchaseFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSuppliers();
-    this.loadProducts();
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode.set(true);
       this.orderId.set(+id);
+      this.loadProducts();
       this.loadOrder(+id);
+    } else {
+      this.loadProducts(() => this.applyQueryParamPrefill());
+    }
+  }
+
+  // A smart-feature recommendation (reorder recommendations, pricing/expiry
+  // suggestions) navigates here with query params instead of creating anything
+  // itself - the pharmacist still has to review and submit the order manually.
+  private applyQueryParamPrefill(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const productId = params.get('productId');
+    if (!productId) return;
+
+    const supplierId = params.get('supplierId');
+    const quantity = params.get('quantity');
+    const predictionId = params.get('predictionId');
+    const source = params.get('source');
+
+    if (supplierId) this.form.patchValue({ supplierId: +supplierId });
+    if (source) this.form.patchValue({ sourceType: source.toUpperCase() });
+    if (predictionId) this.form.patchValue({ sourceId: +predictionId });
+
+    const product = this.products().find(p => p.id === +productId);
+    if (product) {
+      this.addItem({
+        productId: product.id,
+        productName: product.name,
+        quantity: quantity ? +quantity : 1,
+        unitPrice: product.buyPrice || 0
+      });
     }
   }
 
@@ -95,7 +125,7 @@ export class PurchaseFormComponent implements OnInit {
     });
   }
 
-  loadProducts(): void {
+  loadProducts(onLoaded?: () => void): void {
     this.productService.getProductsList().subscribe({
       next: (response: any) => {
         if (response && response.success && Array.isArray(response.data)) {
@@ -106,11 +136,13 @@ export class PurchaseFormComponent implements OnInit {
           console.error('Unexpected data structure:', response);
           this.products.set([]);
         }
+        onLoaded?.();
       },
       error: (err) => {
         console.error('Error loading products from server:', err);
         this.errorHandler.handleHttpError(err, 'PRODUCTS.LOAD_ERROR');
         this.products.set([]);
+        onLoaded?.();
       }
     });
   }
