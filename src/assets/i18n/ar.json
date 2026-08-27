@@ -105,7 +105,15 @@
     "AVERAGE_ORDER": "متوسط الطلب",
     "PROFIT": "الربح",
     "LOADING": "جاري التحميل...",
-    "REFRESH_SUCCESS": "تم تحديث البيانات بنجاح"
+    "REFRESH_SUCCESS": "تم تحديث البيانات بنجاح",
+    "SMART_INSIGHTS": {
+      "TITLE": "رؤى ذكية",
+      "SALES_VS_AVERAGE": "مبيعات اليوم مقارنة بمتوسط 30 يوم",
+      "HIGH_RISK_STOCKOUT": "منتجات بخطر نفاد مرتفع",
+      "REORDER_RECOMMENDATIONS": "طلبات موصى بإعادتها",
+      "PRICING_RECOMMENDATIONS": "توصيات تسعير",
+      "UNUSUAL_ACTIVITY": "نشاط غير معتاد تم رصده"
+    }
   },
   "PRODUCTS": {
     "TITLE": "المنتجات",
@@ -926,7 +934,8 @@
     "INVALID_ADJUSTMENT_TYPE": "نوع تعديل المخزون غير صالح",
     "FEATURE_DISABLED_REORDER_RECOMMENDATIONS": "توصيات إعادة الطلب معطّلة لصيدليتك",
     "FEATURE_DISABLED_PRICING_RECOMMENDATIONS": "توصيات التسعير معطّلة لصيدليتك",
-    "FEATURE_DISABLED_SUPPLIER_RECOMMENDATIONS": "توصيات طلبات الموردين معطّلة لصيدليتك"
+    "FEATURE_DISABLED_SUPPLIER_RECOMMENDATIONS": "توصيات طلبات الموردين معطّلة لصيدليتك",
+    "FEATURE_DISABLED_DASHBOARD_INSIGHTS": "رؤى لوحة التحكم معطّلة لصيدليتك"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",

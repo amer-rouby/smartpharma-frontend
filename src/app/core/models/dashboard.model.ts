@@ -52,3 +52,13 @@ export interface ChartPoint {
   revenue: number;
   orders: number;
 }
+
+export interface SmartInsights {
+  todayRevenue: number;
+  averageDailyRevenue30d: number;
+  salesDeltaPercent: number | null;
+  highRiskStockoutCount: number | null;
+  reorderRecommendationsCount: number | null;
+  pricingRecommendationsCount: number | null;
+  unusualActivityCount: number | null;
+}
