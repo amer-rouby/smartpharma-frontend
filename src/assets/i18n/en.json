@@ -950,7 +950,9 @@
     "FEATURE_DISABLED_ANOMALY_DETECTION": "Unusual activity detection is turned off for your pharmacy",
     "ANOMALY_NOT_FOUND": "Unusual activity record not found",
     "FEATURE_DISABLED_AI_ASSISTANT": "The assistant is turned off for your pharmacy",
-    "ASSISTANT_QUESTION_REQUIRED": "Please type a question"
+    "ASSISTANT_QUESTION_REQUIRED": "Please type a question",
+    "FEATURE_DISABLED_EINVOICE": "E-invoice (ETA) submission is turned off for your pharmacy",
+    "EINVOICE_SUBMISSION_NOT_FOUND": "No e-invoice submission exists yet for this sale"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
@@ -1276,6 +1278,16 @@
     "CONFIRM_MARK_ALL_READ_MSG": "Do you want to mark all alerts as read?",
     "DELETE_ERROR": "Failed to delete alert",
     "RESOLVE_ERROR": "Failed to resolve alert"
+  },
+  "EINVOICE": {
+    "STATUS": "E-Invoice (ETA)",
+    "STATUS_PENDING": "Pending",
+    "STATUS_SUBMITTED": "Submitted",
+    "STATUS_ACCEPTED": "Accepted",
+    "STATUS_REJECTED": "Rejected",
+    "STATUS_ERROR": "Error",
+    "SUBMIT": "Submit to ETA",
+    "RETRY": "Retry"
   },
   "ASSISTANT": {
     "TITLE": "Smart Assistant",

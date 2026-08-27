@@ -952,7 +952,9 @@
     "FEATURE_DISABLED_ANOMALY_DETECTION": "رصد النشاط غير المعتاد معطّل لصيدليتك",
     "ANOMALY_NOT_FOUND": "سجل النشاط غير المعتاد غير موجود",
     "FEATURE_DISABLED_AI_ASSISTANT": "المساعد الذكي معطّل لصيدليتك",
-    "ASSISTANT_QUESTION_REQUIRED": "من فضلك اكتب سؤالاً"
+    "ASSISTANT_QUESTION_REQUIRED": "من فضلك اكتب سؤالاً",
+    "FEATURE_DISABLED_EINVOICE": "إرسال الفاتورة الإلكترونية (ETA) معطّل لصيدليتك",
+    "EINVOICE_SUBMISSION_NOT_FOUND": "لا يوجد إرسال فاتورة إلكترونية لهذه العملية بعد"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
@@ -1278,6 +1280,16 @@
     "CONFIRM_MARK_ALL_READ_MSG": "هل تريد تحديد جميع التنبيهات كمقروءة؟",
     "DELETE_ERROR": "فشل حذف التنبيه",
     "RESOLVE_ERROR": "فشل حل التنبيه"
+  },
+  "EINVOICE": {
+    "STATUS": "الفاتورة الإلكترونية (ETA)",
+    "STATUS_PENDING": "قيد الانتظار",
+    "STATUS_SUBMITTED": "تم الإرسال",
+    "STATUS_ACCEPTED": "مقبولة",
+    "STATUS_REJECTED": "مرفوضة",
+    "STATUS_ERROR": "خطأ",
+    "SUBMIT": "إرسال إلى ETA",
+    "RETRY": "إعادة المحاولة"
   },
   "ASSISTANT": {
     "TITLE": "المساعد الذكي",
