@@ -925,7 +925,8 @@
     "USER_ID_REQUIRED_FOR_ADJUSTMENT": "معرّف المستخدم مطلوب لتعديل المخزون",
     "INVALID_ADJUSTMENT_TYPE": "نوع تعديل المخزون غير صالح",
     "FEATURE_DISABLED_REORDER_RECOMMENDATIONS": "توصيات إعادة الطلب معطّلة لصيدليتك",
-    "FEATURE_DISABLED_PRICING_RECOMMENDATIONS": "توصيات التسعير معطّلة لصيدليتك"
+    "FEATURE_DISABLED_PRICING_RECOMMENDATIONS": "توصيات التسعير معطّلة لصيدليتك",
+    "FEATURE_DISABLED_SUPPLIER_RECOMMENDATIONS": "توصيات طلبات الموردين معطّلة لصيدليتك"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
@@ -1694,6 +1695,11 @@
     "DELETE": "حذف المورد",
     "LIST": "قائمة الموردين",
     "COUNT": "مورد",
+    "RECOMMENDED_ORDERS": "الطلبات الموصى بها",
+    "RECOMMENDED_ITEMS": "صنف يحتاج إعادة طلب",
+    "UNKNOWN_SUPPLIER": "لا يوجد سجل مورد",
+    "NO_RECOMMENDATIONS": "لا توجد طلبات موصى بها",
+    "NO_RECOMMENDATIONS_DESC": "مستويات المخزون الحالية تبدو كافية لجميع المنتجات",
     "SEARCH": "البحث عن مورد...",
     "NO_SUPPLIERS": "لا توجد موردين",
     "ADD_FIRST": "إضافة أول مورد",

@@ -26,6 +26,12 @@ export interface DemandPrediction {
   createdAt: string;
 }
 
+export interface SupplierReorderGroup {
+  supplierId: number | null;
+  supplierName: string | null;
+  recommendations: ReorderRecommendation[];
+}
+
 export interface ReorderRecommendation {
   predictionId: number;
   productId: number;
@@ -180,6 +186,15 @@ export class DemandPredictionService {
     }).pipe(
       map((response) => response.data || []),
       withHttpErrorFallback<ReorderRecommendation[]>('getReorderRecommendations', [])
+    );
+  }
+
+  getReorderRecommendationsBySupplier(): Observable<SupplierReorderGroup[]> {
+    return this.http.get<ApiResponse<SupplierReorderGroup[]>>(`${this.apiUrl}/reorder-recommendations/by-supplier`, {
+      params: this.pharmacy.pharmacyParams()
+    }).pipe(
+      map((response) => response.data || []),
+      withHttpErrorFallback<SupplierReorderGroup[]>('getReorderRecommendationsBySupplier', [])
     );
   }
 
