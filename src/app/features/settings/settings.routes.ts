@@ -57,5 +57,12 @@ export const SETTINGS_ROUTES: Routes = [
     loadComponent: () => import('./backup/backup-settings.component')
       .then(m => m.BackupSettingsComponent),
     canActivate: [authGuard]
+  },
+  {
+    path: 'smart-features',
+    loadComponent: () => import('./smart-features/smart-features-settings.component')
+      .then(m => m.SmartFeaturesSettingsComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] }
   }
 ];
