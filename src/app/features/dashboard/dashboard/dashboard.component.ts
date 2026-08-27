@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -12,6 +13,8 @@ import { DashboardService } from '../../../core/services/dashboard.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { DashboardStats, SmartInsights } from '../../../core/models/dashboard.model';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
+import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
+import { DailyBriefDialogComponent } from '../daily-brief-dialog/daily-brief-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,7 +37,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly dialog = inject(MatDialog);
+  private readonly smartFeatureSettingsService = inject(SmartFeatureSettingsService);
   private readonly destroy$ = new Subject<void>();
+
+  readonly dailyBriefEnabled = computed(() => this.smartFeatureSettingsService.flags().dailyBriefEnabled);
 
   readonly stats = signal<DashboardStats | null>(null);
   readonly loading = signal(true);
@@ -136,5 +143,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   viewAllSales(): void {
     this.router.navigate(['/sales/history']);
+  }
+
+  openDailyBrief(): void {
+    this.dialog.open(DailyBriefDialogComponent, {
+      width: '420px',
+      data: { stats: this.stats(), insights: this.insights() }
+    });
   }
 }

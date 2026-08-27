@@ -113,6 +113,15 @@
       "REORDER_RECOMMENDATIONS": "Recommended reorders",
       "PRICING_RECOMMENDATIONS": "Pricing recommendations",
       "UNUSUAL_ACTIVITY": "Unusual activity flagged"
+    },
+    "DAILY_BRIEF": {
+      "TITLE": "Daily Brief",
+      "SALES": "Sales",
+      "LOW_STOCK": "Low Stock",
+      "NEAR_EXPIRY": "Near Expiry",
+      "RECOMMENDED_ORDERS": "Recommended Orders",
+      "UNUSUAL_ACTIVITY": "Unusual Activity",
+      "BEST_SELLER": "Best Seller"
     }
   },
   "PRODUCTS": {

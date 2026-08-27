@@ -121,6 +121,12 @@
             <mat-icon>receipt_long</mat-icon>
             <span>{{'DASHBOARD.SALES_HISTORY' | translate}}</span>
           </button>
+          @if (dailyBriefEnabled()) {
+          <button type="button" (click)="openDailyBrief()" class="action-btn">
+            <mat-icon>auto_awesome</mat-icon>
+            <span>{{'DASHBOARD.DAILY_BRIEF.TITLE' | translate}}</span>
+          </button>
+          }
         </div>
       </mat-card-content>
     </mat-card>
