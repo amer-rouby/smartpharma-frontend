@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
 
 interface ReportCard {
   titleKey: string;
@@ -33,16 +34,28 @@ interface ReportCard {
   styleUrl: './reports.component.scss'
 })
 export class ReportsComponent {
+  private readonly smartFeatureSettingsService = inject(SmartFeatureSettingsService);
+
   readonly cols = signal(2);
 
-  readonly reportCards = signal<ReportCard[]>([
+  private readonly baseReportCards: ReportCard[] = [
     { titleKey: 'REPORTS.SALES_REPORTS', subtitleKey: 'REPORTS.SALES_DESC', icon: 'trending_up', route: '/reports/sales', color: '#667eea' },
     { titleKey: 'REPORTS.STOCK_REPORTS', subtitleKey: 'REPORTS.STOCK_DESC', icon: 'inventory', route: '/reports/stock', color: '#764ba2' },
     { titleKey: 'REPORTS.FINANCIAL_REPORTS', subtitleKey: 'REPORTS.FINANCIAL_DESC', icon: 'account_balance', route: '/reports/financial', color: '#f093fb' },
     { titleKey: 'REPORTS.EXPIRY_REPORTS', subtitleKey: 'REPORTS.EXPIRY_DESC', icon: 'event_busy', route: '/reports/expiry', color: '#f5576c' },
     { titleKey: 'REPORTS.PROFIT_REPORTS', subtitleKey: 'REPORTS.PROFIT_DESC', icon: 'paid', route: '/reports/profit', color: '#4facfe' },
     { titleKey: 'REPORTS.CUSTOMER_REPORTS', subtitleKey: 'REPORTS.CUSTOMER_DESC', icon: 'people', route: '/reports/customers', color: '#43e97b' }
-  ]);
+  ];
+
+  private readonly anomaliesCard: ReportCard = {
+    titleKey: 'REPORTS.ANOMALIES_REPORTS', subtitleKey: 'REPORTS.ANOMALIES_DESC', icon: 'gpp_maybe', route: '/reports/anomalies', color: '#f59e0b'
+  };
+
+  readonly reportCards = computed<ReportCard[]>(() =>
+    this.smartFeatureSettingsService.flags().anomalyDetectionEnabled
+      ? [...this.baseReportCards, this.anomaliesCard]
+      : this.baseReportCards
+  );
 
   constructor() {
     this.updateCols();
