@@ -36,6 +36,7 @@
     "REPORTS_STOCK": "تقارير المخزون",
     "REPORTS_FINANCIAL": "التقارير المالية",
     "REPORTS_EXPIRY": "تقارير الصلاحية",
+    "REPORTS_ANOMALIES": "نشاط غير معتاد",
     "USERS": "المستخدمين",
     "USERS_MANAGE": "إدارة المستخدمين",
     "USERS_ROLES": "الأدوار والصلاحيات",
@@ -495,6 +496,8 @@
     "FINANCIAL_DESC": "الإيرادات والمصروفات",
     "EXPIRY_REPORTS": "تقارير الصلاحية",
     "EXPIRY_DESC": "المنتجات منتهية الصلاحية",
+    "ANOMALIES_REPORTS": "نشاط غير معتاد",
+    "ANOMALIES_DESC": "أنماط تستحق المراجعة",
     "PROFIT_REPORTS": "تقارير الأرباح",
     "PROFIT_DESC": "تحليل الأرباح والخسائر",
     "CUSTOMER_REPORTS": "تقارير العملاء",
@@ -944,7 +947,9 @@
     "FEATURE_DISABLED_REORDER_RECOMMENDATIONS": "توصيات إعادة الطلب معطّلة لصيدليتك",
     "FEATURE_DISABLED_PRICING_RECOMMENDATIONS": "توصيات التسعير معطّلة لصيدليتك",
     "FEATURE_DISABLED_SUPPLIER_RECOMMENDATIONS": "توصيات طلبات الموردين معطّلة لصيدليتك",
-    "FEATURE_DISABLED_DASHBOARD_INSIGHTS": "رؤى لوحة التحكم معطّلة لصيدليتك"
+    "FEATURE_DISABLED_DASHBOARD_INSIGHTS": "رؤى لوحة التحكم معطّلة لصيدليتك",
+    "FEATURE_DISABLED_ANOMALY_DETECTION": "رصد النشاط غير المعتاد معطّل لصيدليتك",
+    "ANOMALY_NOT_FOUND": "سجل النشاط غير المعتاد غير موجود"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
@@ -1270,6 +1275,57 @@
     "CONFIRM_MARK_ALL_READ_MSG": "هل تريد تحديد جميع التنبيهات كمقروءة؟",
     "DELETE_ERROR": "فشل حذف التنبيه",
     "RESOLVE_ERROR": "فشل حل التنبيه"
+  },
+  "ANOMALIES": {
+    "TITLE": "نشاط غير معتاد",
+    "SUBTITLE": "أنماط تستحق المراجعة - هذا ليس اتهامًا، مجرد تنبيه",
+    "STATS": {
+      "NEW": "جديد",
+      "REVIEWED": "تمت المراجعة",
+      "DISMISSED": "تم التجاهل"
+    },
+    "FILTERS": {
+      "TYPE": "النوع",
+      "STATUS": "الحالة",
+      "ALL_TYPES": "كل الأنواع",
+      "ALL_STATUS": "كل الحالات"
+    },
+    "TYPE": {
+      "EXCESSIVE_RETURNS": "مرتجعات كثيرة",
+      "UNUSUAL_DISCOUNT": "خصم غير معتاد",
+      "FREQUENT_CANCELLATIONS": "إلغاءات متكررة",
+      "REPEATED_STOCK_ADJUSTMENTS": "تعديلات مخزون متكررة",
+      "LARGE_STOCK_DISCREPANCY": "فرق كبير في المخزون"
+    },
+    "SEVERITY": {
+      "LOW": "منخفضة",
+      "MEDIUM": "متوسطة",
+      "HIGH": "مرتفعة"
+    },
+    "STATUS": {
+      "NEW": "جديد",
+      "REVIEWED": "تمت المراجعة",
+      "DISMISSED": "تم التجاهل"
+    },
+    "COLUMN": {
+      "TYPE": "النوع",
+      "DESCRIPTION": "الوصف",
+      "SEVERITY": "الخطورة",
+      "STATUS": "الحالة",
+      "DETECTED_AT": "وقت الاكتشاف"
+    },
+    "LIST": "قائمة النشاط غير المعتاد",
+    "COUNT": "عنصر",
+    "MARK_REVIEWED": "تمت المراجعة",
+    "DISMISS": "تجاهل",
+    "MARKED_REVIEWED": "تم وضع علامة تمت المراجعة",
+    "DISMISSED": "تم التجاهل",
+    "CONFIRM_DISMISS_TITLE": "تجاهل هذا العنصر؟",
+    "CONFIRM_DISMISS_MSG": "سيتم وضع علامة عليه كمتجاهَل ولن يحتاج مراجعة إضافية.",
+    "NO_ANOMALIES": "لا يوجد شيء غير معتاد",
+    "NO_ANOMALIES_DESC": "لم يتم رصد أي نشاط غير معتاد",
+    "LOAD_ERROR": "فشل تحميل النشاط",
+    "UPDATE_ERROR": "فشل التحديث"
   },
   "STOCK_MOVEMENTS": {
     "TITLE": "سجل حركات المخزن",
