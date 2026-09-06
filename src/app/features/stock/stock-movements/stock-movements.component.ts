@@ -1,11 +1,12 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { PageEvent } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { StockMovementService } from '../../../core/services/stock-movement.service';
+import { StockMovement } from '../../../core/models/Stock-movement.model';
+import { CrudPageDirective } from '../../../core/crud';
+import { StockMovementCrudService } from './services/stock-movement-crud.service';
 
 @Component({
   selector: 'app-stock-movements',
@@ -14,19 +15,13 @@ import { StockMovementService } from '../../../core/services/stock-movement.serv
   templateUrl: './stock-movements.component.html',
   styleUrl: './stock-movements.component.scss'
 })
-export class StockMovementsComponent implements OnInit {
+export class StockMovementsComponent extends CrudPageDirective<StockMovement, StockMovementCrudService> {
+  readonly service = inject(StockMovementCrudService);
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly stockMovementService = inject(StockMovementService);
 
-  readonly loading = signal(false);
-  readonly movements = signal<any[]>([]);
   readonly stats = signal<any>(null);
-  readonly page = signal(0);
-  readonly size = signal(10);
-  readonly totalElements = signal(0);
-  readonly isFiltered = signal(false);
 
   readonly filterForm: FormGroup = this.fb.group({
     startDate: [''],
@@ -44,41 +39,27 @@ export class StockMovementsComponent implements OnInit {
     'userName'
   ];
 
-  ngOnInit(): void {
-    this.loadMovements();
+  constructor() {
+    super();
     this.loadStats();
   }
 
-  loadMovements(): void {
-    this.isFiltered.set(false);
-    this.loading.set(true);
+  protected override buildLoadOptions(page: number, size: number, search: string): Record<string, unknown> {
+    const options = super.buildLoadOptions(page, size, search);
 
-    this.stockMovementService.getMovements(this.page(), this.size()).subscribe({
-      next: (pageResult) => {
-        this.movements.set(pageResult.content);
-        this.totalElements.set(pageResult.totalElements);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        console.error('Error loading movements:', error);
-        this.snackBar.open(
-          this.translate.instant('STOCK_MOVEMENTS.LOAD_ERROR'),
-          this.translate.instant('COMMON.CLOSE'),
-          { duration: 3000 }
-        );
-        this.loading.set(false);
+    const startDate: Date = this.filterForm.get('startDate')?.value;
+    const endDate: Date = this.filterForm.get('endDate')?.value;
+
+    if (startDate && endDate) {
+      options['startDate'] = this.formatDateTimeForAPI(startDate, false);
+      options['endDate'] = this.formatDateTimeForAPI(endDate, true);
+      const movementType = this.filterForm.get('movementType')?.value;
+      if (movementType && movementType !== 'all') {
+        options['movementType'] = movementType;
       }
-    });
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.page.set(event.pageIndex);
-    this.size.set(event.pageSize);
-    if (this.isFiltered()) {
-      this.applyDateFilter();
-    } else {
-      this.loadMovements();
     }
+
+    return options;
   }
 
   loadStats(): void {
@@ -90,12 +71,8 @@ export class StockMovementsComponent implements OnInit {
     const endDateStr = this.formatDateForAPI(today);
 
     this.stockMovementService.getStats(startDateStr, endDateStr).subscribe({
-      next: (data) => {
-        this.stats.set(data);
-      },
-      error: (error) => {
-        console.error('Error loading stats:', error);
-      }
+      next: (data) => this.stats.set(data),
+      error: (error) => console.error('Error loading stats:', error)
     });
   }
 
@@ -113,45 +90,14 @@ export class StockMovementsComponent implements OnInit {
   }
 
   onFilter(): void {
-    const startDate = this.filterForm.get('startDate')?.value;
-    const endDate = this.filterForm.get('endDate')?.value;
-
-    if (startDate && endDate) {
-      this.isFiltered.set(true);
-      this.page.set(0);
-      this.applyDateFilter();
-    } else {
-      this.loadMovements();
-    }
+    this.pageIndex.set(0);
+    this.refresh();
   }
 
-  private applyDateFilter(): void {
-    const startDate: Date = this.filterForm.get('startDate')?.value;
-    const endDate: Date = this.filterForm.get('endDate')?.value;
-    const movementType = this.filterForm.get('movementType')?.value;
-
-    const startIso = this.formatDateTimeForAPI(startDate, false);
-    const endIso = this.formatDateTimeForAPI(endDate, true);
-
-    this.loading.set(true);
-    this.stockMovementService
-      .getMovementsByDateRange(startIso, endIso, movementType, this.page(), this.size())
-      .subscribe({
-        next: (pageResult) => {
-          this.movements.set(pageResult.content);
-          this.totalElements.set(pageResult.totalElements);
-          this.loading.set(false);
-        },
-        error: (error) => {
-          console.error('Error filtering movements:', error);
-          this.snackBar.open(
-            this.translate.instant('STOCK_MOVEMENTS.LOAD_ERROR'),
-            this.translate.instant('COMMON.CLOSE'),
-            { duration: 3000 }
-          );
-          this.loading.set(false);
-        }
-      });
+  resetFilters(): void {
+    this.filterForm.reset({ startDate: '', endDate: '', movementType: 'all' });
+    this.pageIndex.set(0);
+    this.refresh();
   }
 
   getMovementTypeLabel(type: string): string {
