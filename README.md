@@ -2,10 +2,10 @@
 
 # 🏥 SmartPharma — Pharmacy Management System
 
-![Angular](https://img.shields.io/badge/Angular-21.1-DD0031?style=for-the-badge&logo=angular&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-22.1-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![RxJS](https://img.shields.io/badge/RxJS-7.8-B7178C?style=for-the-badge&logo=reactivex&logoColor=white)
-![Material](https://img.shields.io/badge/Material_UI-21.1-0081CB?style=for-the-badge&logo=mui&logoColor=white)
+![Material](https://img.shields.io/badge/Material_UI-22.1-0081CB?style=for-the-badge&logo=mui&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-4.5-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT_Auth-4.0-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
@@ -50,7 +50,7 @@
 
 Built to serve as a complete solution for **pharmacy owners and managers**, SmartPharma handles every aspect of pharmaceutical operations — from **point-of-sale (POS)** and **inventory management** to **AI-powered demand prediction**, **financial reporting**, and **multi-language support** — all within a single, unified platform.
 
-> 💡 **Perfect for your CV/Resume** — this project demonstrates **production-level expertise** in Angular 21, TypeScript, reactive programming, enterprise architecture, and complex business logic implementation.
+> 💡 **Perfect for your CV/Resume** — this project demonstrates **production-level expertise** in Angular 22, TypeScript, reactive programming, enterprise architecture, and complex business logic implementation.
 
 ---
 
@@ -60,7 +60,8 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 
 | CV Highlight | What It Demonstrates |
 |:------------|:---------------------|
-| **Angular 21 Standalone Components** | Zero `NgModule`s — 100% modern, future-proof Angular architecture. No legacy patterns. |
+| **Angular 22 Standalone Components** | Zero `NgModule`s — 100% modern, future-proof Angular architecture. No legacy patterns. |
+| **Generic CRUD Architecture** | Reusable `CrudModel` / `CrudService` / `ServiceRegistry` base classes power 8 feature modules (Categories, Users, Expenses, Suppliers, Purchase Orders, Payments, Stock Movements, Sales History) — shows **framework design**, **DI-based service resolution**, and **DRY at scale**. |
 | **18+ Business Services** | Comprehensive service layer — shows mastery of **Dependency Injection**, **Separation of Concerns**, and **business logic abstraction**. |
 | **20+ TypeScript Models** | Rich domain modeling — **interfaces**, **enums**, **union types**, and **type safety** across the entire codebase. |
 | **Advanced Lazy Loading** | Every feature module loads **independently on demand** — demonstrates **performance optimization** and **code splitting** expertise. |
@@ -78,9 +79,10 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 ### 🧠 Skills Demonstrated
 
 ```
-🔷 Angular 21 (Standalone Components)   🔷 TypeScript 5.9
+🔷 Angular 22 (Standalone Components)   🔷 TypeScript 6.0
 🔷 RxJS 7.8 (Observables, Subjects)     🔷 Angular Signals
-🔷 Angular Material 21.1                🔷 Angular CDK
+🔷 Angular Material 22.1                🔷 Angular CDK
+🔷 Generic CRUD Base Classes            🔷 DI Service Registry
 🔷 SCSS (Variables, Mixins, Gradients)  🔷 CSS Grid & Flexbox
 🔷 Chart.js + ng2-charts                🔷 Data Visualization
 🔷 JWT Authentication & Authorization   🔷 HTTP Interceptors
@@ -211,16 +213,16 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 ### Core Framework
 | Technology | Version | Purpose |
 |:-----------|:--------|:--------|
-| **Angular** | 21.1 | Frontend framework (Standalone Components) |
-| **TypeScript** | 5.9 | Type-safe development |
+| **Angular** | 22.1 | Frontend framework (Standalone Components) |
+| **TypeScript** | 6.0 | Type-safe development |
 | **RxJS** | 7.8 | Reactive programming & state streams |
 | **Zone.js** | 0.16 | Change detection |
 
 ### UI & Design
 | Technology | Version | Purpose |
 |:-----------|:--------|:--------|
-| **Angular Material** | 21.1 | Material Design component library |
-| **Angular CDK** | 21.1 | Component development kit |
+| **Angular Material** | 22.1 | Material Design component library |
+| **Angular CDK** | 22.1 | Component development kit |
 | **SCSS** | — | Advanced styling with CSS variables |
 
 ### Charts & Visualization
@@ -241,6 +243,7 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 |:-----------|:--------|:--------|
 | **SweetAlert2** | 11.26 | Beautiful alert dialogs |
 | **ngx-translate** | 17.0 | Complete i18n translation system |
+| **cast-response** | 2.1 | Decorator-based HTTP response casting for the CRUD architecture |
 
 ### Testing
 | Technology | Version | Purpose |
@@ -257,6 +260,7 @@ Built to serve as a complete solution for **pharmacy owners and managers**, Smar
 ```
 📁 src/app/
 ├── 📁 core/                         # Core Layer — Foundation
+│   ├── 📁 crud/                     #   Generic CRUD architecture (CrudModel, CrudService, ServiceRegistry...)
 │   ├── 📁 guards/                   #   Route Guards
 │   ├── 📁 interceptors/             #   HTTP Interceptors
 │   ├── 📁 models/                   #   TypeScript Models (20+)
@@ -302,6 +306,7 @@ Total: **~40 feature sub-modules** | **18+ services** | **20+ models** | **4 gua
 |:----------|:---------------|
 | **Standalone Components** | Zero NgModules — 100% modern Angular |
 | **Lazy Loading** | Every feature module loads on-demand |
+| **Generic CRUD Base Classes** | `CrudModel` / `CrudService` / `CrudPageDirective` eliminate repeated list/pagination/dialog boilerplate across features |
 | **Dependency Injection** | Angular DI with `inject()` function |
 | **Signals API** | Modern reactive state via Angular Signals |
 | **Reactive Programming** | RxJS observables for async data streams |
@@ -310,6 +315,28 @@ Total: **~40 feature sub-modules** | **18+ services** | **20+ models** | **4 gua
 | **Barrel Exports** | Clean imports via `index.ts` |
 | **Environment Config** | Per-environment configuration files |
 | **Error Pipeline** | Interceptor → Service → UI component chain |
+
+### 🧩 Generic CRUD Architecture (`core/crud/`)
+
+A reusable, DI-driven CRUD framework — modeled on an "Active Record"-style pattern — that removes repeated list/pagination/dialog boilerplate from feature code:
+
+```
+CrudModel<Model, Service>          Active Record base — save()/create()/update()/delete()
+   └── looks itself up in ──▶ ServiceRegistry (name-keyed map)
+                                     ▲
+CrudService<Model>            ── registers via ──┘  (RegisterServiceMixin)
+   ├── getAll() / getById() / create() / update() / delete()
+   ├── @CastResponse (cast-response) — casts JSON straight into real model classes
+   └── toRequestPayload() — per-model hook to shape the outgoing body
+
+CrudPageDirective<Model, Service>              → pagination + search + loading signals
+   └── CrudPageWithDialogDirective              → + create/edit dialog + delete-confirm
+              └── CrudDialogDirective            → create/update/view form lifecycle
+```
+
+- **8 feature modules** run on this architecture: **Categories, Users, Expenses, Suppliers** (full create/edit/delete dialogs) and **Purchase Orders, Payment History, Stock Movements, Sales History** (read-only paginated lists with search/filtering).
+- Each feature only writes what's actually different — its model's fields/validators and its endpoint quirks (pharmacy-scoped query params, non-standard pagination shapes, dual endpoints for filtered vs. unfiltered results) — while pagination, debounced search, loading states, and dialog open/close/save lifecycles are inherited for free.
+- A `ServiceRegistry` bridges Angular's DI (services) with plain model classes, so a model instance can call `.save()` and have it resolve to the right injected service without the model itself being Angular-aware.
 
 ---
 
@@ -474,7 +501,7 @@ COMPLETED → REFUNDED ↩️
 |:------------|:--------|
 | **Node.js** | 18.x or later |
 | **npm** | 10.x or later |
-| **Angular CLI** | 21.1.x |
+| **Angular CLI** | 22.1.x |
 | **Browsers** | Chrome 90+, Firefox 90+, Safari 15+, Edge 90+ |
 
 ---
@@ -640,7 +667,7 @@ This project is proprietary and protected by intellectual property rights.
 
 ### 🏥 SmartPharma — The Complete Pharmacy Management Solution
 
-**Built with ❤️ using Angular 21 & TypeScript**
+**Built with ❤️ using Angular 22 & TypeScript**
 
 ---
 
