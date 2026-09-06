@@ -40,13 +40,13 @@ export abstract class CrudService<Model, PrimaryKeyType = number> implements Cru
   }
 
   @HasInterception
-  @CastResponse(undefined, { fallback: '$default' })
+  @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
   create(@InterceptParam() model: Model): Observable<Model> {
     return this.http.post<Model>(this.getCreateEndpoint(), model);
   }
 
   @HasInterception
-  @CastResponse(undefined, { fallback: '$default' })
+  @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
   update(@InterceptParam() model: Model): Observable<Model> {
     const id = (model as Record<string, unknown>)['id'] as PrimaryKeyType;
     return this.http.put<Model>(this.getUpdateEndpoint(id), model, {
@@ -60,14 +60,14 @@ export abstract class CrudService<Model, PrimaryKeyType = number> implements Cru
     });
   }
 
-  @CastResponse(undefined, { fallback: '$default' })
+  @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
   getById(id: PrimaryKeyType): Observable<Model> {
     return this.http.get<Model>(this.getGetByIdEndpoint(id), {
       params: new HttpParams().set('pharmacyId', this.getPharmacyId()),
     });
   }
 
-  @CastResponse(undefined, { fallback: '$pagination' })
+  @CastResponse(undefined, { fallback: '$pagination', unwrap: 'data' })
   getAll(options?: Record<string, unknown>): Observable<PagedResult<Model>> {
     const params = new HttpParams({
       fromObject: { ...options, pharmacyId: this.getPharmacyId() } as never,
