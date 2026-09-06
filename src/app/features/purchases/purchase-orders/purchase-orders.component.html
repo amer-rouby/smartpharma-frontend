@@ -71,7 +71,7 @@
 
     <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
-        <table mat-table [dataSource]="dataSource" class="purchase-orders-table">
+        <table mat-table [dataSource]="models()" class="purchase-orders-table">
 
           <ng-container matColumnDef="orderNumber">
             <th mat-header-cell *matHeaderCellDef>{{'PURCHASES.COLUMN.ORDER_NUMBER' | translate}}</th>

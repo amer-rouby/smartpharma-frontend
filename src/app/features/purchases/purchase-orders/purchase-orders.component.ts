@@ -1,17 +1,17 @@
-import { Component, inject, signal, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PurchaseOrderService } from '../../../core/services/purchase-order.service';
 import { PurchaseOrder } from '../../../core/models/purchase-order.model';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { CrudPageDirective } from '../../../core/crud';
+import { PurchaseOrderCrudService } from './services/purchase-order-crud.service';
 
 @Component({
   selector: 'app-purchase-orders',
@@ -20,60 +20,20 @@ import { CurrencyService } from '../../../core/services/currency.service';
   templateUrl: './purchase-orders.component.html',
   styleUrl: './purchase-orders.component.scss'
 })
-export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PurchaseOrdersComponent extends CrudPageDirective<PurchaseOrder, PurchaseOrderCrudService> implements OnInit {
+  readonly service = inject(PurchaseOrderCrudService);
   private readonly purchaseService = inject(PurchaseOrderService);
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
-  private readonly errorHandler = inject(ErrorHandlerService);
   private readonly currencyService = inject(CurrencyService);
 
-  readonly loading = signal(false);
   readonly stats = signal<any>(null);
-  readonly totalElements = signal(0);
-  readonly pageSize = signal(10);
-  readonly pageIndex = signal(0);
 
   displayedColumns: string[] = ['orderNumber', 'supplier', 'orderDate', 'totalAmount', 'status', 'priority', 'actions'];
-  dataSource = new MatTableDataSource<PurchaseOrder>([]);
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit(): void {
     this.loadStats();
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.loadOrders(0, 10);
-    }, 0);
-  }
-
-  ngOnDestroy(): void {
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
-    this.loadOrders(event.pageIndex, event.pageSize);
-  }
-
-  loadOrders(pageIndex: number = 0, pageSize: number = 10): void {
-    this.loading.set(true);
-    this.purchaseService.getOrders(pageIndex, pageSize).subscribe({
-      next: (response: any) => {
-        const content = response?.data?.content || response?.content || [];
-        const total = response?.data?.totalElements || response?.totalElements || content.length;
-        this.dataSource.data = content;
-        this.totalElements.set(total);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.errorHandler.handleHttpError(err, 'PURCHASES.LOAD_ERROR');
-      }
-    });
   }
 
   loadStats(): void {
@@ -117,7 +77,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
         this.purchaseService.deleteOrder(order.id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('PURCHASES.DELETED');
-            this.loadOrders(this.pageIndex(), this.pageSize());
+            this.refresh();
             this.loadStats();
           },
           error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.DELETE_ERROR')
@@ -143,7 +103,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
         this.purchaseService.approveOrder(order.id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('PURCHASES.APPROVED');
-            this.loadOrders(this.pageIndex(), this.pageSize());
+            this.refresh();
             this.loadStats();
           },
           error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.APPROVE_ERROR')
@@ -169,7 +129,7 @@ export class PurchaseOrdersComponent implements OnInit, AfterViewInit, OnDestroy
         this.purchaseService.receiveOrder(order.id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('PURCHASES.RECEIVED');
-            this.loadOrders(this.pageIndex(), this.pageSize());
+            this.refresh();
             this.loadStats();
           },
           error: (err) => this.errorHandler.handleHttpError(err, 'PURCHASES.RECEIVE_ERROR')
