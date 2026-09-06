@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -13,6 +13,7 @@ import { StockMovementCrudService } from './services/stock-movement-crud.service
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule],
   templateUrl: './stock-movements.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './stock-movements.component.scss'
 })
 export class StockMovementsComponent extends CrudPageDirective<StockMovement, StockMovementCrudService> {

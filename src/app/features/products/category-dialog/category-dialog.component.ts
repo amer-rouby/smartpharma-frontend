@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MaterialModule } from '../../../shared/material.module';
@@ -10,6 +10,7 @@ import { CategoryModel } from '../models/category.model';
   standalone: true,
   imports: [MaterialModule, ReactiveFormsModule],
   templateUrl: './category-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './category-dialog.component.scss',
 })
 export class CategoryDialogComponent extends CrudDialogDirective<CategoryModel> {

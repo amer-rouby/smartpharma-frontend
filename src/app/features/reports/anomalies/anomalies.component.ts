@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -23,6 +23,7 @@ import { Anomaly, AnomalyCounts, AnomalyStatus, AnomalyType } from '../../../cor
     EmptyStateComponent
   ],
   templateUrl: './anomalies.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './anomalies.component.scss'
 })
 export class AnomaliesComponent implements OnInit {

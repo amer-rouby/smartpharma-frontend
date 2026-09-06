@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,6 +22,7 @@ import { EditPredictionDialogComponent } from '../edit-prediction-dialog/edit-pr
     MatMenuModule
   ],
   templateUrl: './demand-predictions.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './demand-predictions.component.scss'
 })
 export class DemandPredictionsComponent implements OnInit {

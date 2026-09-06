@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -28,6 +28,7 @@ interface GuideTopic {
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './help.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './help.component.scss'
 })
 export class HelpComponent {

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -19,6 +19,7 @@ interface FeatureToggle {
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, FormsModule],
   templateUrl: './smart-features-settings.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './smart-features-settings.component.scss'
 })
 export class SmartFeaturesSettingsComponent implements OnInit {

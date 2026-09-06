@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -45,6 +45,7 @@ interface SaleRequest {
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent],
   templateUrl: './sales-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-form.component.scss'
 })
 export class SalesFormComponent implements OnInit, AfterViewInit {

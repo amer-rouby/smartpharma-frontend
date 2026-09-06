@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,6 +26,7 @@ interface NotificationSetting {
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './notification-settings.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './notification-settings.component.scss'
 })
 export class NotificationSettingsComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, inject, signal, ViewChild, ElementRef, AfterViewChecked, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MaterialModule } from '../../../shared/material.module';
@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: true,
   imports: [MaterialModule, FormsModule],
   templateUrl: './assistant-chat-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './assistant-chat-dialog.component.scss'
 })
 export class AssistantChatDialogComponent implements AfterViewChecked {

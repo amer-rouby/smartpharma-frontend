@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,6 +16,7 @@ import { MaterialModule } from '../../../shared/material.module';
     ReactiveFormsModule,
   ],
   templateUrl: './payment-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment-form.component.scss'
 })
 export class PaymentFormComponent {

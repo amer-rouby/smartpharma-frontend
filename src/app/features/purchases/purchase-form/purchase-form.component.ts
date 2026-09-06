@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
@@ -29,6 +29,7 @@ import { Product } from '../../../core/models/product.model';
     MatNativeDateModule
   ],
   templateUrl: './purchase-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './purchase-form.component.scss'
 })
 export class PurchaseFormComponent implements OnInit {
