@@ -1,20 +1,20 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
-import { SalesService } from '../../../core/services/sales.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
 import { InvoicePrintService, PrintableSale } from '../../../core/services/invoice-print.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { SaleDetailsDialogComponent } from '../sale-details-dialog/sale-details-dialog.component';
 import { PharmacySettings } from '../../../core/models/settings/pharmacy-settings.model';
+import { SaleResponse } from '../../../core/models/sale.model';
+import { CrudPageDirective } from '../../../core/crud';
+import { SaleCrudService } from './services/sale-crud.service';
 
 @Component({
   selector: 'app-sales-history',
@@ -23,8 +23,8 @@ import { PharmacySettings } from '../../../core/models/settings/pharmacy-setting
   templateUrl: './sales-history.component.html',
   styleUrl: './sales-history.component.scss'
 })
-export class SalesHistoryComponent implements OnInit {
-  private readonly salesService = inject(SalesService);
+export class SalesHistoryComponent extends CrudPageDirective<SaleResponse, SaleCrudService> {
+  readonly service = inject(SaleCrudService);
   private readonly authService = inject(AuthService);
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
@@ -32,24 +32,17 @@ export class SalesHistoryComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly pharmacySettingsService = inject(PharmacySettingsService);
   private readonly invoicePrintService = inject(InvoicePrintService);
-  private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly displayedColumns = ['invoiceNumber', 'date', 'items', 'total', 'paymentMethod', 'actions'];
-  readonly sales = signal<any[]>([]);
-  readonly loading = signal(false);
-  readonly searchQuery = signal('');
-  readonly page = signal(0);
-  readonly size = signal(10);
-  readonly totalElements = signal(0);
   readonly pharmacySettings = signal<PharmacySettings | null>(null);
 
-  readonly hasSales = computed(() => !this.loading() && this.sales().length > 0);
-  readonly isEmpty = computed(() => !this.loading() && this.sales().length === 0);
-  readonly hasPagination = computed(() => this.totalElements() > this.size());
+  readonly hasSales = computed(() => !this.loading() && this.models().length > 0);
+  readonly isEmpty = computed(() => !this.loading() && this.models().length === 0);
+  readonly hasPagination = computed(() => this.totalElements() > this.pageSize());
 
-  ngOnInit(): void {
+  constructor() {
+    super();
     this.loadPharmacySettings();
-    this.loadSales();
   }
 
   private loadPharmacySettings(): void {
@@ -82,63 +75,8 @@ export class SalesHistoryComponent implements OnInit {
     };
   }
 
-  private getPharmacyId(): number {
-    return this.authService.getPharmacyId() || 1;
-  }
-
-  loadSales(): void {
-    this.loading.set(true);
-    const pharmacyId = this.getPharmacyId();
-
-    this.salesService.getAllSales(pharmacyId, this.page(), this.size()).subscribe({
-      next: (response: any) => {
-        const data = response.data || response;
-        this.sales.set(data.content || data.sales || []);
-        this.totalElements.set(data.totalElements || this.sales().length);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.errorHandler.handleHttpError(err, 'SALES.LOAD_ERROR');
-      }
-    });
-  }
-
-  onSearch(): void {
-    const query = this.searchQuery().trim();
-    if (query) {
-      this.loading.set(true);
-      const pharmacyId = this.getPharmacyId();
-
-      this.salesService.searchSales(pharmacyId, query).subscribe({
-        next: (response: any) => {
-          const data = response.data || response;
-          this.sales.set(data.content || data.sales || []);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.loading.set(false);
-          this.errorHandler.handleHttpError(err, 'SALES.SEARCH_ERROR');
-        }
-      });
-    } else {
-      this.loadSales();
-    }
-  }
-
-  clearSearch(): void {
-    this.searchQuery.set('');
-    this.loadSales();
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.page.set(event.pageIndex);
-    this.size.set(event.pageSize);
-    this.loadSales();
-  }
-
-  onViewSale(sale: any): void {
-    this.salesService.getSaleById(sale.id).subscribe({
+  onViewSale(sale: SaleResponse): void {
+    this.service.getById(sale.id).subscribe({
       next: (saleDetails) => {
         this.dialog.open(SaleDetailsDialogComponent, {
           width: '800px',
@@ -152,7 +90,7 @@ export class SalesHistoryComponent implements OnInit {
     });
   }
 
-  onPrintSale(sale: any): void {
+  onPrintSale(sale: SaleResponse): void {
     try {
       const pharmacy = this.pharmacySettings() || this.getDefaultPharmacyInfo();
 
@@ -164,9 +102,9 @@ export class SalesHistoryComponent implements OnInit {
         totalAmount: sale.totalAmount,
         subtotal: sale.subtotal,
         discountAmount: sale.discountAmount,
-        items: (sale.items || []).map((item: any) => ({
+        items: (sale.items || []).map((item) => ({
           id: item.id,
-          productName: item.productName || item.product?.name || this.translate.instant('PRODUCTS.UNNAMED'),
+          productName: item.productName || this.translate.instant('PRODUCTS.UNNAMED'),
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           totalPrice: item.totalPrice
