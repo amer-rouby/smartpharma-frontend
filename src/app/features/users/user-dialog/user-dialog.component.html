@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="dialog-header">
     <h2 mat-dialog-title>
-      {{ data?.mode === 'edit' ? ('USERS.EDIT' | translate) : ('USERS.ADD_NEW' | translate) }}
+      {{ titleKey | translate }}
     </h2>
     <button mat-icon-button mat-dialog-close>
       <mat-icon>close</mat-icon>
@@ -22,9 +22,9 @@
 
     <!-- Password -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>{{'USERS.PASSWORD' | translate}} {{ data?.mode === 'edit' ? '' : '*' }}</mat-label>
+      <mat-label>{{'USERS.PASSWORD' | translate}} {{ isUpdateMode() ? '' : '*' }}</mat-label>
       <input matInput type="password" formControlName="password"
-        [placeholder]="data?.mode === 'edit' ? ('USERS.PASSWORD_HINT' | translate) : ('USERS.PASSWORD' | translate)">
+        [placeholder]="isUpdateMode() ? ('USERS.PASSWORD_HINT' | translate) : ('USERS.PASSWORD' | translate)">
       @if (form.get('password')?.invalid && form.get('password')?.touched) {
       <mat-error>{{'USERS.PASSWORD_REQUIRED' | translate}}</mat-error>
       }
@@ -77,13 +77,13 @@
     <button mat-button mat-dialog-close>
       {{'COMMON.CANCEL' | translate}}
     </button>
-    <button mat-raised-button color="primary" [disabled]="form.invalid || loading()" (click)="onSubmit()">
-      @if (loading()) {
+    <button mat-raised-button color="primary" [disabled]="form.invalid || saving()" (click)="onSubmit()">
+      @if (saving()) {
       <mat-spinner diameter="20"></mat-spinner>
       } @else {
-      <mat-icon>{{ data?.mode === 'edit' ? 'save' : 'add' }}</mat-icon>
+      <mat-icon>{{ isUpdateMode() ? 'save' : 'add' }}</mat-icon>
       }
-      {{ data?.mode === 'edit' ? ('COMMON.SAVE' | translate) : ('COMMON.ADD' | translate) }}
+      {{ isUpdateMode() ? ('COMMON.SAVE' | translate) : ('COMMON.ADD' | translate) }}
     </button>
   </div>
 </div>
