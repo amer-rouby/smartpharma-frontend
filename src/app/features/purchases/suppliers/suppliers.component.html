@@ -1,7 +1,7 @@
 <div class="suppliers-container">
   <app-page-header [title]="'SUPPLIERS.TITLE' | translate" [subtitle]="'SUPPLIERS.SUBTITLE' | translate"
     icon="business">
-    <button mat-raised-button color="primary" (click)="onAdd()">
+    <button mat-raised-button color="primary" (click)="openCreateDialog()">
       <mat-icon>add</mat-icon>
       <span>{{'SUPPLIERS.ADD' | translate}}</span>
     </button>
@@ -10,7 +10,7 @@
   <mat-tab-group (selectedIndexChange)="onTabChange($event)">
   <mat-tab [label]="'SUPPLIERS.LIST' | translate">
 
-  @if (loading() && !dataSource.data.length) {
+  @if (loading() && !models().length) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
@@ -25,12 +25,12 @@
         <mat-icon>business</mat-icon>
         {{'SUPPLIERS.LIST' | translate}}
       </mat-card-title>
-      <mat-card-subtitle>{{dataSource.data.length}} {{'SUPPLIERS.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{totalElements()}} {{'SUPPLIERS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
-        <table mat-table [dataSource]="dataSource" class="suppliers-table">
+        <table mat-table [dataSource]="models()" class="suppliers-table">
 
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>{{'SUPPLIERS.COLUMN.NAME' | translate}}</th>
@@ -75,21 +75,19 @@
             <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
             <td mat-cell *matCellDef="let supplier">
               <div class="action-buttons">
-                <!-- ✅ FIXED: تأكد إن الـ supplier.id موجود قبل الـ click -->
-                <button mat-icon-button color="primary" (click)="supplier?.id ? onEdit(supplier) : null"
-                  [matTooltip]="'SUPPLIERS.EDIT' | translate" [disabled]="!supplier?.id">
+                <button mat-icon-button color="primary" (click)="openUpdateDialog(supplier)"
+                  [matTooltip]="'SUPPLIERS.EDIT' | translate">
                   <mat-icon>edit</mat-icon>
                 </button>
 
-                <button mat-icon-button color="warn" (click)="supplier?.id ? onDelete(supplier) : null"
-                  [matTooltip]="'COMMON.DELETE' | translate" [disabled]="!supplier?.id">
+                <button mat-icon-button color="warn" (click)="confirmDelete(supplier)"
+                  [matTooltip]="'COMMON.DELETE' | translate">
                   <mat-icon>delete</mat-icon>
                 </button>
 
                 <button mat-icon-button [color]="supplier.status === 'ACTIVE' ? 'warn' : 'primary'"
-                  (click)="supplier?.id ? onToggleStatus(supplier) : null"
-                  [matTooltip]="(supplier.status === 'ACTIVE' ? 'COMMON.DISABLE' : 'COMMON.ENABLE') | translate"
-                  [disabled]="!supplier?.id">
+                  (click)="toggleStatus(supplier)"
+                  [matTooltip]="(supplier.status === 'ACTIVE' ? 'COMMON.DISABLE' : 'COMMON.ENABLE') | translate">
                   <mat-icon>{{supplier.status === 'ACTIVE' ? 'block' : 'check_circle'}}</mat-icon>
                 </button>
               </div>
@@ -100,8 +98,12 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="supplier-row"></tr>
         </table>
 
-        <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons aria-label="Select page">
+        @if (hasPagination()) {
+        <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+          [pageSizeOptions]="[5, 10, 20, 50]" [disabled]="loading()" (page)="onPageChange($event)"
+          showFirstLastButtons aria-label="Select page">
         </mat-paginator>
+        }
       </div>
     </mat-card-content>
   </mat-card>
@@ -183,90 +185,4 @@
 
   </mat-tab>
   </mat-tab-group>
-
-  <!-- ✅ Supplier Dialog -->
-  @if (showDialog()) {
-  <div class="dialog-overlay">
-    <mat-card class="supplier-dialog">
-      <mat-card-header>
-        <mat-card-title>
-          {{(isEditMode() ? 'SUPPLIERS.EDIT' : 'SUPPLIERS.ADD') | translate}}
-        </mat-card-title>
-        <button mat-icon-button (click)="onCancel()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-card-header>
-
-      <mat-card-content>
-        <form [formGroup]="supplierForm" (ngSubmit)="onSubmit()" class="supplier-form">
-          <div class="form-grid">
-            <mat-form-field appearance="outline">
-              <mat-label>{{'SUPPLIERS.COLUMN.NAME' | translate}} *</mat-label>
-              <input matInput formControlName="name">
-              @if (supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched) {
-              <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{'SUPPLIERS.COLUMN.CONTACT' | translate}}</mat-label>
-              <input matInput formControlName="contactPerson">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{'SUPPLIERS.COLUMN.PHONE' | translate}}</mat-label>
-              <input matInput formControlName="phone" type="tel">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{'SUPPLIERS.COLUMN.EMAIL' | translate}}</mat-label>
-              <input matInput formControlName="email" type="email">
-              @if (supplierForm.get('email')?.errors?.['email'] && supplierForm.get('email')?.touched) {
-              <mat-error>{{'VALIDATION.EMAIL_INVALID' | translate}}</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{'SUPPLIERS.COLUMN.CITY' | translate}}</mat-label>
-              <input matInput formControlName="city">
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>{{'SUPPLIERS.COLUMN.STATUS' | translate}}</mat-label>
-              <mat-select formControlName="status">
-                <mat-option value="ACTIVE">{{'COMMON.ACTIVE' | translate}}</mat-option>
-                <mat-option value="INACTIVE">{{'COMMON.INACTIVE' | translate}}</mat-option>
-                <mat-option value="BLOCKED">{{'COMMON.BLOCKED' | translate}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{'SUPPLIERS.COLUMN.ADDRESS' | translate}}</mat-label>
-              <textarea matInput formControlName="address" rows="2"></textarea>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{'COMMON.NOTES' | translate}}</mat-label>
-              <textarea matInput formControlName="notes" rows="3"></textarea>
-            </mat-form-field>
-          </div>
-
-          <div class="form-actions">
-            <button mat-button type="button" (click)="onCancel()">
-              {{'COMMON.CANCEL' | translate}}
-            </button>
-            <button mat-raised-button color="primary" type="submit" [disabled]="loading() || supplierForm.invalid">
-              @if (loading()) {
-              <mat-spinner diameter="20"></mat-spinner>
-              } @else {
-              <mat-icon>save</mat-icon>
-              }
-              <span>{{(isEditMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE') | translate}}</span>
-            </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  }
 </div>

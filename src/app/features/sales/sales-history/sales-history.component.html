@@ -13,32 +13,32 @@
       <!-- Search Field -->
       <mat-form-field appearance="outline" class="search-field">
         <mat-label>{{'SALES.SEARCH_PLACEHOLDER' | translate}}</mat-label>
-        <input matInput [(ngModel)]="searchQuery" name="searchQuery" (keyup.enter)="onSearch()"
+        <input matInput [ngModel]="searchQuery()" name="searchQuery" (ngModelChange)="onSearchInput($event)"
           [placeholder]="'SALES.SEARCH_PLACEHOLDER' | translate">
         <mat-icon matPrefix>search</mat-icon>
         @if (searchQuery()) {
-        <button mat-icon-button matSuffix (click)="clearSearch()" type="button">
+        <button mat-icon-button matSuffix (click)="onSearchInput('')" type="button">
           <mat-icon>close</mat-icon>
         </button>
         }
       </mat-form-field>
 
       <!-- Loading State (first load only, no data on screen yet) -->
-      @if (loading() && !sales().length) {
+      @if (loading() && !models().length) {
       <div class="loading-state">
         <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
         <p>{{'COMMON.LOADING' | translate}}</p>
       </div>
       }
 
-      @if (loading() && sales().length) {
+      @if (loading() && models().length) {
       <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
       }
 
       <!-- Table Container -->
-      @if (sales().length || !loading()) {
+      @if (models().length || !loading()) {
       <div class="table-container" [class.list-content-refreshing]="loading()">
-        <table mat-table [dataSource]="sales()" class="data-table">
+        <table mat-table [dataSource]="models()" class="data-table">
 
           <!-- Invoice Number Column -->
           <ng-container matColumnDef="invoiceNumber">
@@ -115,7 +115,7 @@
 
         <!-- Paginator -->
         @if (hasPagination()) {
-        <mat-paginator [length]="totalElements()" [pageSize]="size()" [pageSizeOptions]="[5, 10, 25]"
+        <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()" [pageSizeOptions]="[5, 10, 25]"
           [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
         </mat-paginator>
         }

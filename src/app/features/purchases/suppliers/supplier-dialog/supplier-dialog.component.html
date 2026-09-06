@@ -1,0 +1,76 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ titleKey | translate }}</h2>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" mat-dialog-content class="supplier-form">
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{'SUPPLIERS.COLUMN.NAME' | translate}} *</mat-label>
+        <input matInput formControlName="name">
+        @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{'SUPPLIERS.COLUMN.CONTACT' | translate}}</mat-label>
+        <input matInput formControlName="contactPerson">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{'SUPPLIERS.COLUMN.PHONE' | translate}}</mat-label>
+        <input matInput formControlName="phone" type="tel">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{'SUPPLIERS.COLUMN.EMAIL' | translate}}</mat-label>
+        <input matInput formControlName="email" type="email">
+        @if (form.get('email')?.errors?.['email'] && form.get('email')?.touched) {
+        <mat-error>{{'VALIDATION.EMAIL_INVALID' | translate}}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{'SUPPLIERS.COLUMN.CITY' | translate}}</mat-label>
+        <input matInput formControlName="city">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{'SUPPLIERS.COLUMN.STATUS' | translate}}</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="ACTIVE">{{'COMMON.ACTIVE' | translate}}</mat-option>
+          <mat-option value="INACTIVE">{{'COMMON.INACTIVE' | translate}}</mat-option>
+          <mat-option value="BLOCKED">{{'COMMON.BLOCKED' | translate}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'SUPPLIERS.COLUMN.ADDRESS' | translate}}</mat-label>
+        <textarea matInput formControlName="address" rows="2"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'COMMON.NOTES' | translate}}</mat-label>
+        <textarea matInput formControlName="notes" rows="3"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="dialogRef.close()">
+      {{'COMMON.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button color="primary" [disabled]="form.invalid || saving()" (click)="onSubmit()">
+      @if (saving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+      <mat-icon>save</mat-icon>
+      }
+      <span>{{ (isUpdateMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE') | translate }}</span>
+    </button>
+  </div>
+</div>

@@ -813,6 +813,12 @@
     "FILE_INVALID_TYPE": "Unsupported file type"
   },
   "COMMON": {
+    "SAVE_SUCCESS": "Saved successfully",
+    "SAVE_ERROR": "An error occurred while saving",
+    "DELETE_SUCCESS": "Deleted successfully",
+    "DELETE_ERROR": "An error occurred while deleting",
+    "DELETE_CONFIRM_GENERIC": "Are you sure you want to delete this item?",
+    "LOAD_ERROR": "An error occurred while loading data",
     "SAVE": "Save",
     "CANCEL": "Cancel",
     "DELETE": "Delete",

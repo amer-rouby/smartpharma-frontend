@@ -815,6 +815,12 @@
     "FILE_INVALID_TYPE": "نوع الملف غير مدعوم"
   },
   "COMMON": {
+    "SAVE_SUCCESS": "تم الحفظ بنجاح",
+    "SAVE_ERROR": "حدث خطأ أثناء الحفظ",
+    "DELETE_SUCCESS": "تم الحذف بنجاح",
+    "DELETE_ERROR": "حدث خطأ أثناء الحذف",
+    "DELETE_CONFIRM_GENERIC": "هل أنت متأكد من الحذف؟",
+    "LOAD_ERROR": "حدث خطأ أثناء تحميل البيانات",
     "SAVE": "حفظ",
     "CANCEL": "إلغاء",
     "DELETE": "حذف",

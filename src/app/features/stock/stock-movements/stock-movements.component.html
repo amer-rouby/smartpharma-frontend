@@ -94,7 +94,7 @@
               <mat-icon>filter_list</mat-icon>
               <span>{{'COMMON.FILTER' | translate}}</span>
             </button>
-            <button mat-button (click)="loadMovements()" [disabled]="loading()">
+            <button mat-button (click)="refresh()" [disabled]="loading()">
               <mat-icon>refresh</mat-icon>
               <span>{{'COMMON.REFRESH' | translate}}</span>
             </button>
@@ -105,7 +105,7 @@
   </mat-card>
 
   <!-- Loading State (first load only, no data on screen yet) -->
-  @if (loading() && !movements().length) {
+  @if (loading() && !models().length) {
   <div class="loading-state">
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
     <p>{{'COMMON.LOADING' | translate}}</p>
@@ -113,19 +113,19 @@
   }
 
   <!-- Movements Table -->
-  @if (movements().length) {
+  @if (models().length) {
   <mat-card class="table-card">
     @if (loading()) {
     <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
     }
     <mat-card-header>
       <mat-card-title>{{'STOCK_MOVEMENTS.MOVEMENTS_LIST' | translate}}</mat-card-title>
-      <mat-card-subtitle>{{totalElements() || movements().length}} {{'STOCK_MOVEMENTS.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{totalElements() || models().length}} {{'STOCK_MOVEMENTS.COUNT' | translate}}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
-        <table mat-table [dataSource]="movements()" class="movements-table">
+        <table mat-table [dataSource]="models()" class="movements-table">
 
           <!-- Movement Type -->
           <ng-container matColumnDef="movementType">
@@ -200,7 +200,7 @@
         </table>
       </div>
 
-      <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+      <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
         [pageSizeOptions]="[10, 20, 50, 100]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
       </mat-paginator>
     </mat-card-content>

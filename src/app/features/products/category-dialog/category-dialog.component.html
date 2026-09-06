@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="dialog-header">
     <h2 mat-dialog-title>
-      {{ data?.category ? ('CATEGORIES.EDIT_TITLE' | translate) : ('CATEGORIES.ADD_TITLE' | translate) }}
+      {{ titleKey | translate }}
     </h2>
     <button mat-icon-button mat-dialog-close>
       <mat-icon>close</mat-icon>
@@ -55,13 +55,13 @@
     <button mat-button mat-dialog-close>
       {{'COMMON.CANCEL' | translate}}
     </button>
-    <button mat-raised-button color="primary" [disabled]="form.invalid || loading()" (click)="onSubmit()">
-      @if (loading()) {
+    <button mat-raised-button color="primary" [disabled]="form.invalid || saving()" (click)="onSubmit()">
+      @if (saving()) {
       <mat-spinner diameter="20"></mat-spinner>
       } @else {
-      <mat-icon>{{ data?.category ? 'save' : 'add' }}</mat-icon>
+      <mat-icon>{{ isUpdateMode() ? 'save' : 'add' }}</mat-icon>
       }
-      {{ data?.category ? ('COMMON.SAVE' | translate) : ('COMMON.ADD' | translate) }}
+      {{ isUpdateMode() ? ('COMMON.SAVE' | translate) : ('COMMON.ADD' | translate) }}
     </button>
   </div>
 </div>
