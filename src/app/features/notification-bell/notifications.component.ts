@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, inject, signal, OnInit, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslateModule, MaterialModule, PageHeaderComponent],
   templateUrl: './notifications.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './notifications.component.scss'
 })
 export class NotificationsComponent implements OnInit {

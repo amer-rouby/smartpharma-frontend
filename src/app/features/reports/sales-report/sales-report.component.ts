@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -32,6 +32,7 @@ import { DailySalesRow, ReportRequest, SalesReportData, TopProductRow } from '..
     BaseChartDirective
   ],
   templateUrl: './sales-report.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-report.component.scss'
 })
 export class SalesReportComponent implements OnInit {

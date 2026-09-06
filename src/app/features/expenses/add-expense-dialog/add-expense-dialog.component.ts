@@ -1,4 +1,4 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, OnDestroy, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -14,6 +14,7 @@ import { ExpenseModel } from '../models/expense.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, MaterialModule],
   templateUrl: './add-expense-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-expense-dialog.component.scss',
 })
 export class AddExpenseDialogComponent extends CrudDialogDirective<ExpenseModel> implements OnDestroy {

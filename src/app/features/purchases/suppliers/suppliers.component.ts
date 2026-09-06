@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -13,6 +13,7 @@ import { SupplierModel } from './models/supplier.model';
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, MatTableModule],
   templateUrl: './suppliers.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './suppliers.component.scss',
 })
 export class SuppliersComponent extends CrudPageWithDialogDirective<SupplierModel, SupplierCrudService> {

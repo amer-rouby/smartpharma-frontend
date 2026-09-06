@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
@@ -11,6 +11,7 @@ import { CategoryModel } from '../models/category.model';
   standalone: true,
   imports: [FormsModule, MaterialModule, PageHeaderComponent],
   templateUrl: './product-categories.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-categories.component.scss',
 })
 export class ProductCategoriesComponent extends CrudPageWithDialogDirective<CategoryModel, CategoryCrudService> {

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -12,6 +12,7 @@ import { DemandPrediction, DemandPredictionService } from '../../../core/service
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, RouterLink, CommonModule],
   templateUrl: './prediction-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './prediction-detail.component.scss'
 })
 export class PredictionDetailComponent implements OnInit {

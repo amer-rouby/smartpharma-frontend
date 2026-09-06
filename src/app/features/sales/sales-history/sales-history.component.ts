@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,6 +21,7 @@ import { SaleCrudService } from './services/sale-crud.service';
   standalone: true,
   imports: [FormsModule, RouterLink, MaterialModule, PageHeaderComponent],
   templateUrl: './sales-history.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-history.component.scss'
 })
 export class SalesHistoryComponent extends CrudPageDirective<SaleResponse, SaleCrudService> {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MaterialModule } from '../../../shared/material.module';
@@ -11,6 +11,7 @@ import { UserModel } from '../models/user.model';
   standalone: true,
   imports: [MaterialModule, ReactiveFormsModule],
   templateUrl: './user-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-dialog.component.scss',
 })
 export class UserDialogComponent extends CrudDialogDirective<UserModel> {

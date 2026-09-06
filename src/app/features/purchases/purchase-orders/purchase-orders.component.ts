@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -18,6 +18,7 @@ import { PurchaseOrderCrudService } from './services/purchase-order-crud.service
   standalone: true,
   imports: [MaterialModule, PageHeaderComponent, RouterLink, MatTableModule, MatPaginatorModule],
   templateUrl: './purchase-orders.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './purchase-orders.component.scss'
 })
 export class PurchaseOrdersComponent extends CrudPageDirective<PurchaseOrder, PurchaseOrderCrudService> implements OnInit {

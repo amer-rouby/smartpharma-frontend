@@ -1,4 +1,4 @@
-import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,6 +30,7 @@ import { Subscription } from 'rxjs';
     TranslateModule
   ],
   templateUrl: './main-layout.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
@@ -15,6 +15,7 @@ export interface DailyBriefDialogData {
   standalone: true,
   imports: [MaterialModule],
   templateUrl: './daily-brief-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './daily-brief-dialog.component.scss'
 })
 export class DailyBriefDialogComponent {
