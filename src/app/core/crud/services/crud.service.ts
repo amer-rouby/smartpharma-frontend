@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CastResponse, HasInterception, InterceptParam } from 'cast-response';
+import { CastResponse } from 'cast-response';
 import { AuthService } from '../../services/auth.service';
 import { CrudServiceContract } from '../interfaces/crud-service-contract.interface';
 import { PagedResult } from '../classes/paged-result';
@@ -39,17 +39,24 @@ export abstract class CrudService<Model, PrimaryKeyType = number> implements Cru
     return `${this.getSegmentUrl()}/page`;
   }
 
-  @HasInterception
-  @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
-  create(@InterceptParam() model: Model): Observable<Model> {
-    return this.http.post<Model>(this.getCreateEndpoint(), model);
+  // Most SmartPharma request DTOs reject unknown JSON properties (Jackson
+  // FAIL_ON_UNKNOWN_PROPERTIES), so the outgoing body can't just be the model
+  // as-is - server-assigned fields like id/createdAt/updatedAt must be
+  // stripped. Override in a concrete service if a model needs to shape its
+  // payload differently.
+  protected toRequestPayload(model: Model): unknown {
+    return model;
   }
 
-  @HasInterception
   @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
-  update(@InterceptParam() model: Model): Observable<Model> {
+  create(model: Model): Observable<Model> {
+    return this.http.post<Model>(this.getCreateEndpoint(), this.toRequestPayload(model));
+  }
+
+  @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
+  update(model: Model): Observable<Model> {
     const id = (model as Record<string, unknown>)['id'] as PrimaryKeyType;
-    return this.http.put<Model>(this.getUpdateEndpoint(id), model, {
+    return this.http.put<Model>(this.getUpdateEndpoint(id), this.toRequestPayload(model), {
       params: new HttpParams().set('pharmacyId', this.getPharmacyId()),
     });
   }

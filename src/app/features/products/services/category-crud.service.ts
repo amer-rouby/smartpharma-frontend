@@ -45,4 +45,11 @@ export class CategoryCrudService extends RegisterServiceMixin(CrudWithDialogServ
     model.pharmacyId = this.getPharmacyId();
     return model;
   }
+
+  // Backend's CategoryRequest DTO has no id/createdAt/updatedAt fields and
+  // rejects unrecognized JSON properties - only send what it actually accepts.
+  override toRequestPayload(model: CategoryModel): unknown {
+    const { name, nameAr, nameEn, description, icon, color, isActive, pharmacyId } = model;
+    return { name, nameAr, nameEn, description, icon, color, isActive, pharmacyId };
+  }
 }
