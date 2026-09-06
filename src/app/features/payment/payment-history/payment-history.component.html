@@ -35,10 +35,11 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{'COMMON.SEARCH' | translate}}</mat-label>
-          <input matInput formControlName="search" placeholder="{{'PAYMENTS.SEARCH_PLACEHOLDER' | translate}}">
+          <input matInput [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)"
+            [ngModelOptions]="{standalone: true}" placeholder="{{'PAYMENTS.SEARCH_PLACEHOLDER' | translate}}">
           <mat-icon matPrefix>search</mat-icon>
-          @if (filterForm.get('search')?.value) {
-          <button matSuffix mat-icon-button aria-label="Clear" (click)="filterForm.get('search')?.setValue('')">
+          @if (searchQuery()) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="onSearchInput('')">
             <mat-icon>close</mat-icon>
           </button>
           }
@@ -57,7 +58,7 @@
     <mat-progress-bar mode="indeterminate" class="list-refresh-bar"></mat-progress-bar>
     }
     <mat-card-content [class.list-content-refreshing]="loading()">
-      <table mat-table [dataSource]="payments()" class="payments-table">
+      <table mat-table [dataSource]="models()" class="payments-table">
         <ng-container matColumnDef="referenceNumber">
           <th mat-header-cell *matHeaderCellDef>{{'PAYMENTS.REFERENCE' | translate}}</th>
           <td mat-cell *matCellDef="let payment">
@@ -122,14 +123,14 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      @if (!loading() && payments().length === 0) {
+      @if (!loading() && models().length === 0) {
       <div class="empty-state">
         <mat-icon>receipt_long</mat-icon>
         <p>{{'PAYMENTS.NO_PAYMENTS' | translate}}</p>
       </div>
       }
 
-      <mat-paginator [length]="totalItems()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
+      <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
         [pageSizeOptions]="[10, 20, 50]" [disabled]="loading()" (page)="onPageChange($event)">
       </mat-paginator>
     </mat-card-content>
