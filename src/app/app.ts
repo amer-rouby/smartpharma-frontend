@@ -1,6 +1,8 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { ThemeService } from './core/services/theme.service';
+import { applyChartJsTheme } from './core/utils/chart-theme.util';
 
 @Component({
   selector: 'app-root',
@@ -14,8 +16,17 @@ export class App implements OnInit {
   protected readonly title = signal('smartpharma-frontend');
 
   private readonly translate = inject(TranslateService);
+  // Injected here (not lazily in a feature component) so Chart.js picks up
+  // the right colors before the first chart ever renders.
+  private readonly themeService = inject(ThemeService);
   readonly direction = signal<'rtl' | 'ltr'>('rtl');
   readonly currentLang = signal<string>('ar');
+
+  constructor() {
+    // currentTheme$ is a BehaviorSubject, so this also applies the theme
+    // immediately (covers the initial load, not just later toggles).
+    this.themeService.currentTheme$.subscribe(() => applyChartJsTheme());
+  }
 
   ngOnInit(): void {
     const lang = localStorage.getItem('language') || 'ar';
@@ -31,5 +42,15 @@ export class App implements OnInit {
     this.currentLang.set(lang);
     document.documentElement.dir = dir;
     document.documentElement.lang = lang;
+
+    // Angular Material's outlined form fields measure their notch/label
+    // gap once against whatever direction was active at render time, and
+    // don't re-measure just because document.dir changes later at
+    // runtime - every field already on screen when the user switches
+    // Arabic/English is left with a stale, wrong-direction gap, which
+    // shows up as an overlapping label/value look. Material's own notch
+    // recalculation already listens for window resize, so firing one
+    // here fixes every field at once instead of hunting each one down.
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
   }
 }

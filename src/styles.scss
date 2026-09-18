@@ -221,14 +221,50 @@ body.dark-theme {
   }
 
   // Generic un-migrated card/container wrappers still hardcoding a
-  // light surface (mat-card itself is already theme-aware via
-  // Angular Material's own dark theme - this only catches the plain
-  // custom wrapper divs many older screens use instead).
+  // light surface (the plain custom wrapper divs many older screens use).
   .stock-card,
   .search-container,
   .empty-state h3 {
     background: transparent;
   }
+
+  // <table>/mat-table specifically: Angular Material paints its own dark
+  // M3 "surface" (a near-black baseline) on it by default, a different
+  // color than this app's own --color-surface - that mismatch is what
+  // shows up as a black box wherever a table sits inside an otherwise
+  // slate card. Making the table itself transparent lets the card's own
+  // background show through everywhere consistently.
+  table,
+  .mat-mdc-table {
+    background: transparent !important;
+  }
+}
+
+// ============================================================
+// Material surface color consistency - ONE shared fix for every screen,
+// instead of each screen's own .scss re-declaring a background.
+//
+// Angular Material's own M3 theme (mat.all-component-colors or the
+// legacy mat-core theming) paints cards, dialogs, menus, selects, etc.
+// with Material's own "surface" role, which defaults to a near-black
+// baseline in dark mode - a different color than this app's own
+// --color-surface token (contrary to what the comment above used to
+// assume). Every screen that relies on a plain <mat-card>, dialog,
+// dropdown menu, or select panel without its own explicit background
+// override shows that mismatch as a black box. --color-surface already
+// resolves correctly in both themes (white in light mode, slate in dark
+// mode), so pointing every Material surface at it fixes every screen at
+// once, in both modes, with no screen-specific CSS needed.
+// ============================================================
+.mat-mdc-card,
+.mat-mdc-dialog-surface,
+.mat-mdc-menu-panel,
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel,
+.mat-expansion-panel,
+.mat-mdc-bottom-sheet-container,
+.mat-datepicker-content {
+  background-color: var(--color-surface, #ffffff) !important;
 }
 
 // Sensible default icon color so icons that don't set their own color
