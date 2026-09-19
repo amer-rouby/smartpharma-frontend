@@ -42,12 +42,12 @@ $dark-theme: mat.define-theme((color: (theme-type: dark,
 // primary actions actually read as primary.
 .mat-mdc-raised-button {
   &.mat-primary {
-    background-color: #4f46e5 !important;
+    background-color: var(--color-primary-600, #4f46e5) !important;
     color: #fff !important;
   }
 
   &.mat-accent {
-    background-color: #6366f1 !important;
+    background-color: var(--color-primary-500, #6366f1) !important;
     color: #fff !important;
   }
 
@@ -178,6 +178,102 @@ body.dark-theme {
 
   background-color: #0f172a;
   color: #f1f5f9;
+}
+
+// ============================================================
+// Color themes (Settings → Appearance) — layered on top of the light/dark
+// tokens above via a body.theme-<name> class from ThemeService. Only the
+// primary-* scale changes per color; every screen already reading
+// var(--color-primary-*) re-themes automatically. Indigo is the built-in
+// default already set in :root / body.dark-theme above, so it has no
+// override block of its own here.
+// ============================================================
+body.theme-teal {
+  --color-primary-50: #f0fdfa;
+  --color-primary-100: #ccfbf1;
+  --color-primary-200: #99f6e4;
+  --color-primary-500: #14b8a6;
+  --color-primary-600: #0d9488;
+  --color-primary-700: #0f766e;
+  --color-primary-800: #115e59;
+  --color-primary-900: #134e4a;
+}
+
+body.dark-theme.theme-teal {
+  --color-primary-50: #042f2e;
+  --color-primary-100: #134e4a;
+  --color-primary-200: #115e59;
+  --color-primary-500: #2dd4bf;
+  --color-primary-600: #14b8a6;
+  --color-primary-700: #5eead4;
+  --color-primary-800: #99f6e4;
+  --color-primary-900: #ccfbf1;
+}
+
+body.theme-rose {
+  --color-primary-50: #fff1f2;
+  --color-primary-100: #ffe4e6;
+  --color-primary-200: #fecdd3;
+  --color-primary-500: #f43f5e;
+  --color-primary-600: #e11d48;
+  --color-primary-700: #be123c;
+  --color-primary-800: #9f1239;
+  --color-primary-900: #881337;
+}
+
+body.dark-theme.theme-rose {
+  --color-primary-50: #4c0519;
+  --color-primary-100: #881337;
+  --color-primary-200: #9f1239;
+  --color-primary-500: #fb7185;
+  --color-primary-600: #f43f5e;
+  --color-primary-700: #fda4af;
+  --color-primary-800: #fecdd3;
+  --color-primary-900: #ffe4e6;
+}
+
+body.theme-amber {
+  --color-primary-50: #fffbeb;
+  --color-primary-100: #fef3c7;
+  --color-primary-200: #fde68a;
+  --color-primary-500: #f59e0b;
+  --color-primary-600: #d97706;
+  --color-primary-700: #b45309;
+  --color-primary-800: #92400e;
+  --color-primary-900: #78350f;
+}
+
+body.dark-theme.theme-amber {
+  --color-primary-50: #451a03;
+  --color-primary-100: #78350f;
+  --color-primary-200: #92400e;
+  --color-primary-500: #fbbf24;
+  --color-primary-600: #f59e0b;
+  --color-primary-700: #fcd34d;
+  --color-primary-800: #fde68a;
+  --color-primary-900: #fef3c7;
+}
+
+body.theme-sky {
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+}
+
+body.dark-theme.theme-sky {
+  --color-primary-50: #082f49;
+  --color-primary-100: #0c4a6e;
+  --color-primary-200: #075985;
+  --color-primary-500: #38bdf8;
+  --color-primary-600: #0ea5e9;
+  --color-primary-700: #7dd3fc;
+  --color-primary-800: #bae6fd;
+  --color-primary-900: #e0f2fe;
 }
 
 // ============================================================

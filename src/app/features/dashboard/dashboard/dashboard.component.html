@@ -1,7 +1,21 @@
 <div class="dashboard-container">
-  <app-page-header [title]="'DASHBOARD.TITLE' | translate" [subtitle]="'DASHBOARD.SUBTITLE' | translate"
-    icon="dashboard">
-  </app-page-header>
+  <div class="welcome-banner">
+    <svg class="banner-pattern" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,80 C100,110 300,40 400,70 L400,120 L0,120 Z" fill="rgba(255,255,255,0.08)" />
+      <path d="M0,95 C120,60 280,120 400,90 L400,120 L0,120 Z" fill="rgba(255,255,255,0.06)" />
+    </svg>
+    <div class="banner-icon">
+      <mat-icon>local_pharmacy</mat-icon>
+    </div>
+    <div class="banner-text">
+      <h1>{{'DASHBOARD.WELCOME' | translate: { name: currentUserName() } }}</h1>
+      <p>{{'DASHBOARD.WELCOME_SUBTITLE' | translate}}</p>
+    </div>
+    <div class="banner-datetime">
+      <span class="banner-time">{{formattedTime()}}</span>
+      <span class="banner-date">{{formattedDate()}}</span>
+    </div>
+  </div>
 
   @if (loading()) {
   <div class="dashboard-content">
@@ -52,6 +66,9 @@
             <small>{{stats()!.todayOrders}} {{'DASHBOARD.TOTAL_ORDERS' | translate}}</small>
           </div>
         </mat-card-content>
+        <svg class="stat-sparkline tone-primary" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,20 15,16 30,18 45,10 60,12 75,4 90,7 100,2" fill="none" stroke="currentColor" stroke-width="2" />
+        </svg>
       </mat-card>
 
       <mat-card class="stat-card">
@@ -65,6 +82,9 @@
             <small>{{'PRODUCTS.TITLE' | translate}}</small>
           </div>
         </mat-card-content>
+        <svg class="stat-sparkline tone-info" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,10 15,14 30,8 45,16 60,11 75,15 90,9 100,13" fill="none" stroke="currentColor" stroke-width="2" />
+        </svg>
       </mat-card>
 
       <mat-card class="stat-card">
@@ -78,6 +98,9 @@
             <small>{{'STOCK.LOW_STOCK_PRODUCTS' | translate}}</small>
           </div>
         </mat-card-content>
+        <svg class="stat-sparkline tone-warning" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,6 15,10 30,9 45,15 60,13 75,19 90,17 100,20" fill="none" stroke="currentColor" stroke-width="2" />
+        </svg>
       </mat-card>
 
       <mat-card class="stat-card">
@@ -91,6 +114,9 @@
             <small>{{'STOCK.TOTAL_VALUE' | translate}}</small>
           </div>
         </mat-card-content>
+        <svg class="stat-sparkline tone-success" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,18 15,13 30,15 45,7 60,9 75,3 90,6 100,1" fill="none" stroke="currentColor" stroke-width="2" />
+        </svg>
       </mat-card>
     </div>
 
