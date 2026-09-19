@@ -1,0 +1,44 @@
+<div class="license-renew-container">
+  <app-page-header [title]="pageTitleKey() | translate" [subtitle]="pageSubtitleKey() | translate" icon="lock_clock">
+  </app-page-header>
+
+  <mat-card class="renew-card">
+    <mat-card-content>
+      @if (expired()) {
+        @if (expiresAt()) {
+        <p class="status-note expired">{{'LICENSE.EXPIRED_ON' | translate}} {{ expiresAt() | date:'mediumDate' }}</p>
+        } @else {
+        <p class="status-note expired">{{'LICENSE.EXPIRED_GENERIC' | translate}}</p>
+        }
+      } @else if (expiresAt()) {
+        <p class="status-note active">{{'LICENSE.ACTIVE_UNTIL' | translate}} {{ expiresAt() | date:'mediumDate' }}</p>
+      } @else {
+        <p class="status-note active">{{'LICENSE.UNLIMITED' | translate}}</p>
+      }
+
+      @if (isAdmin()) {
+      @if (pharmacyId()) {
+      <p class="pharmacy-id-hint">
+        {{'LICENSE.PHARMACY_ID_HINT' | translate}}
+        <strong class="pharmacy-id-value">{{ pharmacyId() }}</strong>
+      </p>
+      }
+      <p>{{'LICENSE.ENTER_CODE_HINT' | translate}}</p>
+      <mat-form-field appearance="outline" class="code-field">
+        <mat-label>{{'LICENSE.CODE_LABEL' | translate}}</mat-label>
+        <textarea matInput rows="4" [ngModel]="code()" (ngModelChange)="code.set($event)"></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="submitting() || !code().trim()" (click)="onSubmit()">
+        @if (submitting()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        <mat-icon>vpn_key</mat-icon>
+        }
+        <span>{{'LICENSE.RENEW_BUTTON' | translate}}</span>
+      </button>
+      } @else if (expired()) {
+      <p>{{'LICENSE.CONTACT_ADMIN' | translate}}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

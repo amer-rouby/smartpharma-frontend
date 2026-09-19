@@ -1,0 +1,43 @@
+<div class="license-generate-container">
+  <app-page-header [title]="'LICENSE.GENERATE_TITLE' | translate" [subtitle]="'LICENSE.GENERATE_SUBTITLE' | translate" icon="vpn_key">
+  </app-page-header>
+
+  <mat-card class="generate-card">
+    <mat-card-content>
+      <p>{{'LICENSE.PHARMACY_ID_INPUT_HINT' | translate}}</p>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'LICENSE.PHARMACY_ID_LABEL' | translate}}</mat-label>
+        <input matInput type="number" min="1" [ngModel]="pharmacyId()" (ngModelChange)="pharmacyId.set($event)">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'LICENSE.MONTHS_LABEL' | translate}}</mat-label>
+        <input matInput type="number" min="1" [ngModel]="months()" (ngModelChange)="months.set($event)">
+        <mat-hint>{{'LICENSE.MONTHS_HINT' | translate}}</mat-hint>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" [disabled]="submitting() || !pharmacyId()" (click)="onSubmit()">
+        @if (submitting()) {
+        <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+        <mat-icon>vpn_key</mat-icon>
+        }
+        <span>{{'LICENSE.GENERATE_BUTTON' | translate}}</span>
+      </button>
+
+      @if (result()) {
+      <div class="result-box">
+        <p class="result-label">{{'LICENSE.RESULT_LABEL' | translate}} {{ result()!.expiresAt | date:'mediumDate' }}</p>
+        <div class="code-output">{{ result()!.code }}</div>
+        <div class="result-actions">
+          <button mat-stroked-button (click)="copyCode()">
+            <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+            <span>{{ (copied() ? 'LICENSE.COPIED' : 'LICENSE.COPY_CODE') | translate }}</span>
+          </button>
+          <button mat-button (click)="reset()">{{'LICENSE.GENERATE_ANOTHER' | translate}}</button>
+        </div>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
