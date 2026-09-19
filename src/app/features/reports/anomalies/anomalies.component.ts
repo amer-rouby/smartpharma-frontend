@@ -1,15 +1,15 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { MaterialModule } from '../../../shared/material.module';
-import { AnomalyService } from '../../../core/services/anomaly.service';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
-import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { TableLoadingComponent } from '../../../shared/components/table-loading/table-loading.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-import { Anomaly, AnomalyCounts, AnomalyStatus, AnomalyType } from '../../../core/models/anomaly.model';
+import { Anomaly, AnomalyCounts } from '../../../core/models/anomaly.model';
+import { CrudPageDirective } from '../../../core/crud';
+import { AnomalyCrudService } from './services/anomaly-crud.service';
 
 @Component({
   selector: 'app-anomalies',
@@ -26,73 +26,47 @@ import { Anomaly, AnomalyCounts, AnomalyStatus, AnomalyType } from '../../../cor
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './anomalies.component.scss'
 })
-export class AnomaliesComponent implements OnInit {
+export class AnomaliesComponent extends CrudPageDirective<Anomaly, AnomalyCrudService> {
+  readonly service = inject(AnomalyCrudService);
   private readonly fb = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
-  private readonly anomalyService = inject(AnomalyService);
   private readonly confirmDialog = inject(ConfirmDialogService);
-  private readonly errorHandler = inject(ErrorHandlerService);
 
-  readonly loading = signal(false);
-  readonly anomalies = signal<Anomaly[]>([]);
   readonly counts = signal<AnomalyCounts | null>(null);
-
-  readonly pageIndex = signal(0);
-  readonly pageSize = signal(10);
-  readonly totalElements = signal(0);
 
   readonly displayedColumns = ['type', 'description', 'severity', 'status', 'detectedAt', 'actions'];
   readonly filterForm: FormGroup = this.fb.group({ status: ['all'], type: ['all'] });
 
-  ngOnInit(): void {
-    this.loadAnomalies();
+  constructor() {
+    super();
     this.loadCounts();
   }
 
-  loadAnomalies(): void {
-    this.loading.set(true);
+  protected override buildLoadOptions(page: number, size: number, search: string): Record<string, unknown> {
+    const options = super.buildLoadOptions(page, size, search);
     const status = this.filterForm.get('status')?.value;
     const type = this.filterForm.get('type')?.value;
-    this.anomalyService.getAnomalies(
-      status !== 'all' ? (status as AnomalyStatus) : undefined,
-      type !== 'all' ? (type as AnomalyType) : undefined,
-      this.pageIndex(),
-      this.pageSize()
-    ).subscribe({
-      next: (data) => {
-        this.anomalies.set(data.content || []);
-        this.totalElements.set(data.totalElements || 0);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.errorHandler.showError('ANOMALIES.LOAD_ERROR');
-        this.loading.set(false);
-      }
-    });
+    if (status && status !== 'all') options['status'] = status;
+    if (type && type !== 'all') options['type'] = type;
+    return options;
   }
 
   loadCounts(): void {
-    this.anomalyService.getCounts().subscribe({
+    this.service.getCounts().subscribe({
       next: (data) => this.counts.set(data)
     });
   }
 
   onFilterChange(): void {
     this.pageIndex.set(0);
-    this.loadAnomalies();
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
-    this.loadAnomalies();
+    this.refresh();
   }
 
   onMarkReviewed(anomaly: Anomaly): void {
-    this.anomalyService.markReviewed(anomaly.id).subscribe({
+    this.service.markReviewed(anomaly.id).subscribe({
       next: () => {
         this.errorHandler.showSuccess('ANOMALIES.MARKED_REVIEWED');
-        this.loadAnomalies();
+        this.refresh();
         this.loadCounts();
       },
       error: () => this.errorHandler.showError('ANOMALIES.UPDATE_ERROR')
@@ -107,10 +81,10 @@ export class AnomaliesComponent implements OnInit {
       color: 'primary'
     }).subscribe(result => {
       if (result) {
-        this.anomalyService.dismiss(anomaly.id).subscribe({
+        this.service.dismiss(anomaly.id).subscribe({
           next: () => {
             this.errorHandler.showSuccess('ANOMALIES.DISMISSED');
-            this.loadAnomalies();
+            this.refresh();
             this.loadCounts();
           },
           error: () => this.errorHandler.showError('ANOMALIES.UPDATE_ERROR')
