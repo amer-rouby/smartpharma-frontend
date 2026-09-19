@@ -1,0 +1,75 @@
+<div class="appearance-settings-container">
+  <app-page-header [title]="'SETTINGS.APPEARANCE.TITLE' | translate"
+    [subtitle]="'SETTINGS.APPEARANCE.SUBTITLE' | translate" icon="palette">
+  </app-page-header>
+
+  <mat-card class="appearance-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>brightness_6</mat-icon>
+        {{'SETTINGS.APPEARANCE.MODE' | translate}}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="mode-toggle">
+        <button type="button" class="mode-option" [class.active]="mode() === 'light'" (click)="setMode('light')">
+          <mat-icon>light_mode</mat-icon>
+          <span class="option-title">{{'SETTINGS.APPEARANCE.LIGHT' | translate}}</span>
+          <span class="option-desc">{{'SETTINGS.APPEARANCE.LIGHT_DESC' | translate}}</span>
+          @if (mode() === 'light') {
+          <mat-icon class="check">check_circle</mat-icon>
+          }
+        </button>
+        <button type="button" class="mode-option" [class.active]="mode() === 'dark'" (click)="setMode('dark')">
+          <mat-icon>dark_mode</mat-icon>
+          <span class="option-title">{{'SETTINGS.APPEARANCE.DARK' | translate}}</span>
+          <span class="option-desc">{{'SETTINGS.APPEARANCE.DARK_DESC' | translate}}</span>
+          @if (mode() === 'dark') {
+          <mat-icon class="check">check_circle</mat-icon>
+          }
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="appearance-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>palette</mat-icon>
+        {{'SETTINGS.APPEARANCE.COLOR' | translate}}
+      </mat-card-title>
+      <p class="card-subtitle">{{'SETTINGS.APPEARANCE.COLOR_SUBTITLE' | translate}}</p>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="color-grid">
+        @for (theme of colorThemes; track theme.value) {
+        <button type="button" class="color-option" [class.active]="colorTheme() === theme.value"
+          (click)="setColorTheme(theme.value)">
+          <span class="swatch" [style.background]="theme.swatch"></span>
+          <span class="label">{{theme.labelKey | translate}}</span>
+          <span class="desc">{{theme.descKey | translate}}</span>
+          @if (colorTheme() === theme.value) {
+          <mat-icon class="check">check_circle</mat-icon>
+          }
+        </button>
+        }
+      </div>
+
+      <div class="suggestion-box">
+        <mat-icon>lightbulb</mat-icon>
+        <p>{{'SETTINGS.APPEARANCE.SUGGESTION' | translate}}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="appearance-actions">
+    <button type="button" class="save-btn" (click)="onSave()">
+      <mat-icon>save</mat-icon>
+      <span>{{'SETTINGS.APPEARANCE.SAVE' | translate}}</span>
+    </button>
+    <button type="button" class="reset-btn" (click)="onReset()">
+      <mat-icon>restart_alt</mat-icon>
+      <span>{{'SETTINGS.APPEARANCE.RESET' | translate}}</span>
+    </button>
+  </div>
+</div>

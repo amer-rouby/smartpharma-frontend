@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { licenseGuard } from './core/guards/license.guard';
 
 export const routes: Routes = [
   {
@@ -19,8 +20,19 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./layouts/main-layout/main-layout.component')
         .then(m => m.MainLayoutComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, licenseGuard],
+    // Without this, Angular only re-runs canActivate the first time this
+    // layout activates - licenseGuard needs to re-check on every navigation
+    // (cheaply, via its own cache) so an expired pharmacy can't just navigate
+    // away from the renewal screen once it's already inside the layout.
+    runGuardsAndResolvers: 'always',
     children: [
+      {
+        path: 'license',
+        loadChildren: () =>
+          import('./features/license/license.routes')
+            .then(m => m.LICENSE_ROUTES)
+      },
       {
         path: 'dashboard',
         loadComponent: () =>

@@ -29,6 +29,12 @@ export const SETTINGS_ROUTES: Routes = [
     data: { roles: ['ADMIN'] }
   },
   {
+    path: 'appearance',
+    loadComponent: () => import('./appearance/appearance-settings.component')
+      .then(m => m.AppearanceSettingsComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'notifications',
     loadComponent: () => import('./notifications/notification-settings.component')
       .then(m => m.NotificationSettingsComponent),

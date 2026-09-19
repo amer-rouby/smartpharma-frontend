@@ -30,12 +30,14 @@ export class SettingsComponent {
     { icon: 'person', labelKey: 'SETTINGS.PROFILE', route: '/settings/profile' },
     { icon: 'people', labelKey: 'SETTINGS.USERS', route: '/users', roles: ['ADMIN'] },
     { icon: 'store', labelKey: 'SETTINGS.PHARMACY', route: '/settings/pharmacy', roles: ['ADMIN'] },
+    { icon: 'palette', labelKey: 'SETTINGS.APPEARANCE.TITLE', route: '/settings/appearance' },
     { icon: 'notifications', labelKey: 'SETTINGS.NOTIFICATIONS', route: '/settings/notifications' },
     { icon: 'security', labelKey: 'SETTINGS.SECURITY', route: '/settings/security' },
     { icon: 'timer', labelKey: 'SETTINGS.SESSION.TITLE', route: '/settings/session' },
     // { icon: 'language', labelKey: 'SETTINGS.LANGUAGE', route: '/settings/language' },
     { icon: 'backup', labelKey: 'SETTINGS.BACKUP', route: '/settings/backup' },
-    { icon: 'auto_awesome', labelKey: 'SMART_FEATURES.TITLE', route: '/settings/smart-features', roles: ['ADMIN'] }
+    { icon: 'auto_awesome', labelKey: 'SMART_FEATURES.TITLE', route: '/settings/smart-features', roles: ['ADMIN'] },
+    { icon: 'vpn_key', labelKey: 'LICENSE.MENU_LABEL', route: '/license/renew', roles: ['ADMIN'] }
   ]);
 
   readonly filteredItems = signal<SettingsItem[]>([]);

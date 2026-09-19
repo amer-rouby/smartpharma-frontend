@@ -17,7 +17,7 @@
     .icon-wrapper {
       width: 80px;
       height: 80px;
-      background: #fff5f5; // خلفية حمراء فاتحة جداً
+      background: var(--color-danger-bg, #fff5f5); // خلفية حمراء فاتحة جداً
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -28,7 +28,7 @@
         font-size: 40px;
         width: 40px;
         height: 40px;
-        color: #ef4444; // لون تحذير احترافي
+        color: var(--color-danger, #ef4444); // لون تحذير احترافي
         animation: pulse-ring 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
       }
     }
@@ -38,13 +38,13 @@
     h2 {
       font-size: 22px;
       font-weight: 800;
-      color: #1e293b;
+      color: var(--color-text-primary, #1e293b);
       margin-bottom: 8px;
     }
 
     p {
       font-size: 15px;
-      color: #64748b;
+      color: var(--color-text-secondary, #64748b);
       line-height: 1.6;
       margin: 0;
     }
@@ -77,12 +77,12 @@
       }
 
       &.cancel-btn {
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: var(--color-slate-100, #f1f5f9);
+        color: var(--color-text-secondary, #475569);
 
         &:hover {
-          background-color: #e2e8f0;
-          color: #1e293b;
+          background-color: var(--color-slate-200, #e2e8f0);
+          color: var(--color-text-primary, #1e293b);
         }
       }
     }

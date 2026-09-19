@@ -12,7 +12,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border, #e9ecef);
   direction: inherit;
 }
 
@@ -29,7 +29,7 @@
 }
 
 .batch-info {
-  background: #f8fafc;
+  background: var(--color-slate-50, #f8fafc);
   padding: 14px;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -46,12 +46,12 @@
 }
 
 .batch-info span {
-  color: #64748b;
+  color: var(--color-text-secondary, #64748b);
   font-size: 13px;
 }
 
 .batch-info strong {
-  color: #0f172a;
+  color: var(--color-text-primary, #0f172a);
   font-size: 14px;
   text-align: end;
   overflow-wrap: anywhere;
@@ -121,8 +121,8 @@ mat-form-field {
   justify-content: flex-end;
   gap: 10px;
   padding: 12px 18px 16px;
-  border-top: 1px solid #e9ecef;
-  background: #fff;
+  border-top: 1px solid var(--color-border, #e9ecef);
+  background: var(--color-surface, #fff);
 }
 
 @media (max-width: 600px) {
