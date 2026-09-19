@@ -12,7 +12,7 @@ export const SALES_ROUTES: Routes = [
       .then(m => m.SalesFormComponent)
   },
   {
-    path: 'analytics',  // <-- أضف هذا
+    path: 'analytics',
     loadComponent: () => import('./sales-analytics/sales-analytics.component')
       .then(m => m.SalesAnalyticsComponent)
   },
