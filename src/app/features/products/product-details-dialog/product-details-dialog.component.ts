@@ -1,6 +1,5 @@
 import { Component, Inject, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { RouterLink } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MaterialModule } from '../../../shared/material.module';
 import { Product } from '../../../core/models/product.model';
@@ -10,7 +9,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 @Component({
   selector: 'app-product-details-dialog',
   standalone: true,
-  imports: [MatDialogModule, MaterialModule, RouterLink],
+  imports: [MatDialogModule, MaterialModule],
   templateUrl: './product-details-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-details-dialog.component.scss'
@@ -42,5 +41,9 @@ export class ProductDetailsDialogComponent {
 
   close(): void {
     this.dialogRef.close();
+  }
+
+  editProduct(): void {
+    this.dialogRef.close({ edit: true });
   }
 }

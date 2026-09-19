@@ -1,23 +1,17 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink, ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
-import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
-import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
-import { Product } from '../../../core/models/product.model';
 import { Category } from '../../../core/models/category';
 import { MaterialModule } from '../../../shared/material.module';
 import { FormsModule } from '@angular/forms';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ProductDetailsDialogComponent } from '../product-details-dialog/product-details-dialog.component';
-
-const SEARCH_DEBOUNCE_MS = 350;
+import { CrudPageWithDialogDirective } from '../../../core/crud';
+import { ProductModel } from '../models/product.model';
+import { ProductCrudService } from '../services/product-crud.service';
 
 @Component({
   selector: 'app-product-list',
@@ -27,19 +21,15 @@ const SEARCH_DEBOUNCE_MS = 350;
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-list.component.scss'
 })
-export class ProductListComponent implements OnInit, OnDestroy {
-  private readonly productService = inject(ProductService);
+export class ProductListComponent extends CrudPageWithDialogDirective<ProductModel, ProductCrudService> implements OnInit {
+  readonly service = inject(ProductCrudService);
   private readonly categoryService = inject(CategoryService);
-  private readonly snackBar = inject(MatSnackBar);
-  private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly currencyService = inject(CurrencyService);
-  private readonly dialog = inject(MatDialog);
+  private readonly matDialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  readonly products = signal<Product[]>([]);
-  readonly loading = signal(false);
-  readonly searchQuery = signal('');
   readonly selectedCategory = signal('all');
   readonly categoryOptions = signal<Category[]>([]);
   readonly categorySearchText = signal('');
@@ -51,40 +41,33 @@ export class ProductListComponent implements OnInit, OnDestroy {
       (c.nameAr || '').toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
     );
   });
-  readonly page = signal(0);
-  readonly size = signal(10);
-  readonly totalElements = signal(0);
 
   readonly displayedColumns = ['name', 'barcode', 'category', 'stock', 'price', 'actions'];
+  readonly hasPagination = computed(() => this.totalElements() > this.pageSize());
+  readonly hasProducts = computed(() => !this.loading() && this.models().length > 0);
+  readonly isEmpty = computed(() => !this.loading() && this.models().length === 0);
 
-  readonly hasProducts = computed(() => !this.loading() && this.products().length > 0);
-  readonly isEmpty = computed(() => !this.loading() && this.products().length === 0);
-  readonly hasPagination = computed(() => this.totalElements() > this.size());
-
-  private readonly searchInput$ = new Subject<string>();
+  protected override buildLoadOptions(page: number, size: number, search: string): Record<string, unknown> {
+    const options = super.buildLoadOptions(page, size, search);
+    options['sortBy'] = 'name';
+    options['sortDirection'] = 'asc';
+    if (this.selectedCategory() !== 'all') options['category'] = this.selectedCategory();
+    return options;
+  }
 
   ngOnInit(): void {
     this.loadCategoryOptions();
-
-    this.searchInput$.pipe(
-      debounceTime(SEARCH_DEBOUNCE_MS),
-      distinctUntilChanged()
-    ).subscribe(() => {
-      this.page.set(0);
-      this.fetchProducts();
-    });
 
     this.route.queryParamMap.subscribe(params => {
       const q = params.get('q');
       if (q) {
         this.searchQuery.set(q);
       }
-      this.fetchProducts();
+      if (params.get('action') === 'new') {
+        this.router.navigate([], { queryParams: { action: null }, queryParamsHandling: 'merge' });
+        this.openCreateDialog();
+      }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.searchInput$.complete();
   }
 
   private loadCategoryOptions(): void {
@@ -94,36 +77,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
   }
 
-  fetchProducts(): void {
-    this.loading.set(true);
-    this.productService.getProductsPaged(
-      this.page(), this.size(), this.searchQuery(), this.selectedCategory()
-    ).subscribe({
-      next: (response) => {
-        this.products.set(response.content || []);
-        this.totalElements.set(response.totalElements || 0);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.showError('PRODUCTS.LOAD_ERROR');
-      }
-    });
-  }
-
-  onSearchInput(): void {
-    this.searchInput$.next(this.searchQuery());
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.page.set(event.pageIndex);
-    this.size.set(event.pageSize);
-    this.fetchProducts();
-  }
-
   filterByCategory(): void {
-    this.page.set(0);
-    this.fetchProducts();
+    this.pageIndex.set(0);
+    this.refresh();
   }
 
   onCategorySelected(value: string): void {
@@ -141,37 +97,28 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.onCategorySelected('all');
   }
 
-  viewDetails(product: Product): void {
-    this.dialog.open(ProductDetailsDialogComponent, {
+  viewDetails(product: ProductModel): void {
+    this.matDialog.open(ProductDetailsDialogComponent, {
       width: '600px',
       maxWidth: '95vw',
       data: { product }
+    }).afterClosed().subscribe(result => {
+      if (result?.edit) {
+        this.openUpdateDialog(product);
+      }
     });
   }
 
-  onDelete(product: Product): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: this.translate.instant('COMMON.CONFIRM'),
-        message: this.translate.instant('PRODUCTS.DELETE_CONFIRM', { name: product.name }),
-        confirmText: this.translate.instant('COMMON.YES'),
-        cancelText: this.translate.instant('COMMON.CANCEL'),
-        color: 'warn'
-      }
-    });
+  protected override getDeleteConfirmMessage(product: ProductModel): string {
+    return this.translate.instant('PRODUCTS.DELETE_CONFIRM', { name: product.name });
+  }
 
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.productService.deleteProduct(product.id).subscribe({
-          next: () => {
-            this.fetchProducts();
-            this.showSuccess('PRODUCTS.DELETE_SUCCESS');
-          },
-          error: () => this.showError('COMMON.ERROR')
-        });
-      }
-    });
+  protected override getDeleteSuccessKey(): string {
+    return 'PRODUCTS.DELETE_SUCCESS';
+  }
+
+  protected override getDeleteErrorKey(): string {
+    return 'COMMON.ERROR';
   }
 
   getStockColor(stock: number): 'primary' | 'accent' | 'warn' {
@@ -188,8 +135,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   clearSearch(): void {
     this.searchQuery.set('');
-    this.page.set(0);
-    this.fetchProducts();
+    this.pageIndex.set(0);
   }
 
   formatCurrency(amount: number): string {
@@ -202,19 +148,5 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   translateCategory(key: string): string {
     return this.translate.instant(key);
-  }
-
-  private showSuccess(key: string): void {
-    this.snackBar.open(this.translate.instant(key), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['success-snackbar']
-    });
-  }
-
-  private showError(key: string): void {
-    this.snackBar.open(this.translate.instant(key), this.translate.instant('COMMON.CLOSE'), {
-      duration: 3000,
-      panelClass: ['error-snackbar']
-    });
   }
 }

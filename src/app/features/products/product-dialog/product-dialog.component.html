@@ -1,20 +1,12 @@
-<div class="product-form-container">
-  <app-page-header [title]="pageTitle() | translate" [subtitle]="pageSubtitle() | translate" icon="inventory_2">
-  </app-page-header>
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ titleKey | translate }}</h2>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
-  @if (loading() && isEditMode()) {
-  <mat-card>
-    <mat-card-content>
-      <div class="loading-state">
-        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-        <p>{{'COMMON.LOADING' | translate}}</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  }
-
-  @if (!loading() || !isEditMode()) {
-  <form (ngSubmit)="onSubmit()" class="product-form">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" mat-dialog-content class="product-form">
 
     <!-- Basic Information -->
     <mat-card class="form-section">
@@ -24,38 +16,35 @@
       <mat-card-content class="form-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.NAME' | translate}} *</mat-label>
-          <input matInput [(ngModel)]="product().name" name="name" required
-            [placeholder]="'PRODUCTS.NAME_PLACEHOLDER' | translate">
+          <input matInput formControlName="name" [placeholder]="'PRODUCTS.NAME_PLACEHOLDER' | translate">
           <mat-icon matPrefix>inventory_2</mat-icon>
+          @if (form.get('name')?.invalid && form.get('name')?.touched) {
+          <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.SCIENTIFIC_NAME' | translate}}</mat-label>
-          <input matInput [(ngModel)]="product().scientificName" name="scientificName"
-            [placeholder]="'PRODUCTS.SCIENTIFIC_NAME_PLACEHOLDER' | translate">
+          <input matInput formControlName="scientificName" [placeholder]="'PRODUCTS.SCIENTIFIC_NAME_PLACEHOLDER' | translate">
           <mat-icon matPrefix>science</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.ACTIVE_INGREDIENTS' | translate}}</mat-label>
-          <input matInput [(ngModel)]="extraFields().activeIngredients" name="activeIngredients"
-            [placeholder]="'PRODUCTS.ACTIVE_INGREDIENTS_PLACEHOLDER' | translate">
+          <input matInput formControlName="activeIngredients" [placeholder]="'PRODUCTS.ACTIVE_INGREDIENTS_PLACEHOLDER' | translate">
           <mat-icon matPrefix>biotech</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.MANUFACTURER' | translate}}</mat-label>
-          <input matInput [(ngModel)]="extraFields().manufacturer" name="manufacturer"
-            [placeholder]="'PRODUCTS.MANUFACTURER_PLACEHOLDER' | translate">
+          <input matInput formControlName="manufacturer" [placeholder]="'PRODUCTS.MANUFACTURER_PLACEHOLDER' | translate">
           <mat-icon matPrefix>factory</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.BARCODE' | translate}}</mat-label>
-          <input #barcodeInput matInput [(ngModel)]="product().barcode" name="barcode"
-            [placeholder]="'PRODUCTS.BARCODE_PLACEHOLDER' | translate"
-            [matTooltip]="'PRODUCTS.BARCODE_SCAN_HINT' | translate"
-            (focus)="barcodeInput.select()">
+          <input #barcodeInput matInput formControlName="barcode" [placeholder]="'PRODUCTS.BARCODE_PLACEHOLDER' | translate"
+            [matTooltip]="'PRODUCTS.BARCODE_SCAN_HINT' | translate" (focus)="barcodeInput.select()">
           <mat-icon matPrefix>qr_code_2</mat-icon>
           <button mat-icon-button matSuffix type="button" (click)="regenerateBarcode()"
             [matTooltip]="'PRODUCTS.REGENERATE_BARCODE' | translate">
@@ -63,7 +52,6 @@
           </button>
         </mat-form-field>
 
-        <!-- Category - dynamic from API -->
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.CATEGORY' | translate}}</mat-label>
           @if (categoriesLoading()) {
@@ -71,7 +59,7 @@
             <mat-option>{{'COMMON.LOADING' | translate}}...</mat-option>
           </mat-select>
           } @else if (categories().length) {
-          <mat-select [(ngModel)]="product().category" name="category">
+          <mat-select formControlName="category">
             @for (cat of categories(); track cat.id) {
             <mat-option [value]="cat.name">
               {{getCategoryName(cat)}}
@@ -96,9 +84,9 @@
       <mat-card-content class="form-grid">
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.UNIT_TYPE' | translate}}</mat-label>
-          <mat-select [(ngModel)]="product().unitType" name="unitType">
+          <mat-select formControlName="unitType">
             @for (unit of unitTypes; track unit.value) {
-            <mat-option [value]="unit.value">{{translate.instant(unit.label)}}</mat-option>
+            <mat-option [value]="unit.value">{{translateUnitType(unit.label)}}</mat-option>
             }
           </mat-select>
           <mat-icon matPrefix>package</mat-icon>
@@ -106,23 +94,25 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.MIN_STOCK_LEVEL' | translate}}</mat-label>
-          <input matInput type="number" min="0" [(ngModel)]="product().minStockLevel" name="minStockLevel">
+          <input matInput type="number" min="0" formControlName="minStockLevel">
           <mat-icon matPrefix>warning</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.BUY_PRICE' | translate}}</mat-label>
-          <input matInput type="number" min="0" step="0.01" [(ngModel)]="product().buyPrice" name="buyPrice">
+          <input matInput type="number" min="0" step="0.01" formControlName="buyPrice">
           <span matTextSuffix>{{getCurrencySuffix()}}</span>
           <mat-icon matPrefix>payments</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.SELL_PRICE' | translate}} *</mat-label>
-          <input matInput type="number" min="0.01" step="0.01" [(ngModel)]="product().sellPrice" name="sellPrice"
-            required>
+          <input matInput type="number" min="0.01" step="0.01" formControlName="sellPrice">
           <span matTextSuffix>{{getCurrencySuffix()}}</span>
           <mat-icon matPrefix>attach_money</mat-icon>
+          @if (form.get('sellPrice')?.invalid && form.get('sellPrice')?.touched) {
+          <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+          }
         </mat-form-field>
       </mat-card-content>
     </mat-card>
@@ -134,15 +124,14 @@
       </mat-card-header>
       <mat-card-content>
         <div class="checkbox-section">
-          <mat-checkbox [(ngModel)]="product().prescriptionRequired" name="prescriptionRequired" color="primary">
+          <mat-checkbox formControlName="prescriptionRequired" color="primary">
             <div class="checkbox-content">
               <mat-icon>medication</mat-icon>
               <span>{{'PRODUCTS.PRESCRIPTION_REQUIRED' | translate}}</span>
             </div>
           </mat-checkbox>
 
-          <mat-checkbox [(ngModel)]="extraFields().isControlledSubstance" name="isControlledSubstance"
-            color="primary">
+          <mat-checkbox formControlName="isControlledSubstance" color="primary">
             <div class="checkbox-content">
               <mat-icon>gpp_maybe</mat-icon>
               <span>{{'PRODUCTS.IS_CONTROLLED_SUBSTANCE' | translate}}</span>
@@ -153,7 +142,7 @@
     </mat-card>
 
     <!-- Initial Stock - create mode only; editing stock happens via Stock Management -->
-    @if (!isEditMode()) {
+    @if (isCreateMode()) {
     <mat-card class="form-section">
       <mat-card-header>
         <mat-card-title>{{'PRODUCTS.INITIAL_STOCK_SECTION' | translate}}</mat-card-title>
@@ -163,13 +152,13 @@
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.INITIAL_QUANTITY' | translate}}</mat-label>
-          <input matInput type="number" min="0" [(ngModel)]="product().initialStock" name="initialStock">
+          <input matInput type="number" min="0" formControlName="initialStock">
           <mat-icon matPrefix>inventory</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{'PRODUCTS.EXPIRY_DATE' | translate}}</mat-label>
-          <input matInput [matDatepicker]="expiryPicker" [(ngModel)]="product().expiryDate" name="expiryDate">
+          <input matInput [matDatepicker]="expiryPicker" formControlName="expiryDate">
           <mat-icon matPrefix>event</mat-icon>
           <mat-datepicker-toggle matIconSuffix [for]="expiryPicker"></mat-datepicker-toggle>
           <mat-datepicker #expiryPicker></mat-datepicker>
@@ -189,48 +178,43 @@
         <div class="form-grid">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{'PRODUCTS.DESCRIPTION' | translate}}</mat-label>
-            <textarea matInput rows="2" [(ngModel)]="extraFields().description" name="description"
+            <textarea matInput rows="2" formControlName="description"
               [placeholder]="'PRODUCTS.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{'PRODUCTS.USAGE_INSTRUCTIONS' | translate}}</mat-label>
-            <textarea matInput rows="2" [(ngModel)]="extraFields().usageInstructions" name="usageInstructions"
+            <textarea matInput rows="2" formControlName="usageInstructions"
               [placeholder]="'PRODUCTS.USAGE_INSTRUCTIONS_PLACEHOLDER' | translate"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{'PRODUCTS.STORAGE_CONDITIONS' | translate}}</mat-label>
-            <textarea matInput rows="2" [(ngModel)]="extraFields().storageConditions" name="storageConditions"
+            <textarea matInput rows="2" formControlName="storageConditions"
               [placeholder]="'PRODUCTS.STORAGE_CONDITIONS_PLACEHOLDER' | translate"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{'PRODUCTS.DRUG_INTERACTION_WARNING' | translate}}</mat-label>
-            <textarea matInput rows="2" [(ngModel)]="extraFields().drugInteractionWarning"
-              name="drugInteractionWarning"
+            <textarea matInput rows="2" formControlName="drugInteractionWarning"
               [placeholder]="'PRODUCTS.DRUG_INTERACTION_WARNING_PLACEHOLDER' | translate"></textarea>
           </mat-form-field>
         </div>
       </mat-expansion-panel>
     </mat-accordion>
-
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button mat-button type="button" (click)="onCancel()" color="warn" [disabled]="loading()">
-        <mat-icon>close</mat-icon>
-        <span>{{'COMMON.CANCEL' | translate}}</span>
-      </button>
-      <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
-        @if (!loading()) {
-        <mat-icon>save</mat-icon>
-        } @else {
-        <mat-spinner diameter="20"></mat-spinner>
-        }
-        <span>{{loading() ? ('COMMON.SAVING' | translate) : (isEditMode() ? ('COMMON.UPDATE' | translate) :
-          ('COMMON.ADD' | translate))}}</span>
-      </button>
-    </div>
   </form>
-  }
+
+  <div mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="dialogRef.close()">
+      {{'COMMON.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button color="primary" [disabled]="saving()" (click)="onSubmit()">
+      @if (saving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+      <mat-icon>save</mat-icon>
+      }
+      <span>{{ (isUpdateMode() ? 'COMMON.UPDATE' : 'COMMON.ADD') | translate }}</span>
+    </button>
+  </div>
 </div>

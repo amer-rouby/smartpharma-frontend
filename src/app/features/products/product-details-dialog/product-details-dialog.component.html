@@ -144,7 +144,7 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-raised-button color="primary" [routerLink]="['/products/edit', product.id]" (click)="close()">
+    <button mat-raised-button color="primary" (click)="editProduct()">
       <mat-icon>edit</mat-icon>
       {{'COMMON.EDIT' | translate}}
     </button>

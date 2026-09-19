@@ -68,7 +68,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   readonly quickActions = [
-    { route: '/products/new', icon: 'inventory_2', label: 'NAV.PRODUCTS_ADD', color: 'primary' },
+    { route: '/products?action=new', icon: 'inventory_2', label: 'NAV.PRODUCTS_ADD', color: 'primary' },
     { route: '/sales/pos', icon: 'point_of_sale', label: 'NAV.SALES_POS', color: 'accent' },
     { route: '/stock/alerts', icon: 'adjust', label: 'NAV.STOCK_ALERTS', color: 'warn' }
   ];

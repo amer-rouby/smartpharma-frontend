@@ -135,7 +135,7 @@
             <span>{{'DASHBOARD.NEW_SALE' | translate}}</span>
             <span class="shortcut-badge">F2</span>
           </button>
-          <button type="button" routerLink="/products/new" class="action-btn">
+          <button type="button" routerLink="/products" [queryParams]="{action: 'new'}" class="action-btn">
             <mat-icon>add</mat-icon>
             <span>{{'DASHBOARD.ADD_PRODUCT' | translate}}</span>
           </button>
