@@ -28,6 +28,15 @@ export class StockBatchCrudService extends RegisterServiceMixin(CrudWithDialogSe
     return `${environment.apiUrl}/stock/batches`;
   }
 
+  // Unlike most entities, GET /api/stock/batches itself takes page/size as
+  // query params directly (no /page suffix) - the base class default of
+  // `${segmentUrl}/page` doesn't exist on the backend, so it 404s and, worse,
+  // matches the GET /api/stock/batches/{id} mapping instead, which then
+  // fails trying to parse "page" as the Long id.
+  override getGetAllEndpoint(): string {
+    return this.getSegmentUrl();
+  }
+
   override getDialogComponent(): Type<StockBatchDialogComponent> {
     return StockBatchDialogComponent;
   }
