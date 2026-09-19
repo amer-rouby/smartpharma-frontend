@@ -7,6 +7,7 @@ import { CategoryService } from '../../../core/services/category.service';
 import { Category } from '../../../core/models/category';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { toLocalDateString } from '../../../core/utils/format.util';
 import { ProductModel } from '../models/product.model';
 
 @Component({
@@ -140,7 +141,7 @@ export class ProductDialogComponent extends CrudDialogDirective<ProductModel> {
       buyPrice: v.buyPrice,
       extraAttributes,
       initialStock: this.isCreateMode() ? v.initialStock : undefined,
-      expiryDate: this.isCreateMode() ? this.toLocalDateString(v.expiryDate) : undefined,
+      expiryDate: this.isCreateMode() ? toLocalDateString(v.expiryDate) : undefined,
     });
   }
 
@@ -152,16 +153,6 @@ export class ProductDialogComponent extends CrudDialogDirective<ProductModel> {
   override afterSaveFail(error: unknown): void {
     this.saving.set(false);
     this.errorHandler.handleHttpError(error as HttpErrorResponse, 'COMMON.ERROR');
-  }
-
-  private toLocalDateString(date: string | Date | undefined): string | undefined {
-    if (!date) return undefined;
-    const d = typeof date === 'string' ? new Date(date) : date;
-    if (isNaN(d.getTime())) return undefined;
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 
   formatCurrency(amount: number): string {

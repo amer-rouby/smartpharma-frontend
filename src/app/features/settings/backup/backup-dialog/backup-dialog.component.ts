@@ -14,8 +14,7 @@ import { BackupModel } from '../models/backup.model';
   styleUrl: './backup-dialog.component.scss',
 })
 export class BackupDialogComponent extends CrudDialogDirective<BackupModel> {
-  // Only ever opened in CREATE mode (a backup has nothing to update/view once
-  // taken) - update/view keys are required by the interface but unreachable.
+  // Only ever opened in CREATE mode; update/view are unreachable here.
   readonly titleKeys: CrudDialogTitleKeys = {
     create: 'BACKUP.CREATE_BACKUP',
     update: 'BACKUP.CREATE_BACKUP',

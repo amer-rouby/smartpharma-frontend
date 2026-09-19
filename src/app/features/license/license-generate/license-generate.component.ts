@@ -8,9 +8,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 import { LicenseService } from '../../../core/services/license.service';
 import { GeneratedLicenseCode } from '../../../core/models/license.model';
 
-// Vendor-only screen: only works against this branch's own backend, which is
-// the sole place license.private-key-path is ever configured (see
-// LicenseServiceImpl.generateCode) - never reachable on a customer's copy.
+// Vendor-only screen: works only where license.private-key-path is configured.
 @Component({
   selector: 'app-license-generate',
   standalone: true,
@@ -24,9 +22,7 @@ export class LicenseGenerateComponent {
   private readonly errorHandler = inject(ErrorHandlerService);
 
   readonly pharmacyId = signal<number | null>(null);
-  // A one-time-purchase product has no real renewal cadence, so this
-  // defaults to effectively permanent (100 years) rather than a monthly
-  // duration - override it for an actual subscription-style customer.
+  // Defaults to effectively permanent (100 years); override for a real subscription.
   readonly months = signal(1200);
   readonly submitting = signal(false);
   readonly result = signal<GeneratedLicenseCode | null>(null);

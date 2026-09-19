@@ -15,3 +15,15 @@ export function formatDateTime(dateString: string, lang: string): string {
     minute: '2-digit'
   });
 }
+
+// Local YYYY-MM-DD, not toISOString() - avoids the UTC-truncation day-shift
+// on matDatepicker values.
+export function toLocalDateString(date: string | Date | null | undefined): string | undefined {
+  if (!date) return undefined;
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return undefined;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}

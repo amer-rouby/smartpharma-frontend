@@ -1,11 +1,7 @@
 import { Chart } from 'chart.js';
 
-// Chart.js has no idea about this app's --color-* design tokens - left on its
-// own defaults, every chart's legend/tick/title text renders in a fixed dark
-// gray that's unreadable once dark mode makes the surrounding card dark too.
-// Setting Chart.js's *global* defaults here (once, reactively) means every
-// report screen's chart re-themes automatically, instead of each chart
-// component repeating its own color options.
+// Sets Chart.js's global text/grid colors from our design tokens, once,
+// so every chart re-themes automatically instead of repeating its own colors.
 export function applyChartJsTheme(): void {
   const styles = getComputedStyle(document.body);
   const textColor = styles.getPropertyValue('--color-text-secondary').trim() || '#64748b';

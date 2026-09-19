@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MaterialModule } from '../../../shared/material.module';
 import { CrudDialogDirective, CrudDialogTitleKeys } from '../../../core/crud';
 import { Product } from '../../../core/models/product.model';
+import { toLocalDateString } from '../../../core/utils/format.util';
 import { StockBatchModel } from '../stock-management/models/stock-batch.model';
 import { StockBatchCrudService } from '../stock-management/services/stock-batch-crud.service';
 
@@ -33,10 +34,7 @@ export class StockBatchDialogComponent extends CrudDialogDirective<StockBatchMod
     });
   }
 
-  // Backend expects LocalDate ("YYYY-MM-DD"); binding matDatepicker to a raw
-  // JS Date and letting it serialize as a full ISO timestamp shifts the saved
-  // date back a day once the UTC time component gets truncated server-side
-  // for the Cairo timezone - same bug already fixed in product-form.
+  // Backend expects LocalDate ("YYYY-MM-DD"), not a full ISO timestamp.
   override populateForm(): void {
     if (this.data.model && this.data.mode !== 'CREATE') {
       const m = this.data.model;
@@ -50,19 +48,9 @@ export class StockBatchDialogComponent extends CrudDialogDirective<StockBatchMod
 
   override prepareModel(): StockBatchModel {
     const model = this.data.model!.clone<StockBatchModel>(this.form.value);
-    model.expiryDate = this.toLocalDateString(this.form.value.expiryDate) ?? '';
-    model.productionDate = this.toLocalDateString(this.form.value.productionDate);
+    model.expiryDate = toLocalDateString(this.form.value.expiryDate) ?? '';
+    model.productionDate = toLocalDateString(this.form.value.productionDate);
     return model;
-  }
-
-  private toLocalDateString(date: string | Date | null | undefined): string | undefined {
-    if (!date) return undefined;
-    const d = typeof date === 'string' ? new Date(date) : date;
-    if (isNaN(d.getTime())) return undefined;
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 
   override afterSaveSuccess(saved: StockBatchModel): void {

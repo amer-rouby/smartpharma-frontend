@@ -11,13 +11,8 @@ interface BackendPage<T> {
   totalElements: number;
 }
 
-// The backend's GET /api/alerts accepts page/size but has no server-side
-// alertType/status filter or search - it also recomputes alerts on every call
-// (generateLowStockAlerts/generateExpiryAlerts), so fetching a large single
-// page once and filtering/paginating client-side (matching the pre-migration
-// UI's filter dropdowns) is cheaper than re-fetching per filter change, and
-// fixes a real bug where the old default size=20 silently capped the whole
-// screen at the first 20 alerts regardless of the on-screen paginator.
+// No server-side filter/search on this endpoint - fetch one large page and
+// filter/paginate client-side instead (also fixes the old size=20 cap).
 @Injectable({ providedIn: 'root' })
 export class StockAlertCrudService extends CrudService<StockAlert, number> {
   private static readonly FETCH_ALL_SIZE = 1000;

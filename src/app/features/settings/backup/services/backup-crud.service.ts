@@ -21,9 +21,7 @@ export class BackupCrudService extends RegisterServiceMixin(CrudWithDialogServic
     return `${environment.apiUrl}/settings/backup`;
   }
 
-  // Backend has no pagination for backups (a flat list, usually a handful of
-  // rows) - wrapped as a single page so the list screen can still use
-  // CrudPageDirective without inventing a fake paginator UI for it.
+  // No backend pagination for backups - wrapped as a single page.
   override getAll(): Observable<PagedResult<BackupModel>> {
     return this.http.get<ApiResponse<Backup[]>>(this.getSegmentUrl()).pipe(
       map((res) => {

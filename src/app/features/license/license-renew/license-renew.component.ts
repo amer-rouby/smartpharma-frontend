@@ -21,22 +21,16 @@ export class LicenseRenewComponent implements OnInit {
   private readonly licenseService = inject(LicenseService);
   private readonly errorHandler = inject(ErrorHandlerService);
 
-  // Only an ADMIN can actually submit a code (matches the backend's
-  // @PreAuthorize on POST /api/license/renew) - a pharmacist/staff account
-  // just sees a message telling them to contact the pharmacy admin.
+  // Only ADMIN can submit a code, matching the backend's @PreAuthorize.
   readonly isAdmin = computed(() => this.authService.getCurrentUser()?.role === 'ADMIN');
   readonly pharmacyId = computed(() => this.authService.getPharmacyId());
   readonly code = signal('');
   readonly submitting = signal(false);
   readonly expiresAt = signal<string | null>(null);
-  // Reachable two ways: forced here by licenseGuard (expired) or opened
-  // voluntarily from Settings to check status/renew early - the messaging
-  // differs, but the code-entry form works the same either way.
+  // Reachable via licenseGuard (expired) or voluntarily from Settings.
   readonly expired = signal(false);
 
-  // The header must never say "you must renew" to a fresh install or a
-  // healthy subscription - that read as broken/alarming to a technician or
-  // customer opening this screen for the first time with nothing wrong.
+  // Never show "you must renew" for a fresh install or healthy subscription.
   readonly pageTitleKey = computed(() => this.expired() ? 'LICENSE.TITLE_EXPIRED' : 'LICENSE.TITLE_OK');
   readonly pageSubtitleKey = computed(() => this.expired() ? 'LICENSE.SUBTITLE_EXPIRED' : 'LICENSE.SUBTITLE_OK');
 

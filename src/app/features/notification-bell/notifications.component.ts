@@ -28,9 +28,7 @@ export class NotificationsComponent extends CrudPageDirective<NotificationModel,
   readonly unreadNotifications = signal<NotificationModel[]>([]);
   readonly selectedTab = signal(0);
 
-  // Tab 0 ("all") is real backend pagination; tab 1 ("unread") is its own
-  // dedicated, unpaginated list - the two datasets aren't the same rows, so
-  // pagination only makes sense (and is only shown) for the "all" tab.
+  // Tab 1 ("unread") is its own unpaginated dataset, different rows than tab 0.
   readonly filteredNotifications = computed(() => {
     return this.selectedTab() === 0 ? this.models() : this.unreadNotifications();
   });
