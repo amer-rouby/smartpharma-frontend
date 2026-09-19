@@ -311,8 +311,13 @@ body.dark-theme {
     }
   }
 
+  // !important here too (not just on table th above) - a component-scoped
+  // `.data-table td { color: #4a5568; }` (or similar hardcoded gray) has the
+  // same or higher specificity than this global rule and silently wins
+  // without it, which is exactly what made expense/date/amount columns
+  // unreadable on several screens despite this safety net already existing.
   table td {
-    color: var(--color-text-secondary, #cbd5e1);
+    color: var(--color-text-secondary, #cbd5e1) !important;
     border-bottom-color: var(--color-border, #334155) !important;
   }
 

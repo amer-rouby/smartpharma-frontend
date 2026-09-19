@@ -98,18 +98,18 @@
     }
 
     &.is-read {
-      background: #ffffff !important;
-      border-color: #e2e8f0;
+      background: var(--color-surface, #ffffff) !important;
+      border-color: var(--color-border, #e2e8f0);
       opacity: 0.8;
 
       .message {
-        color: #64748b;
+        color: var(--color-text-secondary, #64748b);
         font-weight: 500;
       }
 
       .icon-box {
-        background: #cbd5e0;
-        color: #64748b;
+        background: var(--color-slate-200, #cbd5e0);
+        color: var(--color-text-secondary, #64748b);
       }
     }
 

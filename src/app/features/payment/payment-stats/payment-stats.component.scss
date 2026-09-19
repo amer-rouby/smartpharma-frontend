@@ -52,6 +52,6 @@
 
 .stat-info p {
   margin: 4px 0 0;
-  color: #6b7280;
+  color: var(--color-text-secondary, #6b7280);
   font-size: 14px;
 }
