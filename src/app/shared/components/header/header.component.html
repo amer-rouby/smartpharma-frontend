@@ -17,49 +17,16 @@
     </div>
   </div>
 
-  <div class="header-center">
-    <div class="search-wrapper">
-      <mat-form-field appearance="outline" class="search-field">
-        <input matInput [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)"
-          (keyup.enter)="onSearch()" (keydown)="onSearchKeydown($event)"
-          [placeholder]="'HEADER.SEARCH_PLACEHOLDER' | translate">
-        <mat-icon matPrefix>search</mat-icon>
-
-        @if (searchQuery()) {
-        <button mat-icon-button matSuffix (click)="clearSearch()" type="button"
-          [matTooltip]="'COMMON.CLEAR' | translate">
-          <mat-icon>close</mat-icon>
-        </button>
-        }
-      </mat-form-field>
-    </div>
-  </div>
-
   <div class="header-left">
-
-    <button mat-stroked-button class="quick-add-btn" [matMenuTriggerFor]="quickActionsMenu"
-      [matTooltip]="'HEADER.NEW' | translate">
-      <mat-icon>add</mat-icon>
-      <span>{{'HEADER.NEW' | translate}}</span>
-    </button>
-
-    <mat-menu #quickActionsMenu="matMenu" class="quick-actions-menu" xPosition="before">
-      @for (action of quickActions; track action.route) {
-      <button mat-menu-item [routerLink]="action.route">
-        <mat-icon [color]="action.color">{{action.icon}}</mat-icon>
-        <span>{{action.label | translate}}</span>
-      </button>
-      }
-      <mat-divider></mat-divider>
-      <button mat-menu-item routerLink="/reports">
-        <mat-icon>assessment</mat-icon>
-        <span>{{'NAV.REPORTS' | translate}}</span>
-      </button>
-    </mat-menu>
 
     <button mat-icon-button (click)="toggleTheme()" class="theme-toggle-btn"
       [matTooltip]="(isDarkTheme() ? 'HEADER.LIGHT_MODE' : 'HEADER.DARK_MODE') | translate">
       <mat-icon>{{isDarkTheme() ? 'light_mode' : 'dark_mode'}}</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="toggleLanguage()" class="language-toggle-btn"
+      [matTooltip]="(currentLang() === 'ar' ? 'HEADER.SWITCH_TO_ENGLISH' : 'HEADER.SWITCH_TO_ARABIC') | translate">
+      <span class="lang-code">{{currentLang() === 'ar' ? 'EN' : 'ع'}}</span>
     </button>
 
     <app-notification-panel [notifications]="notifications()" [unreadCount]="unreadCount()"
@@ -71,7 +38,11 @@
       [matTooltip]="'HEADER.PROFILE' | translate">
       <div class="user-info-mini">
         <div class="user-avatar">
+          @if (profileImageUrl(); as imageUrl) {
+          <img [src]="imageUrl" alt="" class="user-avatar-img">
+          } @else {
           <mat-icon>account_circle</mat-icon>
+          }
         </div>
         <div class="user-details">
           <span class="user-name">{{userDisplayName()}}</span>
@@ -83,9 +54,15 @@
 
     <mat-menu #userMenu="matMenu" class="user-menu user-menu-wide" xPosition="before" yPosition="below">
       <div class="user-menu-header">
+        <div class="user-avatar-large">
+          @if (profileImageUrl(); as imageUrl) {
+          <img [src]="imageUrl" alt="" class="user-avatar-large-img">
+          } @else {
+          <mat-icon>account_circle</mat-icon>
+          }
+        </div>
         <div class="user-menu-info">
           <p class="user-menu-name">
-            <mat-icon>account_circle</mat-icon>
             <span>{{userDisplayName()}}</span>
           </p>
         </div>
@@ -105,11 +82,6 @@
       </button>
       }
 
-      <button mat-menu-item [matMenuTriggerFor]="languageMenu">
-        <mat-icon>language</mat-icon>
-        <span>{{'HEADER.LANGUAGE' | translate}}</span>
-      </button>
-
       <button mat-menu-item routerLink="/help">
         <mat-icon>help_outline</mat-icon>
         <span>{{'HEADER.HELP' | translate}}</span>
@@ -120,24 +92,6 @@
       <button mat-menu-item (click)="logout()" class="logout-item">
         <mat-icon>exit_to_app</mat-icon>
         <span>{{'HEADER.LOGOUT' | translate}}</span>
-      </button>
-    </mat-menu>
-
-    <mat-menu #languageMenu="matMenu" xPosition="before">
-      <button mat-menu-item (click)="changeLanguage('ar')" [class.active]="currentLang() === 'ar'">
-        <mat-icon>translate</mat-icon>
-        <span>{{'LANGUAGE.ARABIC' | translate}}</span>
-        @if (currentLang() === 'ar') {
-        <mat-icon color="accent">check</mat-icon>
-        }
-      </button>
-
-      <button mat-menu-item (click)="changeLanguage('en')" [class.active]="currentLang() === 'en'">
-        <mat-icon>translate</mat-icon>
-        <span>{{'LANGUAGE.ENGLISH' | translate}}</span>
-        @if (currentLang() === 'en') {
-        <mat-icon color="accent">check</mat-icon>
-        }
       </button>
     </mat-menu>
 
