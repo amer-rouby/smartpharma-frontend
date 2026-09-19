@@ -129,6 +129,7 @@
   },
   "LICENSE": {
     "MENU_LABEL": "الاشتراك والتفعيل",
+    "GENERATE_MENU_LABEL": "توليد كود تفعيل (للمورد)",
     "TITLE_OK": "الاشتراك",
     "SUBTITLE_OK": "حالة اشتراك صيدليتك",
     "TITLE_EXPIRED": "انتهى الاشتراك",
