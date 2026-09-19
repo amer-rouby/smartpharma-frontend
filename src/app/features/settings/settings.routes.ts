@@ -52,12 +52,6 @@ export const SETTINGS_ROUTES: Routes = [
       .then(m => m.SessionSettingsComponent),
     canActivate: [authGuard]
   },
-  // {
-  //   path: 'language',
-  //   loadComponent: () => import('./language/language-settings.component')
-  //     .then(m => m.LanguageSettingsComponent),
-  //   canActivate: [authGuard]
-  // },
   {
     path: 'backup',
     loadComponent: () => import('./backup/backup-settings.component')

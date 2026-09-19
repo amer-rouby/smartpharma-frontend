@@ -34,7 +34,6 @@ export class SettingsComponent {
     { icon: 'notifications', labelKey: 'SETTINGS.NOTIFICATIONS', route: '/settings/notifications' },
     { icon: 'security', labelKey: 'SETTINGS.SECURITY', route: '/settings/security' },
     { icon: 'timer', labelKey: 'SETTINGS.SESSION.TITLE', route: '/settings/session' },
-    // { icon: 'language', labelKey: 'SETTINGS.LANGUAGE', route: '/settings/language' },
     { icon: 'backup', labelKey: 'SETTINGS.BACKUP', route: '/settings/backup' },
     { icon: 'auto_awesome', labelKey: 'SMART_FEATURES.TITLE', route: '/settings/smart-features', roles: ['ADMIN'] },
     { icon: 'vpn_key', labelKey: 'LICENSE.MENU_LABEL', route: '/license/renew', roles: ['ADMIN'] }
