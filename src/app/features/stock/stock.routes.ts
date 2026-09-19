@@ -34,18 +34,6 @@ export const STOCK_ROUTES: Routes = [
         title: 'تفاصيل التنبؤ'
       },
       {
-        path: 'add-batch',
-        loadComponent: () =>
-          import('./stock-batch-form/stock-batch-form.component')
-            .then(m => m.StockBatchFormComponent)
-      },
-      {
-        path: 'batches/:id/edit',
-        loadComponent: () =>
-          import('./stock-batch-form/stock-batch-form.component')
-            .then(m => m.StockBatchFormComponent)
-      },
-      {
         path: 'history',
         loadComponent: () =>
           import('./stock-movements/stock-movements.component')
