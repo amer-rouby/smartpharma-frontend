@@ -34,8 +34,7 @@ export class AppearanceSettingsComponent {
   }
 
   onSave(): void {
-    // Mode/color already apply and persist instantly on click - this just
-    // confirms the choice, matching the reference design's explicit save step.
+    // Mode/color already persist instantly on click; this just confirms the choice.
     this.errorHandler.showSuccess('SETTINGS.APPEARANCE.SAVE_SUCCESS');
   }
 

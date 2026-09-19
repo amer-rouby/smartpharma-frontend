@@ -158,8 +158,7 @@
     padding: 20px 20px 30px;
   }
 
-  // Decorative trend line pinned to the card's bottom edge - kept thin and
-  // low-opacity so it never competes with the number/label above it.
+  // Decorative trend line pinned to the card's bottom edge.
   .stat-sparkline {
     position: absolute;
     bottom: 0;
@@ -184,11 +183,7 @@
     justify-content: center;
     flex-shrink: 0;
 
-    // The global .stat-card mat-icon rule (styles.scss) hardcodes
-    // white, meant for the solid-gradient icon badges other screens
-    // use - it wins over this block's inherited tone color unless
-    // stated explicitly here, since inheritance never beats a direct
-    // declaration on the same element regardless of specificity.
+    // Overrides the global .stat-card mat-icon white default.
     mat-icon {
       font-size: 26px;
       width: 26px;

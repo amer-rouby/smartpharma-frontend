@@ -7,10 +7,7 @@ import { environment } from '../../../../environments/environment';
 import { ProductModel } from '../models/product.model';
 import { ProductDialogComponent } from '../product-dialog/product-dialog.component';
 
-// Parallel to the pre-existing ProductService (core/services/product.service.ts),
-// which sales-form/purchase-form/quick-add-scan still use for lookups (barcode
-// search, low-stock, etc.). This one only backs the Products CRUD screen
-// (list/add/edit/delete), built on the CrudModel/CrudService architecture.
+// Parallel to ProductService, which other screens still use for lookups.
 @CastResponseContainer({
   $default: {
     model: () => ProductModel,
@@ -44,8 +41,7 @@ export class ProductCrudService extends RegisterServiceMixin(CrudWithDialogServi
     return { name, scientificName, barcode, category, unitType, minStockLevel, prescriptionRequired, sellPrice, buyPrice, extraAttributes, initialStock, expiryDate };
   }
 
-  // Unlike the base pattern, this endpoint takes pharmacyId as a query param
-  // on create too (not just update/delete/getAll).
+  // create also needs pharmacyId as a query param, unlike the base pattern.
   @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
   override create(model: ProductModel): Observable<ProductModel> {
     return this.http.post<ProductModel>(this.getCreateEndpoint(), this.toRequestPayload(model), {

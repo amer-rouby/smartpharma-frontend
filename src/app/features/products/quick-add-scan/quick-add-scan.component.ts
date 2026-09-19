@@ -13,6 +13,7 @@ import { LanguageService } from '../../../core/services/language.service';
 import { Product } from '../../../core/models/product.model';
 import { Category } from '../../../core/models/category';
 import { MaterialModule } from '../../../shared/material.module';
+import { toLocalDateString } from '../../../core/utils/format.util';
 
 interface SessionEntry {
   barcode: string;
@@ -169,7 +170,7 @@ export class QuickAddScanComponent implements OnInit, AfterViewInit {
       minStockLevel: 10,
       prescriptionRequired: false,
       initialStock: this.newQuantity() || undefined,
-      expiryDate: this.toLocalDateString(this.newExpiryDate())
+      expiryDate: toLocalDateString(this.newExpiryDate())
     }).subscribe({
       next: (response: any) => {
         this.saving.set(false);
@@ -210,7 +211,7 @@ export class QuickAddScanComponent implements OnInit, AfterViewInit {
       batchNumber: `SCAN-${product.id}-${Date.now()}`,
       quantityInitial: quantity,
       quantityCurrent: quantity,
-      expiryDate: this.toLocalDateString(this.restockExpiryDate())!,
+      expiryDate: toLocalDateString(this.restockExpiryDate())!,
       buyPrice: product.buyPrice,
       sellPrice: product.sellPrice,
       location: 'Shelf-1',
@@ -252,14 +253,6 @@ export class QuickAddScanComponent implements OnInit, AfterViewInit {
       barcode, name, kind, quantity,
       time: new Date().toLocaleTimeString(this.languageService.getCurrentLanguage() === 'ar' ? 'ar-EG' : 'en-US')
     }, ...log]);
-  }
-
-  private toLocalDateString(date: Date | null): string | undefined {
-    if (!date) return undefined;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 
   getCategoryName(category: Category): string {

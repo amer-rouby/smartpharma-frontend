@@ -11,8 +11,7 @@ export class LicenseService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/license`;
 
-  // Cached for the session so navigating between screens doesn't add a
-  // network round-trip per route change - refreshed after a successful renew.
+  // Cached for the session; refreshed after a successful renew.
   private readonly cachedStatus = signal<LicenseStatus | null>(null);
 
   /** Returns the cached status if already fetched this session, otherwise fetches it. */
@@ -36,8 +35,7 @@ export class LicenseService {
     );
   }
 
-  // Vendor-only: only works against this instance's own backend, which is the
-  // sole place license.private-key-path is ever configured.
+  // Vendor-only: works only where license.private-key-path is configured.
   generateCode(pharmacyId: number, months: number): Observable<GeneratedLicenseCode> {
     return this.http.post<ApiResponse<GeneratedLicenseCode>>(`${this.baseUrl}/generate`, { pharmacyId, months }).pipe(
       map((response) => response.data)

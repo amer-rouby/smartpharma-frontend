@@ -5,14 +5,8 @@ import { environment } from '../../../../environments/environment';
 import { NotificationModel } from '../../../core/models/Notification.model';
 import { NotificationService } from '../../../core/services/notification.service';
 
-// Thin CRUD-page adapter over the existing NotificationService, which stays
-// as the shared service for locale-aware mapping (title/message/time/icon),
-// the SSE stream, the header bell's unread count, and mark/delete actions -
-// all used well beyond this one list screen (header, stock-management,
-// notification-panel). Only the paginated "all" list is wrapped here so the
-// list screen can use CrudPageDirective; everything else stays on
-// NotificationService directly, same split as e.g. SupplierCrudService
-// coexisting with the legacy PurchaseOrderService for non-CRUD actions.
+// Thin CRUD-page adapter over NotificationService, which stays the shared
+// service for everything else (mapping, SSE stream, mark/delete, bell count).
 @Injectable({ providedIn: 'root' })
 export class NotificationCrudService extends CrudService<NotificationModel, number> {
   private readonly notificationService = inject(NotificationService);

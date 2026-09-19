@@ -28,11 +28,7 @@ export class StockBatchCrudService extends RegisterServiceMixin(CrudWithDialogSe
     return `${environment.apiUrl}/stock/batches`;
   }
 
-  // Unlike most entities, GET /api/stock/batches itself takes page/size as
-  // query params directly (no /page suffix) - the base class default of
-  // `${segmentUrl}/page` doesn't exist on the backend, so it 404s and, worse,
-  // matches the GET /api/stock/batches/{id} mapping instead, which then
-  // fails trying to parse "page" as the Long id.
+  // No /page suffix here - GET /api/stock/batches itself takes page/size.
   override getGetAllEndpoint(): string {
     return this.getSegmentUrl();
   }
@@ -51,8 +47,7 @@ export class StockBatchCrudService extends RegisterServiceMixin(CrudWithDialogSe
     return { productId, batchNumber, quantityCurrent, quantityInitial, expiryDate, productionDate, location, shelf, warehouse, notes, status };
   }
 
-  // Unlike the base pattern, this endpoint takes pharmacyId as a query param
-  // on create too (not just update/delete/getAll).
+  // create also needs pharmacyId as a query param, unlike the base pattern.
   @CastResponse(undefined, { fallback: '$default', unwrap: 'data' })
   override create(model: StockBatchModel): Observable<StockBatchModel> {
     return this.http.post<StockBatchModel>(this.getCreateEndpoint(), this.toRequestPayload(model), {
