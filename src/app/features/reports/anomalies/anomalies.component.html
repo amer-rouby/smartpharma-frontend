@@ -64,7 +64,7 @@
           </mat-form-field>
         </form>
 
-        <button mat-button (click)="loadAnomalies()" [disabled]="loading()">
+        <button mat-button (click)="refresh()" [disabled]="loading()">
           <mat-icon>refresh</mat-icon>
           <span>{{'COMMON.REFRESH' | translate}}</span>
         </button>
@@ -72,9 +72,9 @@
     </mat-card-content>
   </mat-card>
 
-  @if (loading() && !anomalies().length) {
+  @if (loading() && !models().length) {
   <app-table-loading />
-  } @else if (anomalies().length) {
+  } @else if (models().length) {
 
   <mat-card class="table-card">
     @if (loading()) {
@@ -87,7 +87,7 @@
 
     <mat-card-content [class.list-content-refreshing]="loading()">
       <div class="table-wrapper">
-        <table mat-table [dataSource]="anomalies()" class="anomalies-table">
+        <table mat-table [dataSource]="models()" class="anomalies-table">
 
           <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef>{{'ANOMALIES.COLUMN.TYPE' | translate}}</th>
