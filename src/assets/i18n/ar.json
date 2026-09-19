@@ -75,6 +75,8 @@
     "LOGOUT": "تسجيل الخروج",
     "LANGUAGE": "اللغة",
     "CHOOSE_LANGUAGE": "اختر اللغة",
+    "SWITCH_TO_ENGLISH": "التبديل إلى الإنجليزية",
+    "SWITCH_TO_ARABIC": "التبديل إلى العربية",
     "QUICK_ACTIONS": "إجراءات سريعة"
   },
   "DASHBOARD": {
