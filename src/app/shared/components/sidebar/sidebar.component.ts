@@ -1,11 +1,9 @@
-import { Component, computed, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MaterialModule } from '../../material.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { AuthService } from '../../../core/services/auth.service';
 
 interface MenuItem {
   icon: string;
@@ -31,11 +29,7 @@ interface MenuItem {
   styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent {
-  private readonly authService = inject(AuthService);
-
   readonly isCollapsed = input<boolean>(false);
-  readonly currentUser = toSignal(this.authService.currentUser$);
-  readonly pharmacyDisplayName = computed(() => this.currentUser()?.pharmacyName?.trim() ?? '');
 
   readonly menuItems: MenuItem[] = [
     {
