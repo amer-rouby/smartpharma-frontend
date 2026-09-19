@@ -1,0 +1,115 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ titleKey | translate }}</h2>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" mat-dialog-content class="batch-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'PRODUCTS.NAME' | translate}} *</mat-label>
+      <mat-select formControlName="productId" required>
+        @for (product of products(); track product.id) {
+        <mat-option [value]="product.id">
+          {{product.name}} ({{product.barcode}})
+        </mat-option>
+        } @empty {
+        <mat-option disabled>{{'PRODUCTS.NO_PRODUCTS' | translate}}</mat-option>
+        }
+      </mat-select>
+      @if (form.get('productId')?.invalid && form.get('productId')?.touched) {
+      <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'STOCK.BATCH_NUMBER' | translate}} *</mat-label>
+      <input matInput formControlName="batchNumber" [placeholder]="'STOCK.BATCH_NUMBER_PLACEHOLDER' | translate">
+      @if (form.get('batchNumber')?.invalid && form.get('batchNumber')?.touched) {
+      <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{'STOCK.CURRENT_STOCK' | translate}} *</mat-label>
+        <input matInput type="number" formControlName="quantityCurrent" min="0">
+        @if (form.get('quantityCurrent')?.invalid && form.get('quantityCurrent')?.touched) {
+        <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{'STOCK.INITIAL_STOCK' | translate}}</mat-label>
+        <input matInput type="number" formControlName="quantityInitial" min="0">
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{'PRODUCTS.EXPIRY_DATE' | translate}} *</mat-label>
+        <input matInput [matDatepicker]="expiryPicker" formControlName="expiryDate" required>
+        <mat-datepicker-toggle matIconSuffix [for]="expiryPicker"></mat-datepicker-toggle>
+        <mat-datepicker #expiryPicker></mat-datepicker>
+        @if (form.get('expiryDate')?.invalid && form.get('expiryDate')?.touched) {
+        <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{'STOCK.PRODUCTION_DATE' | translate}}</mat-label>
+        <input matInput [matDatepicker]="productionPicker" formControlName="productionDate">
+        <mat-datepicker-toggle matIconSuffix [for]="productionPicker"></mat-datepicker-toggle>
+        <mat-datepicker #productionPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'STOCK.LOCATION' | translate}}</mat-label>
+      <input matInput formControlName="location" [placeholder]="'STOCK.LOCATION_PLACEHOLDER' | translate">
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{'STOCK.SHELF' | translate}}</mat-label>
+        <input matInput formControlName="shelf" placeholder="A-01">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{'STOCK.WAREHOUSE' | translate}}</mat-label>
+        <input matInput formControlName="warehouse" placeholder="Main">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'COMMON.NOTES' | translate}}</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+
+    @if (isUpdateMode()) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{'PRODUCTS.STATUS' | translate}}</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="ACTIVE">{{'PRODUCTS.ACTIVE' | translate}}</mat-option>
+        <mat-option value="EXPIRED">{{'STOCK.STATUS_EXPIRED' | translate}}</mat-option>
+        <mat-option value="DISCARDED">{{'STOCK.STATUS_DISCARDED' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    }
+  </form>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="dialogRef.close()">
+      {{'COMMON.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button color="primary" [disabled]="form.invalid || saving()" (click)="onSubmit()">
+      @if (saving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+      <mat-icon>save</mat-icon>
+      }
+      <span>{{ (isUpdateMode() ? 'COMMON.UPDATE' : 'COMMON.SAVE') | translate }}</span>
+    </button>
+  </div>
+</div>
