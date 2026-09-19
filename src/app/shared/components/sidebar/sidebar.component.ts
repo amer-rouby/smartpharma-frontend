@@ -43,7 +43,7 @@ export class SidebarComponent {
       label: 'NAV.PRODUCTS',
       children: [
         { icon: 'list', label: 'NAV.PRODUCTS_ALL', route: '/products' },
-        { icon: 'add', label: 'NAV.PRODUCTS_ADD', route: '/products/new' },
+        { icon: 'add', label: 'NAV.PRODUCTS_ADD', route: '/products?action=new' },
         { icon: 'qr_code_scanner', label: 'NAV.PRODUCTS_QUICK_ADD', route: '/products/quick-add' },
         { icon: 'category', label: 'NAV.PRODUCTS_CATEGORIES', route: '/products/categories' }
       ],

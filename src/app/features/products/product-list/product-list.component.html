@@ -5,7 +5,7 @@
       <mat-icon>qr_code_scanner</mat-icon>
       <span>{{'PRODUCTS.QUICK_ADD_TITLE' | translate}}</span>
     </button>
-    <button mat-raised-button color="primary" routerLink="/products/new" class="add-btn">
+    <button mat-raised-button color="primary" (click)="openCreateDialog()" class="add-btn">
       <mat-icon>add</mat-icon>
       <span>{{'PRODUCTS.ADD_NEW' | translate}}</span>
     </button>
@@ -18,7 +18,7 @@
         <!-- Search -->
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>{{'PRODUCTS.SEARCH_PLACEHOLDER' | translate}}</mat-label>
-          <input matInput [(ngModel)]="searchQuery" (ngModelChange)="onSearchInput()"
+          <input matInput [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)"
             [placeholder]="'PRODUCTS.SEARCH_PLACEHOLDER' | translate">
           <mat-icon matPrefix>search</mat-icon>
           @if (searchQuery()) {
@@ -58,7 +58,7 @@
     <mat-card-content [class.list-content-refreshing]="loading()">
 
       <!-- Loading State (first load only, no data on screen yet) -->
-      @if (loading() && !products().length) {
+      @if (loading() && !models().length) {
       <div class="loading-state">
         <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
         <p>{{'COMMON.LOADING' | translate}}</p>
@@ -66,9 +66,9 @@
       }
 
       <!-- Products Table -->
-      @if (products().length || !loading()) {
+      @if (models().length || !loading()) {
       <div class="table-container">
-        <table mat-table [dataSource]="products()" class="data-table">
+        <table mat-table [dataSource]="models()" class="data-table">
 
           <!-- Name Column -->
           <ng-container matColumnDef="name">
@@ -151,11 +151,11 @@
                   [matTooltip]="'PRODUCTS.PRODUCT_DETAILS' | translate">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button color="primary" [routerLink]="['/products/edit', product.id]"
+                <button mat-icon-button color="primary" (click)="openUpdateDialog(product)"
                   [matTooltip]="'COMMON.EDIT' | translate">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" (click)="onDelete(product)"
+                <button mat-icon-button color="warn" (click)="confirmDelete(product)"
                   [matTooltip]="'COMMON.DELETE' | translate">
                   <mat-icon>delete</mat-icon>
                 </button>
@@ -173,7 +173,7 @@
           <mat-icon>inventory_2</mat-icon>
           <h3>{{'PRODUCTS.NO_PRODUCTS' | translate}}</h3>
           <p>{{'PRODUCTS.ADD_FIRST' | translate}}</p>
-          <button mat-raised-button color="primary" routerLink="/products/new">
+          <button mat-raised-button color="primary" (click)="openCreateDialog()">
             <mat-icon>add</mat-icon>
             {{'PRODUCTS.ADD_NEW' | translate}}
           </button>
@@ -181,7 +181,7 @@
         }
 
         @if (hasPagination()) {
-        <mat-paginator [length]="totalElements()" [pageIndex]="page()" [pageSize]="size()"
+        <mat-paginator [length]="totalElements()" [pageIndex]="pageIndex()" [pageSize]="pageSize()"
           [pageSizeOptions]="[5, 10, 25, 50]" [disabled]="loading()" (page)="onPageChange($event)" showFirstLastButtons>
         </mat-paginator>
         }
