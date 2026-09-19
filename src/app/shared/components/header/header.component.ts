@@ -1,6 +1,5 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy, output, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subscription } from 'rxjs';
 import { MaterialModule } from '../../material.module';
@@ -11,6 +10,8 @@ import { NotificationSettingsService } from '../../../core/services/settings/not
 import { LanguageService } from '../../../core/services/language.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { AudioService } from '../../../core/services/audio.service';
+import { ProfileService } from '../../../core/services/settings/profile.service';
+import { PharmacyContextService } from '../../../core/services/pharmacy-context.service';
 import { NotificationModel } from '../../../core/models/Notification.model';
 import { NotificationPanelComponent } from '../../../features/notification-bell/notification-panel/notification-panel.component';
 
@@ -18,7 +19,6 @@ import { NotificationPanelComponent } from '../../../features/notification-bell/
   selector: 'app-header',
   standalone: true,
   imports: [
-    FormsModule,
     RouterLink,
     MaterialModule,
     TranslateModule,
@@ -36,16 +36,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private readonly translate = inject(TranslateService);
   private readonly languageService = inject(LanguageService);
   private readonly themeService = inject(ThemeService);
+  private readonly profileService = inject(ProfileService);
+  private readonly pharmacyContext = inject(PharmacyContextService);
   private readonly router = inject(Router);
 
   readonly toggleSidebar = output<void>();
-  readonly searchQuery = signal<string>('');
   readonly currentLang = signal<string>(this.languageService.getCurrentLanguage());
   readonly isDarkTheme = signal<boolean>(this.themeService.isDark());
   readonly notifications = signal<NotificationModel[]>([]);
   readonly totalCount = signal(0);
   readonly unreadCount = signal(0);
   readonly currentUser = toSignal(this.authService.currentUser$);
+  readonly profileImageUrl = signal<string | null>(null);
 
   private langSubscription?: Subscription;
   private themeSubscription?: Subscription;
@@ -67,17 +69,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return roles.includes(userRole);
   }
 
-  readonly quickActions = [
-    { route: '/products?action=new', icon: 'inventory_2', label: 'NAV.PRODUCTS_ADD', color: 'primary' },
-    { route: '/sales/pos', icon: 'point_of_sale', label: 'NAV.SALES_POS', color: 'accent' },
-    { route: '/stock/alerts', icon: 'adjust', label: 'NAV.STOCK_ALERTS', color: 'warn' }
-  ];
-
   ngOnInit(): void {
     this.initLanguage();
     this.loadNotifications();
     this.setupNotificationStream();
     this.loadNotificationAlertPrefs();
+    this.loadProfileImage();
 
     this.langSubscription = this.languageService.currentLang$.subscribe(lang => {
       this.currentLang.set(lang);
@@ -114,6 +111,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
       error: () => {
         this.notifications.set([]);
         this.unreadCount.set(0);
+      }
+    });
+  }
+
+  private loadProfileImage(): void {
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        const imageUrl = profile?.profileImageUrl;
+        if (!imageUrl) {
+          this.profileImageUrl.set(null);
+          return;
+        }
+        const resolved = imageUrl.startsWith('/api/') || imageUrl.startsWith('/')
+          ? this.pharmacyContext.resolveAssetUrl(imageUrl)
+          : imageUrl;
+        this.profileImageUrl.set(resolved);
+      },
+      error: () => {
+        this.profileImageUrl.set(null);
       }
     });
   }
@@ -182,21 +198,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.unreadCount.set(currentUnread);
   }
 
-  onSearch(): void {
-    const query = this.searchQuery().trim();
-    if (query) {
-      this.router.navigate(['/products'], { queryParams: { q: query } });
-    }
-  }
-
-  clearSearch(): void {
-    this.searchQuery.set('');
-  }
-
-  onSearchKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Escape') this.clearSearch();
-  }
-
   onMarkAllAsRead(): void {
     this.notificationService.markAllAsRead().subscribe(() => {
       this.loadNotifications();
@@ -216,6 +217,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   changeLanguage(lang: 'ar' | 'en'): void {
     this.languageService.setLanguage(lang);
     this.currentLang.set(lang);
+  }
+
+  toggleLanguage(): void {
+    this.changeLanguage(this.currentLang() === 'ar' ? 'en' : 'ar');
   }
 
   logout(): void {

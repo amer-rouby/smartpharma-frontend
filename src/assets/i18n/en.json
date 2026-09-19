@@ -75,6 +75,8 @@
     "LOGOUT": "Logout",
     "LANGUAGE": "Language",
     "CHOOSE_LANGUAGE": "Choose Language",
+    "SWITCH_TO_ENGLISH": "Switch to English",
+    "SWITCH_TO_ARABIC": "Switch to Arabic",
     "QUICK_ACTIONS": "Quick Actions"
   },
   "DASHBOARD": {
