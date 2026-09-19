@@ -129,6 +129,7 @@
   },
   "LICENSE": {
     "MENU_LABEL": "Subscription & Activation",
+    "GENERATE_MENU_LABEL": "Generate Activation Code (Vendor)",
     "TITLE_OK": "Subscription",
     "SUBTITLE_OK": "Your pharmacy's subscription status",
     "TITLE_EXPIRED": "Subscription Expired",

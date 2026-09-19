@@ -36,7 +36,8 @@ export class SettingsComponent {
     { icon: 'timer', labelKey: 'SETTINGS.SESSION.TITLE', route: '/settings/session' },
     { icon: 'backup', labelKey: 'SETTINGS.BACKUP', route: '/settings/backup' },
     { icon: 'auto_awesome', labelKey: 'SMART_FEATURES.TITLE', route: '/settings/smart-features', roles: ['ADMIN'] },
-    { icon: 'vpn_key', labelKey: 'LICENSE.MENU_LABEL', route: '/license/renew', roles: ['ADMIN'] }
+    { icon: 'vpn_key', labelKey: 'LICENSE.MENU_LABEL', route: '/license/renew', roles: ['ADMIN'] },
+    { icon: 'key', labelKey: 'LICENSE.GENERATE_MENU_LABEL', route: '/license/generate', roles: ['ADMIN'] }
   ]);
 
   readonly filteredItems = signal<SettingsItem[]>([]);
