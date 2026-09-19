@@ -1,0 +1,48 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ titleKey | translate }}</h2>
+    <button mat-icon-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" mat-dialog-content class="backup-form">
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>{{'BACKUP.BACKUP_NAME' | translate}}</mat-label>
+        <input matInput formControlName="backupName" [placeholder]="'BACKUP.BACKUP_NAME_PLACEHOLDER' | translate">
+        @if (form.get('backupName')?.invalid && form.get('backupName')?.touched) {
+        <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{'BACKUP.BACKUP_TYPE' | translate}}</mat-label>
+        <mat-select formControlName="backupType">
+          <mat-option value="FULL">{{'BACKUP.TYPE.FULL' | translate}}</mat-option>
+          <mat-option value="INCREMENTAL">{{'BACKUP.TYPE.INCREMENTAL' | translate}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{'BACKUP.DESCRIPTION' | translate}}</mat-label>
+        <textarea matInput formControlName="description" rows="2"
+          [placeholder]="'BACKUP.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="dialogRef.close()">
+      {{'COMMON.CANCEL' | translate}}
+    </button>
+    <button mat-raised-button color="primary" [disabled]="form.invalid || saving()" (click)="onSubmit()">
+      @if (saving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+      <mat-icon>backup</mat-icon>
+      }
+      <span>{{ (saving() ? 'COMMON.CREATING' : 'BACKUP.CREATE') | translate }}</span>
+    </button>
+  </div>
+</div>

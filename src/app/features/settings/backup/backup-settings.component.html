@@ -2,55 +2,6 @@
   <app-page-header [title]="'SETTINGS.BACKUP' | translate" [subtitle]="'BACKUP.SUBTITLE' | translate" icon="backup">
   </app-page-header>
 
-  <!-- Create Backup Form -->
-  <mat-card class="create-backup-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>add_circle</mat-icon>
-        {{'BACKUP.CREATE_BACKUP' | translate}}
-      </mat-card-title>
-    </mat-card-header>
-
-    <mat-card-content>
-      <form [formGroup]="backupForm" (ngSubmit)="onCreateBackup()">
-        <div class="form-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>{{'BACKUP.BACKUP_NAME' | translate}}</mat-label>
-            <input matInput formControlName="backupName" [placeholder]="'BACKUP.BACKUP_NAME_PLACEHOLDER' | translate">
-            @if (backupForm.get('backupName')?.invalid && backupForm.get('backupName')?.touched) {
-            <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>{{'BACKUP.BACKUP_TYPE' | translate}}</mat-label>
-            <mat-select formControlName="backupType">
-              <mat-option value="FULL">{{'BACKUP.TYPE.FULL' | translate}}</mat-option>
-              <mat-option value="INCREMENTAL">{{'BACKUP.TYPE.INCREMENTAL' | translate}}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'BACKUP.DESCRIPTION' | translate}}</mat-label>
-            <textarea matInput formControlName="description" rows="2"
-              [placeholder]="'BACKUP.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
-          </mat-form-field>
-        </div>
-
-        <div class="form-actions">
-          <button mat-raised-button color="primary" type="submit" [disabled]="creating() || backupForm.invalid">
-            @if (creating()) {
-            <mat-spinner diameter="20"></mat-spinner>
-            } @else {
-            <mat-icon>backup</mat-icon>
-            }
-            <span>{{creating() ? ('COMMON.CREATING' | translate) : ('BACKUP.CREATE' | translate)}}</span>
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-
   <!-- Backups List -->
   <mat-card class="backups-list-card">
     <mat-card-header>
@@ -58,7 +9,12 @@
         <mat-icon>history</mat-icon>
         {{'BACKUP.BACKUP_HISTORY' | translate}}
       </mat-card-title>
-      <mat-card-subtitle>{{backups().length}} {{'BACKUP.COUNT' | translate}}</mat-card-subtitle>
+      <mat-card-subtitle>{{totalElements()}} {{'BACKUP.COUNT' | translate}}</mat-card-subtitle>
+      <span class="spacer"></span>
+      <button mat-raised-button color="primary" (click)="openCreateDialog()">
+        <mat-icon>add_circle</mat-icon>
+        <span>{{'BACKUP.CREATE_BACKUP' | translate}}</span>
+      </button>
     </mat-card-header>
 
     <mat-card-content>
@@ -67,14 +23,14 @@
         <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
         <p>{{'COMMON.LOADING' | translate}}</p>
       </div>
-      } @else if (backups().length === 0) {
+      } @else if (models().length === 0) {
       <div class="empty-state">
         <mat-icon>folder_open</mat-icon>
         <p>{{'BACKUP.NO_BACKUPS' | translate}}</p>
       </div>
       } @else {
       <div class="table-wrapper">
-        <table mat-table [dataSource]="backups()" class="backups-table">
+        <table mat-table [dataSource]="models()" class="backups-table">
 
           <!-- Backup Name -->
           <ng-container matColumnDef="backupName">
@@ -133,7 +89,7 @@
                 [matTooltip]="'BACKUP.DOWNLOAD' | translate">
                 <mat-icon>download</mat-icon>
               </button>
-              <button mat-icon-button color="warn" (click)="onDeleteBackup(backup)"
+              <button mat-icon-button color="warn" (click)="confirmDelete(backup)"
                 [matTooltip]="'COMMON.DELETE' | translate">
                 <mat-icon>delete</mat-icon>
               </button>
