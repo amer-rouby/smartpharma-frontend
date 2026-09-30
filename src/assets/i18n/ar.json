@@ -287,6 +287,7 @@
     "ADDITIONAL_INFO_HINT": "اختياري",
     "MANUFACTURER_PLACEHOLDER": "مثال: شركة الحكمة",
     "ACTIVE_INGREDIENTS_PLACEHOLDER": "مثال: باراسيتامول 500 مجم",
+    "ACTIVE_INGREDIENT_HINT": "لو سبته فاضي هيتاخد من الاسم العلمي - بيتستخدم في اقتراح البدائل في نقطة البيع",
     "USAGE_INSTRUCTIONS": "طريقة الاستخدام",
     "USAGE_INSTRUCTIONS_PLACEHOLDER": "مثال: قرص كل 8 ساعات بعد الأكل",
     "STORAGE_CONDITIONS_PLACEHOLDER": "مثال: يُحفظ في مكان بارد وجاف بعيدًا عن الضوء",
@@ -408,6 +409,15 @@
     "BUYER_NATIONAL_ID_INVALID": "الرقم القومي 14 رقم ويبدأ بـ 2 أو 3",
     "BUYER_ID_REQUIRED_HINT": "مطلوب للإيصال الإلكتروني في المبيعات من 150,000 جنيه",
     "BUYER_NAME": "اسم المشتري",
+    "ALTERNATIVES": {
+      "SHOW": "بدائل بنفس المادة الفعالة",
+      "TITLE": "بدائل {{name}}",
+      "SUBTITLE": "أصناف بنفس المادة الفعالة: {{ingredient}}",
+      "OUT_OF_STOCK": "الصنف ده خلصان من المخزون - اختار بديل متاح",
+      "NO_STOCK": "مش متاح",
+      "CHECK_NOTE": "راجع التركيز والشكل الدوائي قبل ما تصرف البديل",
+      "QUANTITY_REDUCED": "الكمية اتظبطت على {{count}} - ده المتاح من البديل"
+    },
     "OFFLINE": {
       "OFFLINE": "مفيش اتصال بالسيرفر - البيع شغال والعمليات بتتحفظ على الجهاز",
       "ONLINE": "الاتصال رجع",

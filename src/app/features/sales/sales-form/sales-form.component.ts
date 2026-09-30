@@ -22,6 +22,8 @@ import { PrescriptionService } from '../../../core/services/prescription.service
 import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
 import { ETA_BUYER_ID_THRESHOLD, NATIONAL_ID_PATTERN } from '../../../core/models/einvoice.model';
 import { OfflineSalesService, QueuedSale } from '../../../core/services/offline-sales.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ProductAlternativesDialogComponent, ProductAlternativesData } from './product-alternatives-dialog/product-alternatives-dialog.component';
 
 interface CartItem {
   product: Product;
@@ -73,6 +75,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly smartFeatureSettingsService = inject(SmartFeatureSettingsService);
   readonly offline = inject(OfflineSalesService);
+  private readonly dialog = inject(MatDialog);
   // When the product list came from the device's saved copy (server unreachable).
   readonly catalogSavedAt = signal<string | null>(null);
 
@@ -98,6 +101,19 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   readonly prescriptionUploading = signal(false);
 
   private readonly allProducts = signal<Product[]>([]);
+
+  // Products grouped by active ingredient: everything in a group is an
+  // alternative for the rest. Built from the loaded list, so it works offline.
+  private readonly productsByIngredient = computed(() => {
+    const groups = new Map<string, Product[]>();
+    for (const product of this.allProducts()) {
+      if (!product.ingredientKey) continue;
+      const group = groups.get(product.ingredientKey) ?? [];
+      group.push(product);
+      groups.set(product.ingredientKey, group);
+    }
+    return groups;
+  });
   private readonly filteredProductsSubject = new BehaviorSubject<Product[]>([]);
   readonly currentFilteredProducts$ = this.filteredProductsSubject.asObservable();
 
@@ -247,7 +263,9 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     return this.allProducts()
       .filter(p =>
         p.name.toLowerCase().includes(filterValue) ||
-        p.barcode?.toLowerCase().includes(filterValue)
+        p.barcode?.toLowerCase().includes(filterValue) ||
+        p.scientificName?.toLowerCase().includes(filterValue) ||
+        p.activeIngredient?.toLowerCase().includes(filterValue)
       )
       .slice(0, 10);
   }
@@ -311,7 +329,12 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
 
   addProductToCart(product: Product): void {
     if (product.totalStock <= 0) {
-      this.errorHandler.showWarning('SALES.INSUFFICIENT_STOCK');
+      // Out of stock: offer what else has the same active ingredient.
+      if (this.alternativesOf(product).some(p => p.totalStock > 0)) {
+        this.openAlternatives(product);
+      } else {
+        this.errorHandler.showWarning('SALES.INSUFFICIENT_STOCK');
+      }
       return;
     }
 
@@ -342,6 +365,50 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
         totalPrice: unitPrice
       }]);
     }
+  }
+
+  // Same active ingredient, in stock first, then cheapest.
+  alternativesOf(product: Product): Product[] {
+    if (!product.ingredientKey) return [];
+    return (this.productsByIngredient().get(product.ingredientKey) ?? [])
+      .filter(p => p.id !== product.id)
+      .sort((a, b) => Number(b.totalStock > 0) - Number(a.totalStock > 0) || (a.sellPrice || 0) - (b.sellPrice || 0));
+  }
+
+  // Picking an alternative adds it to the cart, or swaps it in for `replacing`.
+  openAlternatives(product: Product, replacing?: CartItem): void {
+    const data: ProductAlternativesData = { product, alternatives: this.alternativesOf(product) };
+    this.dialog.open<ProductAlternativesDialogComponent, ProductAlternativesData, Product>(
+      ProductAlternativesDialogComponent, { data, autoFocus: false })
+      .afterClosed()
+      .subscribe(picked => {
+        if (!picked) return;
+        if (replacing) {
+          this.replaceInCart(replacing, picked);
+        } else {
+          this.addProductToCart(picked);
+        }
+      });
+  }
+
+  // Keeps the cart line's place and quantity (capped at the alternative's
+  // stock); merges into the alternative's line if it's already in the cart.
+  private replaceInCart(item: CartItem, replacement: Product): void {
+    const unitPrice = replacement.sellPrice || 0;
+    if (unitPrice === 0) {
+      this.errorHandler.showWarning('SALES.NO_PRICE', { params: { name: replacement.name } });
+      return;
+    }
+    const existing = this.cartItems().find(i => i !== item && i.product.id === replacement.id);
+    const wanted = item.quantity + (existing?.quantity ?? 0);
+    const quantity = Math.min(wanted, replacement.totalStock);
+    if (quantity < wanted) {
+      this.errorHandler.showWarning('SALES.ALTERNATIVES.QUANTITY_REDUCED', { params: { count: quantity } });
+    }
+    const replaced: CartItem = { product: replacement, quantity, unitPrice, totalPrice: quantity * unitPrice };
+    this.cartItems.set(this.cartItems()
+      .filter(i => i !== existing)
+      .map(i => (i === item ? replaced : i)));
   }
 
   removeFromCart(index: number): void {

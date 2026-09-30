@@ -3,6 +3,9 @@ export interface Product {
   pharmacyId: number;
   name: string;
   scientificName?: string;
+  activeIngredient?: string;
+  // Same key = same active substance(s): the POS offers these as alternatives.
+  ingredientKey?: string;
   barcode?: string;
   category?: string;
   unitType: string;

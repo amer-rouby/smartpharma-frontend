@@ -69,7 +69,12 @@
               @for (product of currentFilteredProducts$ | async; track product.id) {
               <mat-option [value]="product">
                 <div class="product-option">
-                  <span class="product-name">{{product.name}}</span>
+                  <span class="product-name">
+                    {{product.name}}
+                    @if (product.scientificName) {
+                    <small class="product-scientific">{{product.scientificName}}</small>
+                    }
+                  </span>
                   @if (product.sellPrice) {
                   <span class="product-price">{{formatCurrency(product.sellPrice)}}</span>
                   }
@@ -136,6 +141,12 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>{{'COMMON.ACTIONS' | translate}}</th>
               <td mat-cell *matCellDef="let item; let i = index">
+                @if (alternativesOf(item.product).length) {
+                <button mat-icon-button (click)="openAlternatives(item.product, item)"
+                  [matTooltip]="'SALES.ALTERNATIVES.SHOW' | translate">
+                  <mat-icon>swap_horiz</mat-icon>
+                </button>
+                }
                 <button mat-icon-button color="warn" (click)="removeFromCart(i)"
                   [matTooltip]="'COMMON.DELETE' | translate">
                   <mat-icon>delete</mat-icon>
