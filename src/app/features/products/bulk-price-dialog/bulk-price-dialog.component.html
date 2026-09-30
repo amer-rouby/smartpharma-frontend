@@ -1,0 +1,130 @@
+<div class="bulk-price-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon>price_change</mat-icon>
+      <div>
+        <h2>{{'PRODUCTS.BULK_PRICE.TITLE' | translate}}</h2>
+        <span class="subtitle">{{'PRODUCTS.BULK_PRICE.SUBTITLE' | translate}}</span>
+      </div>
+    </div>
+    <button mat-icon-button (click)="close()" [attr.aria-label]="'COMMON.CLOSE' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <mat-tab-group (selectedIndexChange)="setMode($event)" animationDuration="0">
+      <mat-tab [label]="'PRODUCTS.BULK_PRICE.BY_PERCENT' | translate">
+        <div class="tab-body form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'PRODUCTS.BULK_PRICE.PERCENT' | translate}}</mat-label>
+            <input matInput type="number" min="-90" max="500" [ngModel]="percent()"
+              (ngModelChange)="percent.set($event === '' ? null : $event); changed()">
+            <span matTextSuffix>%</span>
+            <mat-hint>{{'PRODUCTS.BULK_PRICE.PERCENT_HINT' | translate}}</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{'PRODUCTS.BULK_PRICE.SCOPE' | translate}}</mat-label>
+            <mat-select [ngModel]="category()" (ngModelChange)="category.set($event); changed()">
+              <mat-option value="">{{'PRODUCTS.BULK_PRICE.ALL_PRODUCTS' | translate}}</mat-option>
+              @for (c of data.categories; track c.id) {
+              <mat-option [value]="c.name">{{categoryLabel(c)}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{'PRODUCTS.BULK_PRICE.ROUND_TO' | translate}}</mat-label>
+            <mat-select [ngModel]="roundTo()" (ngModelChange)="roundTo.set($event); changed()">
+              <mat-option [value]="null">{{'PRODUCTS.BULK_PRICE.NO_ROUNDING' | translate}}</mat-option>
+              @for (step of roundingSteps; track step) {
+              <mat-option [value]="step">{{step.toFixed(2)}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="'PRODUCTS.BULK_PRICE.BY_LIST' | translate">
+        <div class="tab-body">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'PRODUCTS.BULK_PRICE.LIST' | translate}}</mat-label>
+            <textarea matInput rows="8" dir="ltr" placeholder="6221000000010,12.50" [ngModel]="priceListText()"
+              (ngModelChange)="priceListText.set($event); changed()"></textarea>
+            <mat-hint>{{'PRODUCTS.BULK_PRICE.LIST_HINT' | translate}}</mat-hint>
+          </mat-form-field>
+          <p class="list-summary">
+            {{'PRODUCTS.BULK_PRICE.LINES_READ' | translate: { count: parsed().items.length } }}
+            @if (parsed().badLines) {
+            <span class="warn-text">· {{'PRODUCTS.BULK_PRICE.LINES_SKIPPED' | translate: { count: parsed().badLines } }}</span>
+            }
+          </p>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    @if (preview(); as p) {
+    <div class="preview">
+      <div class="preview-summary">
+        <mat-chip highlighted color="primary">{{'PRODUCTS.BULK_PRICE.WILL_CHANGE' | translate: { count: p.changedCount } }}</mat-chip>
+        @if (p.unchangedCount) {
+        <mat-chip>{{'PRODUCTS.BULK_PRICE.UNCHANGED' | translate: { count: p.unchangedCount } }}</mat-chip>
+        }
+        @if (p.notFound.length) {
+        <mat-chip highlighted color="warn">{{'PRODUCTS.BULK_PRICE.NOT_FOUND' | translate: { count: p.notFound.length } }}</mat-chip>
+        }
+      </div>
+
+      @if (p.notFound.length) {
+      <p class="not-found" dir="ltr">{{p.notFound.join(', ')}}</p>
+      }
+
+      @if (p.changes.length) {
+      <div class="table-wrap">
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th>{{'PRODUCTS.NAME' | translate}}</th>
+              <th>{{'PRODUCTS.BULK_PRICE.OLD_PRICE' | translate}}</th>
+              <th>{{'PRODUCTS.BULK_PRICE.NEW_PRICE' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of p.changes; track c.productId) {
+            <tr [class.below-cost]="c.belowCost">
+              <td>
+                {{c.productName}}
+                @if (c.belowCost) {
+                <span class="below-cost-tag">{{'PRODUCTS.BULK_PRICE.BELOW_COST' | translate}}</span>
+                }
+              </td>
+              <td>{{formatPrice(c.oldPrice)}}</td>
+              <td><strong>{{formatPrice(c.newPrice)}}</strong></td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      }
+    </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="close()">{{'COMMON.CANCEL' | translate}}</button>
+    <button mat-stroked-button color="primary" (click)="runPreview()" [disabled]="!canPreview() || loading()">
+      <mat-icon>visibility</mat-icon>
+      <span>{{'PRODUCTS.BULK_PRICE.PREVIEW' | translate}}</span>
+    </button>
+    <button mat-raised-button color="primary" (click)="apply()"
+      [disabled]="!preview() || !preview()!.changedCount || loading()">
+      @if (loading()) {
+      <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+      <mat-icon>check</mat-icon>
+      }
+      <span>{{'PRODUCTS.BULK_PRICE.APPLY' | translate: { count: preview()?.changedCount ?? 0 } }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

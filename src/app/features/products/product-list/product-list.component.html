@@ -5,6 +5,12 @@
       <mat-icon>qr_code_scanner</mat-icon>
       <span>{{'PRODUCTS.QUICK_ADD_TITLE' | translate}}</span>
     </button>
+    @if (isAdmin()) {
+    <button mat-stroked-button color="primary" (click)="openBulkPriceDialog()" class="bulk-price-btn">
+      <mat-icon>price_change</mat-icon>
+      <span>{{'PRODUCTS.BULK_PRICE.BUTTON' | translate}}</span>
+    </button>
+    }
     <button mat-raised-button color="primary" (click)="openCreateDialog()" class="add-btn">
       <mat-icon>add</mat-icon>
       <span>{{'PRODUCTS.ADD_NEW' | translate}}</span>

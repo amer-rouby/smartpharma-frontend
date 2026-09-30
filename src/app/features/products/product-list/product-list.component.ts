@@ -12,6 +12,8 @@ import { ProductDetailsDialogComponent } from '../product-details-dialog/product
 import { CrudPageWithDialogDirective } from '../../../core/crud';
 import { ProductModel } from '../models/product.model';
 import { ProductCrudService } from '../services/product-crud.service';
+import { BulkPriceDialogComponent } from '../bulk-price-dialog/bulk-price-dialog.component';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-product-list',
@@ -29,6 +31,10 @@ export class ProductListComponent extends CrudPageWithDialogDirective<ProductMod
   private readonly matDialog = inject(MatDialog);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+
+  // Bulk repricing is ADMIN-only on the server too.
+  readonly isAdmin = computed(() => this.authService.hasRole('ADMIN'));
 
   readonly selectedCategory = signal('all');
   readonly categoryOptions = signal<Category[]>([]);
@@ -95,6 +101,15 @@ export class ProductListComponent extends CrudPageWithDialogDirective<ProductMod
 
   clearCategoryFilter(): void {
     this.onCategorySelected('all');
+  }
+
+  openBulkPriceDialog(): void {
+    this.matDialog.open(BulkPriceDialogComponent, {
+      data: { categories: this.categoryOptions() },
+      maxWidth: '95vw'
+    }).afterClosed().subscribe((applied) => {
+      if (applied) this.refresh();
+    });
   }
 
   viewDetails(product: ProductModel): void {
