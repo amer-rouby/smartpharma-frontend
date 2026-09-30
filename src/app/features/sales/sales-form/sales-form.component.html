@@ -168,6 +168,24 @@
           <input matInput [(ngModel)]="customerPhone" placeholder="01xxxxxxxxx">
         </mat-form-field>
 
+        @if (eInvoiceEnabled()) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{'SALES.BUYER_NATIONAL_ID' | translate}}</mat-label>
+          <input matInput [(ngModel)]="buyerNationalId" inputmode="numeric" maxlength="14" dir="ltr"
+            [required]="buyerIdRequired()">
+          @if (buyerIdInvalid()) {
+          <mat-hint class="buyer-id-error">{{'SALES.BUYER_NATIONAL_ID_INVALID' | translate}}</mat-hint>
+          } @else if (buyerIdRequired()) {
+          <mat-hint>{{'SALES.BUYER_ID_REQUIRED_HINT' | translate}}</mat-hint>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{'SALES.BUYER_NAME' | translate}}</mat-label>
+          <input matInput [(ngModel)]="buyerName" maxlength="100" [required]="buyerIdRequired()">
+        </mat-form-field>
+        }
+
         @if (hasPrescriptionRequiredItem()) {
         <div class="prescription-section">
           <div class="prescription-header">

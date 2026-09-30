@@ -18,6 +18,8 @@ import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PharmacySettingsService } from '../../../core/services/settings/pharmacy-settings.service';
 import { PrescriptionService } from '../../../core/services/prescription.service';
+import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
+import { ETA_BUYER_ID_THRESHOLD, NATIONAL_ID_PATTERN } from '../../../core/models/einvoice.model';
 
 interface CartItem {
   product: Product;
@@ -36,6 +38,8 @@ interface SaleRequest {
   discountAmount: number;
   paymentMethod: string;
   customerPhone: string;
+  buyerNationalId?: string;
+  buyerName?: string;
   totalAmount: number;
   prescriptionImageUrl?: string;
 }
@@ -61,6 +65,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly prescriptionService = inject(PrescriptionService);
   private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
+  private readonly smartFeatureSettingsService = inject(SmartFeatureSettingsService);
 
   @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
   readonly barcodeValue = signal('');
@@ -74,6 +79,8 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   readonly productControl = new FormControl();
   readonly products = signal<Product[]>([]);
   readonly customerPhone = signal('');
+  readonly buyerNationalId = signal('');
+  readonly buyerName = signal('');
   readonly paymentMethod = signal<PaymentMethod>(PaymentMethod.CASH);
   readonly discount = signal(0);
   readonly loading = signal(false);
@@ -94,13 +101,27 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   );
 
   readonly isCartEmpty = computed(() => this.cartItems().length === 0);
+
+  // ETA e-receipt: the buyer's national ID and name are required from the
+  // threshold total - asked for here so the sale isn't refused at checkout.
+  readonly eInvoiceEnabled = computed(() => this.smartFeatureSettingsService.flags().eInvoiceEnabled);
+  readonly buyerIdRequired = computed(() =>
+    this.eInvoiceEnabled() && this.totalAmount() >= ETA_BUYER_ID_THRESHOLD
+  );
+  readonly buyerIdInvalid = computed(() =>
+    this.buyerNationalId().trim() !== '' && !NATIONAL_ID_PATTERN.test(this.buyerNationalId().trim())
+  );
+  readonly buyerIdMissing = computed(() =>
+    this.buyerIdRequired() && (this.buyerNationalId().trim() === '' || this.buyerName().trim() === '')
+  );
   readonly hasPrescriptionRequiredItem = computed(() =>
     this.requirePrescriptionUpload() && this.cartItems().some(item => item.product.prescriptionRequired)
   );
   readonly isSubmitDisabled = computed(() =>
     this.loading() || this.isCartEmpty() || this.totalAmount() <= 0 ||
     this.prescriptionUploading() ||
-    (this.hasPrescriptionRequiredItem() && !this.prescriptionImageUrl())
+    (this.hasPrescriptionRequiredItem() && !this.prescriptionImageUrl()) ||
+    this.buyerIdInvalid() || this.buyerIdMissing()
   );
 
   readonly PaymentMethod = PaymentMethod;
@@ -315,6 +336,8 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.cartItems.set([]);
     this.discount.set(0);
     this.customerPhone.set('');
+    this.buyerNationalId.set('');
+    this.buyerName.set('');
     this.productControl.setValue('');
     this.prescriptionImageUrl.set(null);
   }
@@ -440,6 +463,8 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       discountAmount: this.discount(),
       paymentMethod: this.paymentMethod(),
       customerPhone: this.customerPhone(),
+      buyerNationalId: this.buyerNationalId().trim() || undefined,
+      buyerName: this.buyerName().trim() || undefined,
       totalAmount: this.subtotal(),
       prescriptionImageUrl: this.prescriptionImageUrl() || undefined
     };

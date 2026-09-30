@@ -377,6 +377,10 @@
     "QUANTITY_EXCEEDED": "Requested quantity exceeds available stock",
     "INVALID_TOTAL": "Total amount must be greater than zero",
     "PRESCRIPTION_SECTION_TITLE": "Prescription",
+    "BUYER_NATIONAL_ID": "Buyer national ID",
+    "BUYER_NATIONAL_ID_INVALID": "National ID is 14 digits starting with 2 or 3",
+    "BUYER_ID_REQUIRED_HINT": "Required on the e-receipt for sales of 150,000 EGP or more",
+    "BUYER_NAME": "Buyer name",
     "PRESCRIPTION_HINT": "The cart contains a prescription-only product — please upload a prescription image to complete the sale",
     "PRESCRIPTION_UPLOAD": "Upload Prescription Image",
     "PRESCRIPTION_UPLOADED": "Prescription uploaded",
@@ -1060,7 +1064,8 @@
     "ETA_CREDENTIALS_MISSING": "Client ID and Client Secret are required",
     "ETA_AUTH_FAILED": "Could not connect to the Tax Authority: {{detail}}",
     "EINVOICE_SUBMISSION_NOT_FOUND": "No e-receipt exists for this sale yet",
-    "SALE_HAS_ETA_RECEIPT": "This sale already has an e-receipt. The discount, payment method and customer phone can't be changed - delete the sale (a return receipt is issued) and sell again"
+    "SALE_HAS_ETA_RECEIPT": "This sale already has an e-receipt. The discount, payment method and customer phone can't be changed - delete the sale (a return receipt is issued) and sell again",
+    "BUYER_ID_REQUIRED": "Sales of 150,000 EGP or more need the buyer's national ID and name for the e-receipt"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
