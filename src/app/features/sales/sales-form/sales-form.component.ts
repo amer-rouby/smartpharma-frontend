@@ -278,6 +278,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
           sellPrice: p.sellPrice || 0
         }));
         this.setProducts(data);
+        this.syncCartPrices(data);
         this.catalogSavedAt.set(null);
         this.offline.cacheCatalog(data);
       },
@@ -295,6 +296,19 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.allProducts.set(data);
     this.products.set(data);
     this.filteredProductsSubject.next(data.slice(0, 10));
+  }
+
+  // The server charges its own current prices; after a reload, cart lines
+  // show those too so the total on screen is what gets recorded.
+  private syncCartPrices(products: Product[]): void {
+    if (!this.cartItems().length) return;
+    const byId = new Map(products.map(p => [p.id, p]));
+    this.cartItems.set(this.cartItems().map(item => {
+      const fresh = byId.get(item.product.id);
+      if (!fresh) return item;
+      const unitPrice = fresh.sellPrice || 0;
+      return { ...item, product: fresh, unitPrice, totalPrice: unitPrice * item.quantity };
+    }));
   }
 
   // Server unreachable: sell from the product list saved on this device.
@@ -500,6 +514,10 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
         return;
       }
       console.error('Sale submission error:', error);
+      if (error?.code === 'SALE_PRICE_CHANGED') {
+        // The cart had an old price: refresh prices so the cashier can review.
+        this.loadProducts();
+      }
       if (!this.errorHandler.showByCode(error.code, error.params)) {
         this.errorHandler.showError(error.message || 'SALES.CREATE_ERROR');
       }

@@ -1123,7 +1123,9 @@
     "BUYER_ID_REQUIRED": "المبيعات من 150,000 جنيه أو أكتر لازم يتسجل فيها الرقم القومي واسم المشتري عشان الإيصال الإلكتروني",
     "BULK_PRICE_PERCENT_REQUIRED": "اكتب النسبة",
     "BULK_PRICE_ITEMS_REQUIRED": "قائمة الأسعار فاضية",
-    "SALE_OFFLINE_TIME_INVALID": "العملية اتعملت من غير نت من أكتر من {{hours}} ساعة - سجّلها يدويًا"
+    "SALE_OFFLINE_TIME_INVALID": "العملية اتعملت من غير نت من أكتر من {{hours}} ساعة - سجّلها يدويًا",
+    "SALE_PRICE_CHANGED": "سعر {{productName}} اتغير وبقى {{price}} - الأسعار اتحدثت في الفاتورة، راجعها وأكد تاني",
+    "SALE_PRODUCT_NO_PRICE": "الصنف {{productName}} ملوش سعر بيع - حدد السعر الأول"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
