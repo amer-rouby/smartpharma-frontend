@@ -10,6 +10,10 @@ export class ProductModel extends CrudModel<ProductModel, ProductCrudService> im
   pharmacyId = 0;
   name = '';
   scientificName = '';
+  // Empty = taken from the scientific name. Products with the same
+  // ingredientKey (derived by the API) are alternatives for each other.
+  activeIngredient = '';
+  ingredientKey?: string;
   barcode = '';
   category = '';
   // ETA e-receipt coding - empty means a valid GTIN barcode is used as GS1.
@@ -48,7 +52,7 @@ export class ProductModel extends CrudModel<ProductModel, ProductCrudService> im
       sellPrice: [0, [Validators.required, Validators.min(0.01)]],
       buyPrice: [0, [Validators.min(0)]],
       manufacturer: [''],
-      activeIngredients: [''],
+      activeIngredient: ['', Validators.maxLength(255)],
       description: [''],
       usageInstructions: [''],
       storageConditions: [''],

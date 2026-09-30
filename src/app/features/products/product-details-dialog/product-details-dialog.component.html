@@ -44,12 +44,12 @@
       </div>
       }
 
-      @if (extra['activeIngredients']) {
+      @if (product.activeIngredient) {
       <div class="detail-item">
         <mat-icon>biotech</mat-icon>
         <div>
           <span class="label">{{'PRODUCTS.ACTIVE_INGREDIENTS' | translate}}</span>
-          <span class="value">{{extra['activeIngredients']}}</span>
+          <span class="value">{{product.activeIngredient}}</span>
         </div>
       </div>
       }

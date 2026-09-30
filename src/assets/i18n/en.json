@@ -287,6 +287,7 @@
     "ADDITIONAL_INFO_HINT": "Optional",
     "MANUFACTURER_PLACEHOLDER": "Example: Hikma Pharmaceuticals",
     "ACTIVE_INGREDIENTS_PLACEHOLDER": "Example: Paracetamol 500mg",
+    "ACTIVE_INGREDIENT_HINT": "Leave empty to use the scientific name - used to suggest alternatives at the POS",
     "USAGE_INSTRUCTIONS": "Usage Instructions",
     "USAGE_INSTRUCTIONS_PLACEHOLDER": "Example: One tablet every 8 hours after meals",
     "STORAGE_CONDITIONS_PLACEHOLDER": "Example: Store in a cool, dry place away from light",
@@ -408,6 +409,15 @@
     "BUYER_NATIONAL_ID_INVALID": "National ID is 14 digits starting with 2 or 3",
     "BUYER_ID_REQUIRED_HINT": "Required on the e-receipt for sales of 150,000 EGP or more",
     "BUYER_NAME": "Buyer name",
+    "ALTERNATIVES": {
+      "SHOW": "Alternatives with the same active ingredient",
+      "TITLE": "Alternatives to {{name}}",
+      "SUBTITLE": "Products with the same active ingredient: {{ingredient}}",
+      "OUT_OF_STOCK": "This product is out of stock - pick an available alternative",
+      "NO_STOCK": "Out of stock",
+      "CHECK_NOTE": "Check the strength and dosage form before dispensing an alternative",
+      "QUANTITY_REDUCED": "Quantity set to {{count}} - that's all the alternative has in stock"
+    },
     "OFFLINE": {
       "OFFLINE": "Can't reach the server - selling continues and sales are saved on this device",
       "ONLINE": "Back online",

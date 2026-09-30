@@ -1,0 +1,58 @@
+<div class="alternatives-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon>swap_horiz</mat-icon>
+      <div>
+        <h2>{{'SALES.ALTERNATIVES.TITLE' | translate: { name: data.product.name } }}</h2>
+        <span class="subtitle">
+          {{'SALES.ALTERNATIVES.SUBTITLE' | translate: { ingredient: data.product.activeIngredient || data.product.scientificName } }}
+        </span>
+      </div>
+    </div>
+    <button mat-icon-button (click)="close()" [attr.aria-label]="'COMMON.CLOSE' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    @if (data.product.totalStock <= 0) {
+    <p class="out-of-stock-note">
+      <mat-icon>inventory</mat-icon>
+      {{'SALES.ALTERNATIVES.OUT_OF_STOCK' | translate}}
+    </p>
+    }
+
+    <ul class="alternatives-list">
+      @for (alt of data.alternatives; track alt.id) {
+      <li>
+        <button type="button" class="alternative" [disabled]="alt.totalStock <= 0" (click)="pick(alt)">
+          <div class="alt-info">
+            <strong>{{alt.name}}</strong>
+            @if (alt.scientificName) {
+            <small>{{alt.scientificName}}</small>
+            }
+          </div>
+          <div class="alt-meta">
+            <span class="alt-price">{{formatCurrency(alt.sellPrice)}}</span>
+            @if (priceDifference(alt) !== 0) {
+            <small [class.cheaper]="priceDifference(alt) < 0" [class.pricier]="priceDifference(alt) > 0">
+              {{formatDifference(alt)}}
+            </small>
+            }
+            <span class="alt-stock" [class.none]="alt.totalStock <= 0">
+              {{ alt.totalStock > 0
+                ? ('SALES.AVAILABLE' | translate: { count: alt.totalStock })
+                : ('SALES.ALTERNATIVES.NO_STOCK' | translate) }}
+            </span>
+          </div>
+        </button>
+      </li>
+      }
+    </ul>
+
+    <p class="pharmacist-note">
+      <mat-icon>info</mat-icon>
+      {{'SALES.ALTERNATIVES.CHECK_NOTE' | translate}}
+    </p>
+  </mat-dialog-content>
+</div>

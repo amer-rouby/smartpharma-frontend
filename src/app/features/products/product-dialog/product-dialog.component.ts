@@ -58,7 +58,7 @@ export class ProductDialogComponent extends CrudDialogDirective<ProductModel> {
       this.form.patchValue({
         ...m,
         manufacturer: extra['manufacturer'] || '',
-        activeIngredients: extra['activeIngredients'] || '',
+        activeIngredient: m.activeIngredient ?? '',
         description: extra['description'] || '',
         usageInstructions: extra['usageInstructions'] || '',
         storageConditions: extra['storageConditions'] || '',
@@ -125,7 +125,6 @@ export class ProductDialogComponent extends CrudDialogDirective<ProductModel> {
     const v = this.form.value;
     const extraAttributes: Record<string, unknown> = {};
     if (v.manufacturer?.trim()) extraAttributes['manufacturer'] = v.manufacturer.trim();
-    if (v.activeIngredients?.trim()) extraAttributes['activeIngredients'] = v.activeIngredients.trim();
     if (v.description?.trim()) extraAttributes['description'] = v.description.trim();
     if (v.usageInstructions?.trim()) extraAttributes['usageInstructions'] = v.usageInstructions.trim();
     if (v.storageConditions?.trim()) extraAttributes['storageConditions'] = v.storageConditions.trim();
@@ -135,6 +134,8 @@ export class ProductDialogComponent extends CrudDialogDirective<ProductModel> {
     return this.data.model!.clone<ProductModel>({
       name: v.name,
       scientificName: v.scientificName,
+      // Blank tells the API to take it from the scientific name again.
+      activeIngredient: v.activeIngredient?.trim() ?? '',
       barcode: v.barcode,
       category: v.category,
       etaItemType: v.etaItemType ?? '',
