@@ -45,6 +45,8 @@ export class EtaSettingsComponent implements OnInit {
     street: ['', Validators.required],
     buildingNumber: ['', Validators.required],
     postalCode: [''],
+    defaultTaxSubtype: [''],
+    defaultTaxRate: [null, [Validators.min(0), Validators.max(100)]],
     clientId: ['', Validators.required],
     clientSecret: ['']
   });
@@ -70,7 +72,8 @@ export class EtaSettingsComponent implements OnInit {
       next: ({ settings, devices }) => {
         this.settings.set(settings);
         this.devices.set(devices);
-        this.form.patchValue({ ...settings, clientSecret: '' });
+        // null from the API must map to the "" option or the select shows blank.
+        this.form.patchValue({ ...settings, defaultTaxSubtype: settings.defaultTaxSubtype ?? '', clientSecret: '' });
         this.loading.set(false);
       },
       error: (err) => {
@@ -87,7 +90,11 @@ export class EtaSettingsComponent implements OnInit {
     }
     this.saving.set(true);
     const value = this.form.getRawValue();
-    this.etaSettingsService.saveSettings({ ...value, clientSecret: value.clientSecret || undefined }).subscribe({
+    this.etaSettingsService.saveSettings({
+      ...value,
+      clientSecret: value.clientSecret || undefined,
+      defaultTaxRate: value.defaultTaxSubtype === 'V010' ? value.defaultTaxRate : undefined
+    }).subscribe({
       next: (settings) => {
         this.settings.set(settings);
         this.form.patchValue({ clientSecret: '' });

@@ -11,6 +11,9 @@ export interface EtaSettings {
   street?: string;
   buildingNumber?: string;
   postalCode?: string;
+  /** VAT for products without their own; empty = not VAT-registered (no tax lines). */
+  defaultTaxSubtype?: string;
+  defaultTaxRate?: number;
   clientId?: string;
   clientSecretSet: boolean;
   credentialsKeyConfigured: boolean;

@@ -91,6 +91,30 @@
         </div>
 
         <div class="form-section">
+          <h3 class="section-title">{{'ETA.TAX' | translate}}</h3>
+          <p class="section-hint">{{'ETA.TAX_HINT' | translate}}</p>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.DEFAULT_TAX' | translate}}</mat-label>
+              <mat-select formControlName="defaultTaxSubtype">
+                <mat-option value="">{{'ETA.TAX_NONE' | translate}}</mat-option>
+                <mat-option value="V009">{{'ETA.TAX_V009' | translate}}</mat-option>
+                <mat-option value="V010">{{'ETA.TAX_V010' | translate}}</mat-option>
+                <mat-option value="V003">{{'ETA.TAX_V003' | translate}}</mat-option>
+                <mat-option value="V004">{{'ETA.TAX_V004' | translate}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            @if (form.value.defaultTaxSubtype === 'V010') {
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.TAX_RATE' | translate}}</mat-label>
+              <input matInput type="number" min="0" max="100" formControlName="defaultTaxRate">
+              <span matTextSuffix>%</span>
+            </mat-form-field>
+            }
+          </div>
+        </div>
+
+        <div class="form-section">
           <h3 class="section-title">{{'ETA.CREDENTIALS' | translate}}</h3>
           <p class="section-hint">{{'ETA.CREDENTIALS_HINT' | translate}}</p>
           <div class="form-grid">

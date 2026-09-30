@@ -181,6 +181,8 @@
     "ETA_ITEM_TYPE_BARCODE": "Use barcode (GS1)",
     "ETA_ITEM_CODE": "ETA item code",
     "ETA_ITEM_CODE_HINT": "The code registered in the e-invoicing system",
+    "ETA_TAX": "VAT (e-receipt)",
+    "ETA_TAX_DEFAULT": "Pharmacy default",
     "BARCODE_REGENERATED": "New barcode generated",
     "CATEGORY": "Category",
     "UNIT_TYPE": "Unit Type",
@@ -1440,7 +1442,16 @@
     "PRESHARED_KEY": "Pre-shared key",
     "TEST_CONNECTION": "Test connection",
     "TEST_SUCCESS": "Connected to the Tax Authority",
-    "TEST_FAILED": "Could not connect to the Tax Authority"
+    "TEST_FAILED": "Could not connect to the Tax Authority",
+    "TAX": "Value added tax",
+    "TAX_HINT": "Prices in the app include VAT; the receipt splits the VAT out. Each product can set its own VAT type on the product screen.",
+    "DEFAULT_TAX": "Default VAT for products",
+    "TAX_NONE": "Not VAT-registered (no tax)",
+    "TAX_V009": "General goods 14%",
+    "TAX_V010": "Other rate",
+    "TAX_V003": "Exempt",
+    "TAX_V004": "Not subject to VAT",
+    "TAX_RATE": "VAT rate"
   },
   "ASSISTANT": {
     "TITLE": "Smart Assistant",
