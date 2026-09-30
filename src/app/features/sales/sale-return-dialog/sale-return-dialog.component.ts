@@ -12,6 +12,8 @@ import { LanguageService } from '../../../core/services/language.service';
 interface ReturnLine {
   saleItemId: number;
   productName: string;
+  /** A sale takes from several batches when one doesn't cover the quantity. */
+  batchNumber?: string;
   unitPrice: number;
   sold: number;
   returned: number;
@@ -42,6 +44,7 @@ export class SaleReturnDialogComponent {
   readonly lines: ReturnLine[] = (this.sale.items ?? []).map(item => ({
     saleItemId: item.id,
     productName: item.productName,
+    batchNumber: item.batchNumber,
     unitPrice: item.unitPrice,
     sold: item.quantity,
     returned: item.returnedQuantity ?? 0,

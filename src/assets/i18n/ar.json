@@ -1156,7 +1156,8 @@
     "SALE_HAS_RETURNS": "الفاتورة دي عليها مرتجعات فمينفعش تتلغي - رجّع باقي الأصناف من زرار المرتجع",
     "SALE_RETURN_QUANTITY_EXCEEDED": "مينفعش ترجّع من {{productName}} أكتر من {{available}}",
     "SALE_RETURN_ITEM_NOT_IN_SALE": "الصنف ده مش في الفاتورة",
-    "SALE_RETURN_NOT_FOUND": "المرتجع مش موجود"
+    "SALE_RETURN_NOT_FOUND": "المرتجع مش موجود",
+    "SALE_STOCK_EXPIRED": "باقي مخزون {{productName}} منتهي الصلاحية - المتاح للبيع {{available}} بس"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
