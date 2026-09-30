@@ -613,6 +613,7 @@
       "REASON": "Reason",
       "REASON_EXPIRING": "Near Expiry",
       "REASON_SLOW_MOVING": "Slow Moving",
+      "REASON_DEAD_STOCK": "Dead stock (no sales in 90 days)",
       "SUGGESTED_DISCOUNT": "Suggested Discount",
       "DETAILS": "Details",
       "NO_RECOMMENDATIONS": "No pricing recommendations right now"

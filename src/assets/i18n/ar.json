@@ -613,6 +613,7 @@
       "REASON": "السبب",
       "REASON_EXPIRING": "قريب من انتهاء الصلاحية",
       "REASON_SLOW_MOVING": "بطيء الحركة",
+      "REASON_DEAD_STOCK": "راكد (بدون بيع 90 يوم)",
       "SUGGESTED_DISCOUNT": "الخصم المقترح",
       "DETAILS": "التفاصيل",
       "NO_RECOMMENDATIONS": "لا توجد توصيات تسعير حاليًا"

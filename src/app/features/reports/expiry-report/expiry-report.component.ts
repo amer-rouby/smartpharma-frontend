@@ -86,7 +86,8 @@ export class ExpiryReportComponent implements OnInit {
   getReasonLabel(reason: string): string {
     const keyMap: Record<string, string> = {
       'EXPIRING': 'REPORTS.PRICING.REASON_EXPIRING',
-      'SLOW_MOVING': 'REPORTS.PRICING.REASON_SLOW_MOVING'
+      'SLOW_MOVING': 'REPORTS.PRICING.REASON_SLOW_MOVING',
+      'DEAD_STOCK': 'REPORTS.PRICING.REASON_DEAD_STOCK'
     };
     const key = keyMap[reason] || reason;
     const translated = this.translate.instant(key);
