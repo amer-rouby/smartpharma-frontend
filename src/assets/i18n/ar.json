@@ -1062,7 +1062,7 @@
     "ETA_CREDENTIALS_MISSING": "Client ID و Client Secret مطلوبان",
     "ETA_AUTH_FAILED": "فشل الاتصال بمصلحة الضرائب: {{detail}}",
     "EINVOICE_SUBMISSION_NOT_FOUND": "لا يوجد إيصال إلكتروني لهذه العملية بعد",
-    "EINVOICE_SUBMISSION_NOT_FOUND": "لا يوجد إرسال فاتورة إلكترونية لهذه العملية بعد"
+    "SALE_HAS_ETA_RECEIPT": "العملية دي اتصدر لها إيصال إلكتروني. ما ينفعش تعدّل الخصم أو طريقة الدفع أو رقم العميل - احذف العملية (هيتصدر إيصال مرتجع) واعمل بيع جديد"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",

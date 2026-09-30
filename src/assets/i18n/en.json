@@ -1060,7 +1060,7 @@
     "ETA_CREDENTIALS_MISSING": "Client ID and Client Secret are required",
     "ETA_AUTH_FAILED": "Could not connect to the Tax Authority: {{detail}}",
     "EINVOICE_SUBMISSION_NOT_FOUND": "No e-receipt exists for this sale yet",
-    "EINVOICE_SUBMISSION_NOT_FOUND": "No e-invoice submission exists yet for this sale"
+    "SALE_HAS_ETA_RECEIPT": "This sale already has an e-receipt. The discount, payment method and customer phone can't be changed - delete the sale (a return receipt is issued) and sell again"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
