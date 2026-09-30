@@ -1,0 +1,122 @@
+.return-dialog {
+  min-width: 560px;
+  max-width: 760px;
+  direction: inherit;
+
+  @media (max-width: 640px) {
+    min-width: unset;
+  }
+}
+
+.dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: var(--color-danger-600, #dc2626);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--color-text-secondary, #64748b);
+  }
+}
+
+.return-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+
+  th,
+  td {
+    padding: 10px 8px;
+    text-align: start;
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+    vertical-align: middle;
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  td small {
+    display: block;
+    font-size: 12px;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  tr.done {
+    opacity: 0.6;
+  }
+}
+
+.qty-input {
+  width: 72px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border, #cbd5e1);
+  border-radius: 6px;
+  background: var(--color-surface, #fff);
+  color: inherit;
+  font: inherit;
+}
+
+.fully-returned {
+  font-size: 12px;
+  color: var(--color-success-600, #059669);
+}
+
+.return-all {
+  margin-bottom: 8px;
+}
+
+.hint {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.reason-field {
+  width: 100%;
+}
+
+.refund-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--color-primary-50, rgba(102, 126, 234, 0.06));
+
+  div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .refund strong {
+    font-size: 18px;
+    color: var(--color-danger-600, #dc2626);
+  }
+
+  small {
+    color: var(--color-text-secondary, #64748b);
+  }
+}

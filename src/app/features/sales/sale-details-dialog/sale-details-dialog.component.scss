@@ -198,6 +198,14 @@ h3 {
       padding-top: 8px;
       margin-top: 8px;
     }
+
+    &.returned {
+      color: var(--color-danger-600, #dc2626);
+    }
+
+    &.net {
+      font-weight: 600;
+    }
   }
 }
 
@@ -335,6 +343,70 @@ h3 {
 
     button {
       width: 100%;
+    }
+  }
+}
+
+.returns-section {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 12px;
+    color: var(--color-text-primary);
+  }
+
+  .return-entry {
+    padding: 10px 0;
+    border-top: 1px dashed var(--color-border);
+
+    &:first-of-type {
+      border-top: none;
+    }
+  }
+
+  .return-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+
+    .return-date {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+
+    .return-refund {
+      margin-inline-start: auto;
+      color: var(--color-danger-600, #dc2626);
+    }
+  }
+
+  .return-items {
+    margin-top: 4px;
+    font-size: 13px;
+  }
+
+  .return-note {
+    display: block;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .return-receipt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+
+    .label {
+      font-size: 12px;
+      color: var(--color-text-secondary);
     }
   }
 }

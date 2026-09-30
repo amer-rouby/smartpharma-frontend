@@ -1,0 +1,88 @@
+<div class="return-dialog">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon>assignment_return</mat-icon>
+      <div>
+        <h2>{{'SALES.RETURN.TITLE' | translate}}</h2>
+        <span class="subtitle">{{'SALES.RETURN.SUBTITLE' | translate: { invoice: sale.invoiceNumber } }}</span>
+      </div>
+    </div>
+    <button mat-icon-button (click)="close()" [attr.aria-label]="'COMMON.CLOSE' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <table class="return-table">
+      <thead>
+        <tr>
+          <th>{{'SALES.PRODUCT' | translate}}</th>
+          <th>{{'SALES.RETURN.SOLD' | translate}}</th>
+          <th>{{'SALES.RETURN.ALREADY_RETURNED' | translate}}</th>
+          <th>{{'SALES.RETURN.QUANTITY' | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (line of lines; track line.saleItemId) {
+        <tr [class.done]="line.available === 0">
+          <td>
+            <strong>{{line.productName}}</strong>
+            <small>{{formatCurrency(line.unitPrice)}}</small>
+          </td>
+          <td>{{line.sold}}</td>
+          <td>{{line.returned}}</td>
+          <td>
+            @if (line.available > 0) {
+            <input type="number" class="qty-input" min="0" [max]="line.available"
+              [ngModel]="quantities()[line.saleItemId] ?? 0" (ngModelChange)="setQuantity(line, $event)"
+              [attr.aria-label]="('SALES.RETURN.QUANTITY' | translate) + ' - ' + line.productName">
+            <small class="max-hint">{{'SALES.RETURN.UP_TO' | translate: { count: line.available } }}</small>
+            } @else {
+            <span class="fully-returned">{{'SALES.RETURN.FULLY_RETURNED' | translate}}</span>
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <button mat-button type="button" class="return-all" (click)="returnEverything()">
+      <mat-icon>select_all</mat-icon>
+      {{'SALES.RETURN.ALL_REMAINING' | translate}}
+    </button>
+
+    <mat-checkbox [ngModel]="restock()" (ngModelChange)="restock.set($event)">
+      {{'SALES.RETURN.RESTOCK' | translate}}
+    </mat-checkbox>
+    <p class="hint">{{'SALES.RETURN.RESTOCK_HINT' | translate}}</p>
+
+    <mat-form-field appearance="outline" class="reason-field">
+      <mat-label>{{'SALES.RETURN.REASON' | translate}}</mat-label>
+      <textarea matInput rows="2" maxlength="500" [ngModel]="reason()" (ngModelChange)="reason.set($event)"></textarea>
+    </mat-form-field>
+
+    @if (hasItems()) {
+    <div class="refund-summary">
+      <div>
+        <span>{{'SALES.RETURN.ITEMS_TOTAL' | translate}}</span>
+        <span>{{formatCurrency(itemsTotal())}}</span>
+      </div>
+      <div class="refund">
+        <span>{{'SALES.RETURN.REFUND' | translate}}</span>
+        <strong>{{formatCurrency(estimatedRefund())}}</strong>
+      </div>
+      @if (sale.discountAmount > 0) {
+      <small>{{'SALES.RETURN.DISCOUNT_NOTE' | translate}}</small>
+      }
+    </div>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="close()">{{'COMMON.CANCEL' | translate}}</button>
+    <button mat-raised-button color="warn" [disabled]="!hasItems() || saving()" (click)="confirm()">
+      <mat-icon>assignment_return</mat-icon>
+      {{'SALES.RETURN.CONFIRM' | translate}}
+    </button>
+  </mat-dialog-actions>
+</div>
