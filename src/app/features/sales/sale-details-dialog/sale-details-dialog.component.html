@@ -107,6 +107,9 @@
           <th>{{'SALES.QUANTITY' | translate}}</th>
           <th>{{'SALES.UNIT_PRICE' | translate}}</th>
           <th>{{'SALES.TOTAL_PRICE' | translate}}</th>
+          @if (hasReturns()) {
+          <th class="no-print">{{'SALES.RETURN.RETURNED' | translate}}</th>
+          }
         </tr>
       </thead>
       <tbody>
@@ -117,6 +120,9 @@
           <td>{{item.quantity}}</td>
           <td>{{formatCurrency(item.unitPrice)}}</td>
           <td>{{formatCurrency(item.totalPrice)}}</td>
+          @if (hasReturns()) {
+          <td class="no-print">{{item.returnedQuantity || '-'}}</td>
+          }
         </tr>
         }
       </tbody>
@@ -143,7 +149,60 @@
         <span>{{'SALES.TOTAL' | translate}}</span>
         <span>{{formatCurrency(data.sale?.totalAmount || 0)}}</span>
       </div>
+      @if (hasReturns()) {
+      <div class="total-row returned no-print">
+        <span>{{'SALES.RETURN.RETURNED_AMOUNT' | translate}}</span>
+        <span>-{{formatCurrency(data.sale.returnedAmount)}}</span>
+      </div>
+      <div class="total-row net no-print">
+        <span>{{'SALES.RETURN.NET' | translate}}</span>
+        <span>{{formatCurrency(data.sale.totalAmount - data.sale.returnedAmount)}}</span>
+      </div>
+      }
     </div>
+
+    @if (returns().length) {
+    <div class="returns-section no-print">
+      <h4>
+        <mat-icon>assignment_return</mat-icon>
+        {{'SALES.RETURN.HISTORY' | translate}}
+      </h4>
+      @for (ret of returns(); track ret.id) {
+      <div class="return-entry">
+        <div class="return-head">
+          <strong>{{'SALES.RETURN.NUMBER' | translate: { n: ret.returnNumber } }}</strong>
+          <span class="return-date">{{formatDate(ret.createdAt)}}</span>
+          <strong class="return-refund">-{{formatCurrency(ret.refundAmount)}}</strong>
+        </div>
+        <div class="return-items">{{describeItems(ret)}}</div>
+        @if (!ret.restocked) {
+        <small class="return-note">{{'SALES.RETURN.NOT_RESTOCKED' | translate}}</small>
+        }
+        @if (ret.reason) {
+        <small class="return-note">{{ret.reason}}</small>
+        }
+        @if (eInvoiceEnabled() && receiptFor(ret); as receipt) {
+        <div class="return-receipt">
+          <span class="label">{{'EINVOICE.RETURN_RECEIPT' | translate}}</span>
+          <mat-chip [color]="getEInvoiceStatusColor(receipt.status)" highlighted>
+            {{'EINVOICE.STATUS_' + receipt.status | translate}}
+          </mat-chip>
+          @if (receipt.errorMessage) {
+          <span class="einvoice-error">{{receipt.errorMessage}}</span>
+          }
+          @if (receipt.status === 'ERROR' || receipt.status === 'REJECTED') {
+          <button mat-stroked-button color="primary" [disabled]="returnReceiptLoading() === receipt.id"
+            (click)="retryReturnReceipt(receipt)">
+            <mat-icon>refresh</mat-icon>
+            {{(receipt.status === 'REJECTED' ? 'EINVOICE.REISSUE' : 'EINVOICE.RETRY') | translate}}
+          </button>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
 
     @if (data.sale?.notes) {
     <div class="notes-section">
@@ -173,6 +232,12 @@
     <button mat-button color="primary" (click)="dialogRef.close()">
       {{'COMMON.CLOSE' | translate}}
     </button>
+    @if (canReturn()) {
+    <button mat-stroked-button color="warn" (click)="openReturn()">
+      <mat-icon>assignment_return</mat-icon>
+      {{'SALES.RETURN.ACTION' | translate}}
+    </button>
+    }
     <button mat-raised-button color="accent" (click)="printInvoice()">
       <mat-icon>print</mat-icon>
       {{'COMMON.PRINT' | translate}}

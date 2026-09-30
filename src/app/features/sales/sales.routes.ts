@@ -21,5 +21,10 @@ export const SALES_ROUTES: Routes = [
     loadComponent: () => import('./sales-history/sales-history.component')
       .then(m => m.SalesHistoryComponent)
   },
+  {
+    path: 'e-receipts',
+    loadComponent: () => import('./e-receipts-attention/e-receipts-attention.component')
+      .then(m => m.EReceiptsAttentionComponent)
+  },
 
 ];

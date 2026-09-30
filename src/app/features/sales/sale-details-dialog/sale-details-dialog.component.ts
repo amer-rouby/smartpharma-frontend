@@ -1,5 +1,5 @@
 import { Component, Inject, inject, signal, computed, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
 import { EInvoiceService } from '../../../core/services/einvoice.service';
 import { EInvoiceSubmission } from '../../../core/models/einvoice.model';
+import { SaleReturnService } from '../../../core/services/sale-return.service';
+import { SalesService } from '../../../core/services/sales.service';
+import { SaleReturn } from '../../../core/models/sale-return.model';
+import { SaleReturnDialogComponent } from '../sale-return-dialog/sale-return-dialog.component';
 import { toDataURL } from 'qrcode';
 
 @Component({
@@ -39,6 +43,14 @@ export class SaleDetailsDialogComponent implements OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly smartFeatureSettingsService = inject(SmartFeatureSettingsService);
   private readonly eInvoiceService = inject(EInvoiceService);
+  private readonly saleReturnService = inject(SaleReturnService);
+  private readonly salesService = inject(SalesService);
+  private readonly dialog = inject(MatDialog);
+
+  readonly returns = signal<SaleReturn[]>([]);
+  // ETA return receipts of this sale's returns, matched by saleReturnId.
+  readonly returnReceipts = signal<EInvoiceSubmission[]>([]);
+  readonly returnReceiptLoading = signal<number | null>(null);
 
   readonly pharmacySettings = signal<PharmacySettings | null>(null);
   readonly prescriptionImageBlobUrl = signal<string | null>(null);
@@ -56,6 +68,59 @@ export class SaleDetailsDialogComponent implements OnDestroy {
     this.loadPharmacySettings();
     this.loadPrescriptionImage();
     this.loadEInvoiceStatus();
+    this.loadReturns();
+  }
+
+  private loadReturns(): void {
+    const saleId = this.data.sale?.id;
+    if (!saleId || !(this.data.sale?.returnedAmount > 0)) return;
+    this.saleReturnService.getReturns(saleId).subscribe((returns) => this.returns.set(returns));
+    if (this.eInvoiceEnabled()) {
+      this.eInvoiceService.getReturnsForSale(saleId).subscribe((receipts) => this.returnReceipts.set(receipts));
+    }
+  }
+
+  hasReturns(): boolean {
+    return this.data.sale?.returnedAmount > 0;
+  }
+
+  canReturn(): boolean {
+    return (this.data.sale?.items ?? []).some((item: any) => item.quantity > (item.returnedQuantity ?? 0));
+  }
+
+  openReturn(): void {
+    this.dialog.open(SaleReturnDialogComponent, { data: { sale: this.data.sale }, width: '720px', maxWidth: '95vw' })
+      .afterClosed()
+      .subscribe((saleReturn?: SaleReturn) => {
+        if (!saleReturn) return;
+        // Returned quantities and the refunded total come from the server.
+        this.salesService.getSaleById(this.data.sale.id).subscribe({
+          next: (sale) => {
+            this.data.sale = sale;
+            this.loadReturns();
+          },
+          error: () => this.errorHandler.showError('SALES.LOAD_DETAILS_ERROR')
+        });
+      });
+  }
+
+  receiptFor(saleReturn: SaleReturn): EInvoiceSubmission | undefined {
+    return this.returnReceipts().find((receipt) => receipt.saleReturnId === saleReturn.id);
+  }
+
+  describeItems(saleReturn: SaleReturn): string {
+    const separator = this.languageService.getCurrentLanguage() === 'ar' ? '، ' : ', ';
+    return saleReturn.items.map((item) => `${item.productName} × ${item.quantity}`).join(separator);
+  }
+
+  retryReturnReceipt(receipt: EInvoiceSubmission): void {
+    this.returnReceiptLoading.set(receipt.id);
+    this.eInvoiceService.retrySubmission(receipt.id).subscribe((updated) => {
+      this.returnReceiptLoading.set(null);
+      if (updated) {
+        this.returnReceipts.update((list) => list.map((r) => (r.id === updated.id ? updated : r)));
+      }
+    });
   }
 
   private loadEInvoiceStatus(): void {

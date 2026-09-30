@@ -9,6 +9,12 @@ export type EInvoiceStatus = 'PENDING' | 'SUBMITTED' | 'ACCEPTED' | 'REJECTED' |
 export interface EInvoiceSubmission {
   id: number;
   saleTransactionId: number;
+  documentType?: 'SALE' | 'RETURN';
+  /** Set on the return receipt of some items (a SaleReturn). */
+  saleReturnId?: number;
+  /** Only filled by the "needs attention" list. */
+  invoiceNumber?: string;
+  saleCancelled?: boolean;
   status: EInvoiceStatus;
   etaUuid?: string;
   submittedAt?: string;

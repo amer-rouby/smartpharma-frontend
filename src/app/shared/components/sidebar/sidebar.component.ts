@@ -66,7 +66,8 @@ export class SidebarComponent {
       children: [
         { icon: 'point_of_sale', label: 'NAV.SALES_POS', route: '/sales/pos' },
         { icon: 'receipt_long', label: 'NAV.SALES_HISTORY', route: '/sales/history' },
-        { icon: 'analytics', label: 'NAV.SALES_ANALYTICS', route: '/sales/analytics' }
+        { icon: 'analytics', label: 'NAV.SALES_ANALYTICS', route: '/sales/analytics' },
+        { icon: 'report', label: 'NAV.E_RECEIPTS_ATTENTION', route: '/sales/e-receipts' }
       ],
       roles: ['ADMIN', 'PHARMACIST', 'MANAGER']
     },

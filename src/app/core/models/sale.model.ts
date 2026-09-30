@@ -107,6 +107,8 @@ export interface SaleResponse {
   invoiceNumber: string;
   subtotal: number;
   totalAmount: number;
+  /** Refunded through returns so far; the sale's net is totalAmount - this. */
+  returnedAmount?: number;
   discountAmount: number;
   paymentMethod: string;
   customerPhone?: string;
@@ -120,6 +122,7 @@ export interface SaleItemResponse {
   productName: string;
   barcode: string;
   quantity: number;
+  returnedQuantity?: number;
   unitPrice: number;
   totalPrice: number;
 }

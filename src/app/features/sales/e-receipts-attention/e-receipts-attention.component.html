@@ -1,0 +1,58 @@
+<div class="page-container">
+  <app-page-header [title]="'EINVOICE.ATTENTION_TITLE' | translate" [subtitle]="'EINVOICE.ATTENTION_SUBTITLE' | translate"
+    icon="report">
+    <button mat-stroked-button (click)="load()" [disabled]="loading()">
+      <mat-icon>refresh</mat-icon>
+      {{'COMMON.REFRESH' | translate}}
+    </button>
+  </app-page-header>
+
+  @if (!enabled()) {
+  <div class="state-card">
+    <mat-icon>toggle_off</mat-icon>
+    <p>{{'EINVOICE.FEATURE_OFF' | translate}}</p>
+  </div>
+  } @else if (loading()) {
+  <div class="state-card">
+    <mat-spinner diameter="32"></mat-spinner>
+  </div>
+  } @else if (loadFailed()) {
+  <div class="state-card">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{'EINVOICE.ATTENTION_LOAD_ERROR' | translate}}</p>
+  </div>
+  } @else if (!receipts().length) {
+  <div class="state-card ok">
+    <mat-icon>task_alt</mat-icon>
+    <p>{{'EINVOICE.ATTENTION_EMPTY' | translate}}</p>
+  </div>
+  } @else {
+  <p class="howto">{{'EINVOICE.ATTENTION_HOWTO' | translate}}</p>
+  <div class="receipt-list">
+    @for (receipt of receipts(); track receipt.id) {
+    <div class="receipt-card">
+      <div class="receipt-head">
+        <strong>{{receipt.invoiceNumber}}</strong>
+        <span class="type">{{typeKey(receipt) | translate}}</span>
+        @if (receipt.saleCancelled) {
+        <span class="cancelled">{{'EINVOICE.SALE_CANCELLED' | translate}}</span>
+        }
+        <mat-chip [color]="'warn'" highlighted>{{'EINVOICE.STATUS_' + receipt.status | translate}}</mat-chip>
+      </div>
+      @if (receipt.receiptNumber) {
+      <div class="receipt-number" dir="ltr">{{receipt.receiptNumber}}</div>
+      }
+      @if (receipt.errorMessage) {
+      <p class="reason">{{receipt.errorMessage}}</p>
+      }
+      <div class="receipt-actions">
+        <button mat-raised-button color="primary" [disabled]="retrying() === receipt.id" (click)="retry(receipt)">
+          <mat-icon>refresh</mat-icon>
+          {{(receipt.status === 'REJECTED' ? 'EINVOICE.REISSUE' : 'EINVOICE.RETRY') | translate}}
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
