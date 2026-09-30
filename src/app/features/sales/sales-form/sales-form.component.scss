@@ -4,7 +4,10 @@
 
   .sales-content {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    // minmax(0, ...) not plain 1fr: 1fr can't shrink below its content's
+    // min width, so a wide cart table pushed the whole page sideways instead
+    // of scrolling inside .cart-table-container.
+    grid-template-columns: minmax(0, 1fr) 400px;
     gap: 24px;
   }
 
@@ -382,7 +385,7 @@
 @media (max-width: 1024px) {
   .sales-form-container {
     .sales-content {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .summary-card {
