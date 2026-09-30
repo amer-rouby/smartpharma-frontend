@@ -464,3 +464,61 @@
 .buyer-id-error {
   color: var(--color-error-600, #dc2626);
 }
+
+// Offline POS status: shown while offline, while sales wait to sync, or when
+// the product list came from the device's saved copy.
+.offline-banner {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  background: var(--color-surface, #fff);
+
+  &.is-offline {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+  }
+}
+
+.offline-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.offline-chip {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f59e0b;
+  color: #fff;
+}
+
+.offline-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.offline-failed {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--color-border, #e2e8f0);
+  color: var(--color-error-600, #dc2626);
+
+  .failed-text {
+    flex: 1;
+    min-width: 200px;
+
+    small {
+      display: block;
+      color: var(--color-text-secondary, #64748b);
+    }
+  }
+}

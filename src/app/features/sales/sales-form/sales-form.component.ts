@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, startWith } from 'rxjs';
@@ -20,6 +21,7 @@ import { PharmacySettingsService } from '../../../core/services/settings/pharmac
 import { PrescriptionService } from '../../../core/services/prescription.service';
 import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
 import { ETA_BUYER_ID_THRESHOLD, NATIONAL_ID_PATTERN } from '../../../core/models/einvoice.model';
+import { OfflineSalesService, QueuedSale } from '../../../core/services/offline-sales.service';
 
 interface CartItem {
   product: Product;
@@ -42,12 +44,16 @@ interface SaleRequest {
   buyerName?: string;
   totalAmount: number;
   prescriptionImageUrl?: string;
+  // Offline POS: device-made id (server de-duplicates by it) and, for a
+  // queued sale, when it was actually rung up.
+  clientSaleId: string;
+  soldAt?: string;
 }
 
 @Component({
   selector: 'app-sales-form',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent],
+  imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent, DatePipe],
   templateUrl: './sales-form.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-form.component.scss'
@@ -66,6 +72,9 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly authService = inject(AuthService);
   private readonly errorHandler = inject(ErrorHandlerService);
   private readonly smartFeatureSettingsService = inject(SmartFeatureSettingsService);
+  readonly offline = inject(OfflineSalesService);
+  // When the product list came from the device's saved copy (server unreachable).
+  readonly catalogSavedAt = signal<string | null>(null);
 
   @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
   readonly barcodeValue = signal('');
@@ -250,12 +259,35 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
           ...p,
           sellPrice: p.sellPrice || 0
         }));
-        this.allProducts.set(data);
-        this.products.set(data);
-        this.filteredProductsSubject.next(data.slice(0, 10));
+        this.setProducts(data);
+        this.catalogSavedAt.set(null);
+        this.offline.cacheCatalog(data);
       },
-      error: (err) => this.errorHandler.handleHttpError(err, 'PRODUCTS.LOAD_ERROR')
+      error: (err) => {
+        if (this.offline.enabled() && !err?.status) {
+          void this.loadCachedProducts();
+          return;
+        }
+        this.errorHandler.handleHttpError(err, 'PRODUCTS.LOAD_ERROR');
+      }
     });
+  }
+
+  private setProducts(data: Product[]): void {
+    this.allProducts.set(data);
+    this.products.set(data);
+    this.filteredProductsSubject.next(data.slice(0, 10));
+  }
+
+  // Server unreachable: sell from the product list saved on this device.
+  private async loadCachedProducts(): Promise<void> {
+    const cached = await this.offline.cachedCatalog();
+    if (!cached?.products?.length) {
+      this.errorHandler.showError('SALES.OFFLINE.NO_CATALOG');
+      return;
+    }
+    this.setProducts(cached.products);
+    this.catalogSavedAt.set(cached.savedAt);
   }
 
   displayProduct(product: Product): string {
@@ -368,9 +400,13 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   async onSubmit(): Promise<void> {
     if (!this.validateSale()) return;
 
-    this.loading.set(true);
     const saleRequest = this.mapCartToSaleRequest();
+    if (this.offline.enabled() && !this.offline.online()) {
+      await this.sellOffline(saleRequest);
+      return;
+    }
 
+    this.loading.set(true);
     try {
       if (this.paymentMethod() !== PaymentMethod.CASH) {
         const paymentResponse = await this.processPayment(saleRequest.totalAmount);
@@ -389,12 +425,72 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       const saleResponse = await this.createSale(saleRequest);
       this.handleSaleSuccess(saleResponse);
     } catch (error: any) {
+      // Couldn't reach the server for a cash sale: queue it (same
+      // clientSaleId, so if the request did land it isn't recorded twice).
+      if (this.offline.enabled() && !error?.status && this.paymentMethod() === PaymentMethod.CASH) {
+        this.offline.online.set(false);
+        await this.sellOffline(saleRequest);
+        return;
+      }
       console.error('Sale submission error:', error);
       if (!this.errorHandler.showByCode(error.code, error.params)) {
         this.errorHandler.showError(error.message || 'SALES.CREATE_ERROR');
       }
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  // Card and wallet payments need the gateway, so offline sales are cash only.
+  private async sellOffline(saleRequest: SaleRequest): Promise<void> {
+    if (this.paymentMethod() !== PaymentMethod.CASH) {
+      this.errorHandler.showWarning('SALES.OFFLINE.CASH_ONLY');
+      return;
+    }
+    try {
+      await this.offline.enqueue({ ...saleRequest, soldAt: new Date().toISOString() }, this.totalAmount());
+    } catch {
+      this.errorHandler.showError('SALES.OFFLINE.QUEUE_FAILED');
+      return;
+    }
+    await Swal.fire({
+      icon: 'info',
+      title: this.translate.instant('SALES.OFFLINE.SAVED_TITLE'),
+      text: this.translate.instant('SALES.OFFLINE.SAVED_TEXT', { total: this.formatCurrency(this.totalAmount()) }),
+      confirmButtonText: this.translate.instant('COMMON.CONTINUE'),
+      confirmButtonColor: '#667eea',
+      timer: 6000,
+      timerProgressBar: true
+    });
+    // Stay on the POS - sales history needs the server.
+    this.clearCart();
+  }
+
+  failureReason(sale: QueuedSale): string {
+    if (sale.errorCode) {
+      const key = `ERRORS.${sale.errorCode}`;
+      const translated = this.translate.instant(key);
+      if (translated !== key) return translated;
+    }
+    return sale.errorMessage || this.translate.instant('SALES.CREATE_ERROR');
+  }
+
+  retryQueuedSale(clientSaleId: string): void {
+    void this.offline.retry(clientSaleId);
+  }
+
+  async discardQueuedSale(clientSaleId: string): Promise<void> {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: this.translate.instant('SALES.OFFLINE.DISCARD_TITLE'),
+      text: this.translate.instant('SALES.OFFLINE.DISCARD_TEXT'),
+      showCancelButton: true,
+      confirmButtonText: this.translate.instant('SALES.OFFLINE.DISCARD'),
+      cancelButtonText: this.translate.instant('COMMON.CANCEL'),
+      confirmButtonColor: '#dc2626'
+    });
+    if (result.isConfirmed) {
+      await this.offline.discard(clientSaleId);
     }
   }
 
@@ -466,7 +562,8 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       buyerNationalId: this.buyerNationalId().trim() || undefined,
       buyerName: this.buyerName().trim() || undefined,
       totalAmount: this.subtotal(),
-      prescriptionImageUrl: this.prescriptionImageUrl() || undefined
+      prescriptionImageUrl: this.prescriptionImageUrl() || undefined,
+      clientSaleId: this.offline.newClientSaleId()
     };
   }
 
