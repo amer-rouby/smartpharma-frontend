@@ -17,6 +17,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
 import { EInvoiceService } from '../../../core/services/einvoice.service';
 import { EInvoiceSubmission } from '../../../core/models/einvoice.model';
+import { toDataURL } from 'qrcode';
 
 @Component({
   selector: 'app-sale-details-dialog',
@@ -44,6 +45,9 @@ export class SaleDetailsDialogComponent implements OnDestroy {
   readonly eInvoiceEnabled = computed(() => this.smartFeatureSettingsService.flags().eInvoiceEnabled);
   readonly eInvoiceSubmission = signal<EInvoiceSubmission | null>(null);
   readonly eInvoiceLoading = signal(false);
+  // QR image for the ETA receipt link, rendered locally (the content is the
+  // receipt's portal URL - it's never sent to a third-party QR service).
+  readonly eInvoiceQr = signal<string | null>(null);
 
   constructor(
     public dialogRef: MatDialogRef<SaleDetailsDialogComponent>,
@@ -56,9 +60,7 @@ export class SaleDetailsDialogComponent implements OnDestroy {
 
   private loadEInvoiceStatus(): void {
     if (!this.eInvoiceEnabled() || !this.data.sale?.id) return;
-    this.eInvoiceService.getForSale(this.data.sale.id).subscribe((submission) => {
-      this.eInvoiceSubmission.set(submission);
-    });
+    this.eInvoiceService.getForSale(this.data.sale.id).subscribe((submission) => this.setSubmission(submission));
   }
 
   submitEInvoice(): void {
@@ -66,7 +68,7 @@ export class SaleDetailsDialogComponent implements OnDestroy {
     this.eInvoiceLoading.set(true);
     this.eInvoiceService.submit(this.data.sale.id).subscribe((submission) => {
       this.eInvoiceLoading.set(false);
-      if (submission) this.eInvoiceSubmission.set(submission);
+      if (submission) this.setSubmission(submission);
     });
   }
 
@@ -75,8 +77,19 @@ export class SaleDetailsDialogComponent implements OnDestroy {
     this.eInvoiceLoading.set(true);
     this.eInvoiceService.retry(this.data.sale.id).subscribe((submission) => {
       this.eInvoiceLoading.set(false);
-      if (submission) this.eInvoiceSubmission.set(submission);
+      if (submission) this.setSubmission(submission);
     });
+  }
+
+  private setSubmission(submission: EInvoiceSubmission | null): void {
+    this.eInvoiceSubmission.set(submission);
+    if (!submission?.qrContent) {
+      this.eInvoiceQr.set(null);
+      return;
+    }
+    toDataURL(submission.qrContent, { errorCorrectionLevel: 'M', margin: 1, width: 180 })
+      .then((url) => this.eInvoiceQr.set(url))
+      .catch(() => this.eInvoiceQr.set(null));
   }
 
   getEInvoiceStatusColor(status: string): 'primary' | 'accent' | 'warn' {
@@ -182,7 +195,10 @@ export class SaleDetailsDialogComponent implements OnDestroy {
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           totalPrice: item.totalPrice
-        }))
+        })),
+        etaReceipt: this.eInvoiceSubmission()?.etaUuid && this.eInvoiceQr()
+          ? { uuid: this.eInvoiceSubmission()!.etaUuid!, qrDataUrl: this.eInvoiceQr()! }
+          : undefined
       };
 
       this.invoicePrintService.printInvoice(printableSale, pharmacy);

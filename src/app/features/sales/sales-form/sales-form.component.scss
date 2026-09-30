@@ -456,3 +456,8 @@
   direction: inherit;
   text-align: start;
 }
+
+// National ID format error on the ETA buyer fields.
+.buyer-id-error {
+  color: var(--color-error-600, #dc2626);
+}

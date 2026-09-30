@@ -12,6 +12,12 @@ export class ProductModel extends CrudModel<ProductModel, ProductCrudService> im
   scientificName = '';
   barcode = '';
   category = '';
+  // ETA e-receipt coding - empty means a valid GTIN barcode is used as GS1.
+  etaItemType = '';
+  etaItemCode = '';
+  // VAT subtype (V009/V010/V003/V004); empty = use the pharmacy's ETA default.
+  etaTaxSubtype = '';
+  etaTaxRate?: number;
   unitType = 'BOX';
   minStockLevel = 10;
   prescriptionRequired = false;
@@ -32,6 +38,10 @@ export class ProductModel extends CrudModel<ProductModel, ProductCrudService> im
       scientificName: [''],
       barcode: [''],
       category: [''],
+      etaItemType: [''],
+      etaItemCode: [''],
+      etaTaxSubtype: [''],
+      etaTaxRate: [null, [Validators.min(0), Validators.max(100)]],
       unitType: ['BOX'],
       minStockLevel: [10, [Validators.min(0)]],
       prescriptionRequired: [false],

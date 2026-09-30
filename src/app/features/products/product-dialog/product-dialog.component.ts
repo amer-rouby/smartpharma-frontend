@@ -64,6 +64,9 @@ export class ProductDialogComponent extends CrudDialogDirective<ProductModel> {
         storageConditions: extra['storageConditions'] || '',
         drugInteractionWarning: extra['drugInteractionWarning'] || '',
         isControlledSubstance: !!extra['isControlledSubstance'],
+        // The API sends null for "not set"; the selects' "not set" option is "".
+        etaItemType: m.etaItemType ?? '',
+        etaTaxSubtype: m.etaTaxSubtype ?? '',
       });
     }
   }
@@ -134,6 +137,13 @@ export class ProductDialogComponent extends CrudDialogDirective<ProductModel> {
       scientificName: v.scientificName,
       barcode: v.barcode,
       category: v.category,
+      etaItemType: v.etaItemType ?? '',
+      // Switching back to "use barcode" must clear the code too, or the API
+      // would keep a code with no GS1/EGS type.
+      etaItemCode: v.etaItemType ? (v.etaItemCode?.trim() ?? '') : '',
+      etaTaxSubtype: v.etaTaxSubtype ?? '',
+      // Only "other rate" carries its own percentage.
+      etaTaxRate: v.etaTaxSubtype === 'V010' ? v.etaTaxRate : undefined,
       unitType: v.unitType,
       minStockLevel: v.minStockLevel,
       prescriptionRequired: v.prescriptionRequired,

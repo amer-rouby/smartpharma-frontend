@@ -37,8 +37,8 @@ export class ProductCrudService extends RegisterServiceMixin(CrudWithDialogServi
 
   // ProductRequest has no id/pharmacyId/totalStock/createdAt/updatedAt.
   override toRequestPayload(model: ProductModel): unknown {
-    const { name, scientificName, barcode, category, unitType, minStockLevel, prescriptionRequired, sellPrice, buyPrice, extraAttributes, initialStock, expiryDate } = model;
-    return { name, scientificName, barcode, category, unitType, minStockLevel, prescriptionRequired, sellPrice, buyPrice, extraAttributes, initialStock, expiryDate };
+    const { name, scientificName, barcode, category, etaItemType, etaItemCode, etaTaxSubtype, etaTaxRate, unitType, minStockLevel, prescriptionRequired, sellPrice, buyPrice, extraAttributes, initialStock, expiryDate } = model;
+    return { name, scientificName, barcode, category, etaItemType, etaItemCode, etaTaxSubtype, etaTaxRate, unitType, minStockLevel, prescriptionRequired, sellPrice, buyPrice, extraAttributes, initialStock, expiryDate };
   }
 
   // create also needs pharmacyId as a query param, unlike the base pattern.

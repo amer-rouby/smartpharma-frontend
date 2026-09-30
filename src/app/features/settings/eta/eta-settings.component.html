@@ -1,0 +1,239 @@
+<div class="settings-page">
+  <app-page-header [title]="'ETA.TITLE' | translate" [subtitle]="'ETA.SUBTITLE' | translate" icon="receipt_long">
+  </app-page-header>
+
+  @if (loading()) {
+  <mat-card>
+    <mat-card-content>
+      <div class="loading-state">
+        <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+        <p>{{'COMMON.LOADING' | translate}}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+
+  @if (!loading()) {
+  @if (settings() && !settings()!.credentialsKeyConfigured) {
+  <div class="eta-warning">
+    <mat-icon>warning</mat-icon>
+    <span>{{'ETA.KEY_MISSING' | translate}}</span>
+  </div>
+  }
+
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSave()" class="settings-form">
+
+        <div class="form-section">
+          <h3 class="section-title">{{'ETA.TAXPAYER' | translate}}</h3>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.ENVIRONMENT' | translate}}</mat-label>
+              <mat-select formControlName="environment">
+                @for (env of environments; track env) {
+                <mat-option [value]="env">{{'ETA.ENV_' + env | translate}}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.RIN' | translate}}</mat-label>
+              <input matInput formControlName="rin" inputmode="numeric" maxlength="9">
+              @if (hasError('rin', 'pattern')) {
+              <mat-error>{{'ETA.RIN_INVALID' | translate}}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.TRADE_NAME' | translate}}</mat-label>
+              <input matInput formControlName="companyTradeName" maxlength="200">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.ACTIVITY_CODE' | translate}}</mat-label>
+              <input matInput formControlName="activityCode" maxlength="10">
+              <mat-hint>{{'ETA.ACTIVITY_CODE_HINT' | translate}}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.BRANCH_CODE' | translate}}</mat-label>
+              <input matInput formControlName="branchCode" maxlength="50">
+              <mat-hint>{{'ETA.BRANCH_CODE_HINT' | translate}}</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">{{'ETA.BRANCH_ADDRESS' | translate}}</h3>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.GOVERNATE' | translate}}</mat-label>
+              <input matInput formControlName="governate" maxlength="100">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.REGION_CITY' | translate}}</mat-label>
+              <input matInput formControlName="regionCity" maxlength="100">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.STREET' | translate}}</mat-label>
+              <input matInput formControlName="street" maxlength="200">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.BUILDING_NUMBER' | translate}}</mat-label>
+              <input matInput formControlName="buildingNumber" maxlength="100">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.POSTAL_CODE' | translate}}</mat-label>
+              <input matInput formControlName="postalCode" maxlength="30">
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">{{'ETA.TAX' | translate}}</h3>
+          <p class="section-hint">{{'ETA.TAX_HINT' | translate}}</p>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.DEFAULT_TAX' | translate}}</mat-label>
+              <mat-select formControlName="defaultTaxSubtype">
+                <mat-option value="">{{'ETA.TAX_NONE' | translate}}</mat-option>
+                <mat-option value="V009">{{'ETA.TAX_V009' | translate}}</mat-option>
+                <mat-option value="V010">{{'ETA.TAX_V010' | translate}}</mat-option>
+                <mat-option value="V003">{{'ETA.TAX_V003' | translate}}</mat-option>
+                <mat-option value="V004">{{'ETA.TAX_V004' | translate}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            @if (form.value.defaultTaxSubtype === 'V010') {
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.TAX_RATE' | translate}}</mat-label>
+              <input matInput type="number" min="0" max="100" formControlName="defaultTaxRate">
+              <span matTextSuffix>%</span>
+            </mat-form-field>
+            }
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">{{'ETA.CREDENTIALS' | translate}}</h3>
+          <p class="section-hint">{{'ETA.CREDENTIALS_HINT' | translate}}</p>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.CLIENT_ID' | translate}}</mat-label>
+              <input matInput formControlName="clientId" autocomplete="off">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.CLIENT_SECRET' | translate}}</mat-label>
+              <input matInput formControlName="clientSecret" type="password" autocomplete="new-password"
+                [placeholder]="settings()?.clientSecretSet ? ('ETA.SECRET_KEEP' | translate) : ''">
+              @if (settings()?.clientSecretSet) {
+              <mat-hint>{{'ETA.SECRET_STORED' | translate}}</mat-hint>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+            @if (saving()) {
+            <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+            <mat-icon>save</mat-icon>
+            }
+            <span>{{saving() ? ('COMMON.SAVING' | translate) : ('COMMON.SAVE' | translate)}}</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-content>
+      <div class="form-section">
+        <div class="devices-header">
+          <h3 class="section-title">{{'ETA.DEVICES' | translate}}</h3>
+          @if (!showDeviceForm()) {
+          <button mat-stroked-button color="primary" type="button" (click)="openDeviceForm()">
+            <mat-icon>add</mat-icon>
+            <span>{{'ETA.ADD_DEVICE' | translate}}</span>
+          </button>
+          }
+        </div>
+        <p class="section-hint">{{'ETA.DEVICES_HINT' | translate}}</p>
+
+        @if (devices().length === 0 && !showDeviceForm()) {
+        <p class="empty-devices">{{'ETA.NO_DEVICES' | translate}}</p>
+        }
+
+        @for (device of devices(); track device.id) {
+        <div class="device-row" [class.inactive]="!device.active">
+          <div class="device-info">
+            <mat-icon>point_of_sale</mat-icon>
+            <div>
+              <strong>{{device.serialNumber}}</strong>
+              <span class="device-meta">{{device.osVersion}} · {{device.modelFramework}}</span>
+            </div>
+            <mat-chip [highlighted]="device.active" [color]="device.active ? 'primary' : undefined">
+              {{(device.active ? 'ETA.ACTIVE' : 'ETA.INACTIVE') | translate}}
+            </mat-chip>
+          </div>
+          <div class="device-actions">
+            <button mat-stroked-button type="button" (click)="testConnection(device)"
+              [disabled]="testingDeviceId() === device.id">
+              @if (testingDeviceId() === device.id) {
+              <mat-spinner diameter="18"></mat-spinner>
+              } @else {
+              <mat-icon>wifi_tethering</mat-icon>
+              }
+              <span>{{'ETA.TEST_CONNECTION' | translate}}</span>
+            </button>
+            <button mat-icon-button type="button" (click)="openDeviceForm(device)"
+              [attr.aria-label]="'COMMON.EDIT' | translate">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+        }
+
+        @if (showDeviceForm()) {
+        <form [formGroup]="deviceForm" (ngSubmit)="onSaveDevice()" class="device-form">
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.SERIAL' | translate}}</mat-label>
+              <input matInput formControlName="serialNumber" maxlength="100">
+              @if (editingDevice()?.hasIssuedReceipts) {
+              <mat-hint>{{'ETA.SERIAL_LOCKED' | translate}}</mat-hint>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.OS_VERSION' | translate}}</mat-label>
+              <input matInput formControlName="osVersion" maxlength="50">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.MODEL_FRAMEWORK' | translate}}</mat-label>
+              <input matInput formControlName="modelFramework" maxlength="10">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>{{'ETA.PRESHARED_KEY' | translate}}{{editingDevice() ? '' : ' *'}}</mat-label>
+              <input matInput formControlName="presharedKey" type="password" autocomplete="new-password"
+                [placeholder]="editingDevice()?.presharedKeySet ? ('ETA.SECRET_KEEP' | translate) : ''">
+              @if (deviceForm.get('presharedKey')?.hasError('required')) {
+              <mat-error>{{'VALIDATION.REQUIRED' | translate}}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <mat-slide-toggle formControlName="active" color="primary">{{'ETA.ACTIVE' | translate}}</mat-slide-toggle>
+          <div class="form-actions">
+            <button mat-button type="button" (click)="cancelDeviceForm()">{{'COMMON.CANCEL' | translate}}</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="savingDevice()">
+              <mat-icon>save</mat-icon>
+              <span>{{'COMMON.SAVE' | translate}}</span>
+            </button>
+          </div>
+        </form>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+</div>
