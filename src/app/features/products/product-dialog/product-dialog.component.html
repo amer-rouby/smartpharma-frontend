@@ -73,6 +73,24 @@
           }
           <mat-icon matPrefix>category</mat-icon>
         </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.ETA_ITEM_TYPE' | translate}}</mat-label>
+          <mat-select formControlName="etaItemType">
+            <mat-option value="">{{'PRODUCTS.ETA_ITEM_TYPE_BARCODE' | translate}}</mat-option>
+            <mat-option value="GS1">GS1</mat-option>
+            <mat-option value="EGS">EGS</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>receipt_long</mat-icon>
+        </mat-form-field>
+
+        @if (form.value.etaItemType) {
+        <mat-form-field appearance="outline">
+          <mat-label>{{'PRODUCTS.ETA_ITEM_CODE' | translate}}</mat-label>
+          <input matInput formControlName="etaItemCode" maxlength="100" dir="ltr">
+          <mat-hint>{{'PRODUCTS.ETA_ITEM_CODE_HINT' | translate}}</mat-hint>
+        </mat-form-field>
+        }
       </mat-card-content>
     </mat-card>
 

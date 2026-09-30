@@ -8,4 +8,10 @@ export interface EInvoiceSubmission {
   submittedAt?: string;
   errorMessage?: string;
   retryCount: number;
+  receiptNumber?: string;
+  dateTimeIssued?: string;
+  /** Text to encode in the QR printed on the receipt (ETA portal link). */
+  qrContent?: string;
+  longId?: string;
+  submissionUuid?: string;
 }

@@ -59,6 +59,13 @@ export const SETTINGS_ROUTES: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'eta',
+    loadComponent: () => import('./eta/eta-settings.component')
+      .then(m => m.EtaSettingsComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] }
+  },
+  {
     path: 'smart-features',
     loadComponent: () => import('./smart-features/smart-features-settings.component')
       .then(m => m.SmartFeaturesSettingsComponent),

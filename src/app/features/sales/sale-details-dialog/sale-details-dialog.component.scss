@@ -88,6 +88,20 @@
   color: var(--color-error-600, #dc2626);
 }
 
+.einvoice-uuid {
+  font-family: monospace;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+// White tile so the code still scans when the dialog is in dark mode.
+.einvoice-qr {
+  margin-top: 8px;
+  padding: 6px;
+  background: #fff;
+  border-radius: 8px;
+}
+
 .dialog-content {
   flex: 1;
   overflow-y: auto;

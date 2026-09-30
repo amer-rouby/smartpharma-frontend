@@ -1,0 +1,200 @@
+// Layout shared with the other settings screens (same rules as
+// pharmacy-settings), then the ETA-specific parts below.
+.settings-page {
+  padding: 24px;
+  direction: inherit;
+}
+
+mat-card {
+  margin-top: 24px;
+  border-radius: 16px;
+  direction: inherit;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--mat-sys-on-surface-variant);
+
+  p {
+    margin-top: 16px;
+    font-size: 14px;
+  }
+}
+
+.settings-form {
+  padding: 8px;
+}
+
+.form-section {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  margin: 0 0 16px;
+  padding-inline-start: 8px;
+  border-inline-start: 4px solid #667eea;
+}
+
+.section-hint {
+  font-size: 13px;
+  color: var(--color-text-muted, #94a3b8);
+  margin: -8px 0 16px 8px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+::ng-deep {
+  .settings-page {
+    mat-form-field {
+      direction: inherit;
+
+      .mat-mdc-form-field-infix {
+        direction: inherit;
+        text-align: start;
+      }
+
+      input,
+      select,
+      textarea {
+        direction: inherit;
+        text-align: start;
+      }
+
+      .mat-form-field-label {
+        direction: inherit;
+        text-align: start;
+      }
+    }
+  }
+}
+
+::placeholder {
+  direction: inherit;
+  text-align: start;
+}
+
+// --- ETA screen ---
+
+.eta-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--mat-sys-error-container, #fdecea);
+  color: var(--mat-sys-on-error-container, #8a1c1c);
+}
+
+.devices-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  .section-title {
+    margin-bottom: 0;
+  }
+}
+
+.empty-devices {
+  color: var(--mat-sys-on-surface-variant);
+  padding: 8px;
+}
+
+.device-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  margin-bottom: 8px;
+
+  &.inactive {
+    opacity: 0.6;
+  }
+}
+
+.device-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.device-meta {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.device-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.device-form {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px dashed var(--mat-sys-outline-variant);
+  border-radius: 12px;
+}

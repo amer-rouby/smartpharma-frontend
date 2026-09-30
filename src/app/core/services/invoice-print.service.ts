@@ -13,6 +13,8 @@ export interface PrintableSale {
   subtotal?: number;
   discountAmount?: number;
   items: PrintableSaleItem[];
+  /** Set once the ETA e-receipt is issued - printed as its UUID and QR code. */
+  etaReceipt?: { uuid: string; qrDataUrl: string };
 }
 
 export interface PrintableSaleItem {
@@ -174,6 +176,15 @@ ${this.getPrintStyles(isArabic)}
       </div>
     </div>
 
+    ${sale.etaReceipt ? `
+    <div class="eta-receipt">
+      <img src="${sale.etaReceipt.qrDataUrl}" width="120" height="120" alt="QR">
+      <div>
+        <div class="info-label">${t('EINVOICE.PRINT_TITLE')}</div>
+        <div class="eta-uuid" dir="ltr">${sale.etaReceipt.uuid}</div>
+      </div>
+    </div>` : ''}
+
     <p class="thank-you">${t('PAYMENTS.THANK_YOU')}</p>
 
     ${getPrintFooterHtml(pharmacy.pharmacyName || t('APP.NAME'), t('PAYMENTS.RECEIPT_FOOTER'), isArabic)}
@@ -196,6 +207,8 @@ ${this.getPrintStyles(isArabic)}
     border-top: 1px solid #cbd5e1; margin-top: 8px; margin-bottom: 0;
   }
   .thank-you { text-align: center; font-weight: 700; margin-top: 18px; font-size: 13px; }
+  .eta-receipt { display: flex; align-items: center; gap: 14px; margin-top: 16px; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 6px; }
+  .eta-uuid { font-family: monospace; font-size: 10px; word-break: break-all; color: #1e293b; }
 </style>`;
   }
 

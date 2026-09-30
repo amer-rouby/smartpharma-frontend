@@ -71,6 +71,12 @@
             {{'EINVOICE.RETRY' | translate}}
           </button>
           }
+          @if (eInvoiceSubmission()!.status === 'PENDING') {
+          <button mat-stroked-button color="primary" [disabled]="eInvoiceLoading()" (click)="submitEInvoice()">
+            <mat-icon>upload</mat-icon>
+            {{'EINVOICE.SEND_NOW' | translate}}
+          </button>
+          }
           } @else {
           <button mat-stroked-button color="primary" [disabled]="eInvoiceLoading()" (click)="submitEInvoice()">
             <mat-icon>upload</mat-icon>
@@ -79,6 +85,15 @@
           }
         </span>
       </div>
+      @if (eInvoiceSubmission()?.etaUuid) {
+      <div class="info-item einvoice-receipt">
+        <span class="label">{{'EINVOICE.RECEIPT_UUID' | translate}}</span>
+        <span class="value einvoice-uuid" dir="ltr">{{eInvoiceSubmission()!.etaUuid}}</span>
+        @if (eInvoiceQr()) {
+        <img class="einvoice-qr" [src]="eInvoiceQr()" [alt]="'EINVOICE.QR_ALT' | translate" width="140" height="140">
+        }
+      </div>
+      }
       }
     </div>
 
