@@ -408,6 +408,21 @@
     "BUYER_NATIONAL_ID_INVALID": "National ID is 14 digits starting with 2 or 3",
     "BUYER_ID_REQUIRED_HINT": "Required on the e-receipt for sales of 150,000 EGP or more",
     "BUYER_NAME": "Buyer name",
+    "OFFLINE": {
+      "OFFLINE": "Can't reach the server - selling continues and sales are saved on this device",
+      "ONLINE": "Back online",
+      "PENDING": "{{count}} sale(s) waiting to sync",
+      "SAVED_CATALOG": "Products from the copy saved on this device ({{date}}) - prices and stock may have changed",
+      "NO_CATALOG": "Offline and no product list saved on this device - open the POS once while online",
+      "CASH_ONLY": "Offline sales are cash only - card and wallet payments need a connection",
+      "QUEUE_FAILED": "Couldn't save the sale on this device",
+      "SAVED_TITLE": "Saved on this device",
+      "SAVED_TEXT": "A {{total}} sale was saved and will be sent to the server automatically once the connection is back",
+      "FAILED": "Sale of {{date}} for {{total}} wasn't recorded:",
+      "DISCARD": "Discard",
+      "DISCARD_TITLE": "Discard this saved sale?",
+      "DISCARD_TEXT": "It will never be recorded. Only discard it if it was recorded another way or really was cancelled."
+    },
     "PRESCRIPTION_HINT": "The cart contains a prescription-only product — please upload a prescription image to complete the sale",
     "PRESCRIPTION_UPLOAD": "Upload Prescription Image",
     "PRESCRIPTION_UPLOADED": "Prescription uploaded",
@@ -1095,7 +1110,8 @@
     "SALE_HAS_ETA_RECEIPT": "This sale already has an e-receipt. The discount, payment method and customer phone can't be changed - delete the sale (a return receipt is issued) and sell again",
     "BUYER_ID_REQUIRED": "Sales of 150,000 EGP or more need the buyer's national ID and name for the e-receipt",
     "BULK_PRICE_PERCENT_REQUIRED": "Enter the percentage",
-    "BULK_PRICE_ITEMS_REQUIRED": "The price list is empty"
+    "BULK_PRICE_ITEMS_REQUIRED": "The price list is empty",
+    "SALE_OFFLINE_TIME_INVALID": "This offline sale is older than {{hours}} hours - record it manually"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
