@@ -75,9 +75,9 @@ export class NotificationService {
     return colors[priority] || '#6b7280';
   }
 
-  private formatTime(dateString: string): string {
+  // Relative to `now`, so a view can pass one clock value for a whole render.
+  formatTime(dateString: string, now: Date = new Date()): string {
     const date = new Date(dateString);
-    const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);

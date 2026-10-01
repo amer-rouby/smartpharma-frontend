@@ -513,7 +513,7 @@
     "TITLE": "Inventory",
     "MANAGE": "Manage Inventory",
     "MANAGE_SUBTITLE": "Track inventory and batches",
-    "SEARCH_PLACEHOLDER": "Search by product, barcode, batch number or active ingredient",
+    "NO_BATCHES_TEXT": "No batches have been recorded yet",
     "NO_SEARCH_RESULTS": "No batches match \"{{query}}\"",
     "ALERTS": "Stock Alerts",
     "HISTORY": "Movement History",
@@ -544,7 +544,7 @@
     "REFERENCE": "Reference",
     "NOTES": "Notes",
     "NO_STOCK": "No batches recorded",
-    "SEARCH_PLACEHOLDER": "Search by product name or batch number",
+    "SEARCH_PLACEHOLDER": "Search by product, barcode, batch number or active ingredient",
     "LOAD_ERROR": "Error loading inventory",
     "SEARCH_ERROR": "Error during search",
     "LOW_STOCK_PRODUCTS": "Low Stock Products",
@@ -866,7 +866,9 @@
       "NOTE_DESC": "The new timeout will take effect after your next login. The backend manages session expiration automatically.",
       "SAVE_SUCCESS": "Session settings saved successfully",
       "SAVE_ERROR": "Failed to save session settings",
-      "LOAD_ERROR": "Failed to load session settings"
+      "LOAD_ERROR": "Failed to load session settings",
+      "REMAINING_EXTENSIONS": "Remaining extensions",
+      "OF": "of"
     }
   },
   "SMART_FEATURES": {
@@ -1160,6 +1162,8 @@
     "SALE_RETURN_QUANTITY_EXCEEDED": "Only {{available}} of {{productName}} can still be returned",
     "SALE_RETURN_ITEM_NOT_IN_SALE": "That item isn't on this invoice",
     "SALE_RETURN_NOT_FOUND": "Return not found",
+    "PRODUCT_BARCODE_EXISTS": "Barcode {{barcode}} is already used by another product",
+    "SALE_STOCK_CHANGED": "This item was just sold in another transaction - please try again",
     "SALE_STOCK_EXPIRED": "The rest of the {{productName}} stock is expired - only {{available}} can be sold",
     "TWO_FACTOR_INVALID_CODE": "Wrong or expired code - enter the current code from the app",
     "TWO_FACTOR_SETUP_REQUIRED": "Start turning it on first",
@@ -1752,7 +1756,6 @@
       "CREATE_SALE_CONTENT": "Steps to complete a sale successfully",
       "GENERATE_REPORT_TITLE": "Generate Reports",
       "GENERATE_REPORT_CONTENT": "How to create and export various reports",
-      "STEPS": "Steps",
       "STEPS": {
         "OPEN_PRODUCTS": "Open Products menu from main navigation",
         "CLICK_ADD": "Click 'Add New Product' button",

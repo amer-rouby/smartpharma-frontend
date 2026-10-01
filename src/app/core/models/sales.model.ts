@@ -25,18 +25,28 @@ export interface SaleItem {
   totalPrice: number;
 }
 
+/** What the POS sends to POST /api/sales (the server re-prices it). */
 export interface SaleRequest {
   items: SaleItemRequest[];
-  discountAmount?: number;
-  paymentMethod?: string;
+  discountAmount: number;
+  paymentMethod: string;
   customerPhone?: string;
+  buyerNationalId?: string;
+  buyerName?: string;
+  totalAmount: number;
   prescriptionImageUrl?: string;
+  // Offline POS: device-made id (server de-duplicates by it) and, for a
+  // queued sale, when it was actually rung up.
+  clientSaleId: string;
+  soldAt?: string;
 }
 
 export interface SaleItemRequest {
   productId: number;
   quantity: number;
+  /** What the cashier saw - a different server price refuses the sale. */
   unitPrice: number;
+  totalPrice: number;
 }
 
 export interface DailySales {

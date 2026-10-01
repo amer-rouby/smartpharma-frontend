@@ -1,0 +1,32 @@
+@if (offline.enabled() && (!offline.online() || offline.queue().length || catalogSavedAt())) {
+<div class="offline-banner" [class.is-offline]="!offline.online()">
+  <div class="offline-status">
+    <mat-icon>{{offline.online() ? 'cloud_sync' : 'wifi_off'}}</mat-icon>
+    <span>{{(offline.online() ? 'SALES.OFFLINE.ONLINE' : 'SALES.OFFLINE.OFFLINE') | translate}}</span>
+    @if (offline.pendingCount()) {
+    <span class="offline-chip">{{'SALES.OFFLINE.PENDING' | translate: { count: offline.pendingCount() } }}</span>
+    }
+    @if (offline.syncing()) {
+    <mat-spinner diameter="16"></mat-spinner>
+    }
+  </div>
+  @if (catalogSavedAt()) {
+  <div class="offline-note">{{'SALES.OFFLINE.SAVED_CATALOG' | translate: { date: (catalogSavedAt() | date:'short') } }}</div>
+  }
+  @for (sale of offline.failed(); track sale.clientSaleId) {
+  <div class="offline-failed">
+    <mat-icon>error_outline</mat-icon>
+    <span class="failed-text">
+      {{'SALES.OFFLINE.FAILED' | translate: { date: (sale.createdAt | date:'short'), total: formatCurrency(sale.total) } }}
+      <small>{{failureReason(sale)}}</small>
+    </span>
+    <button mat-stroked-button type="button" (click)="retryQueuedSale(sale.clientSaleId)">
+      {{'EINVOICE.RETRY' | translate}}
+    </button>
+    <button mat-button color="warn" type="button" (click)="discardQueuedSale(sale.clientSaleId)">
+      {{'SALES.OFFLINE.DISCARD' | translate}}
+    </button>
+  </div>
+  }
+</div>
+}

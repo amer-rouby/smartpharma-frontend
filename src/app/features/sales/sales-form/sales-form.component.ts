@@ -1,19 +1,18 @@
 import { Component, inject, signal, computed, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, firstValueFrom, startWith } from 'rxjs';
+import { BehaviorSubject, startWith } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
 import { SalesService } from '../../../core/services/sales.service';
-import { PaymentService } from '../../../core/services/payment.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../core/models/product.model';
-import { PaymentMethod, PaymentRequest, PaymentResponse } from '../../../core/models/payment.model';
+import { SaleRequest } from '../../../core/models';
+import { PaymentMethod } from '../../../core/models/payment.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -21,7 +20,10 @@ import { PharmacySettingsService } from '../../../core/services/settings/pharmac
 import { PrescriptionService } from '../../../core/services/prescription.service';
 import { SmartFeatureSettingsService } from '../../../core/services/settings/smart-feature-settings.service';
 import { ETA_BUYER_ID_THRESHOLD, NATIONAL_ID_PATTERN } from '../../../core/models/einvoice.model';
-import { OfflineSalesService, QueuedSale } from '../../../core/services/offline-sales.service';
+import { OfflineSalesService } from '../../../core/services/offline-sales.service';
+import { VoiceSearchService } from '../../../core/services/voice-search.service';
+import { PosPaymentService } from './pos-payment.service';
+import { OfflineQueueBannerComponent } from './offline-queue-banner/offline-queue-banner.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductAlternativesDialogComponent, ProductAlternativesData } from './product-alternatives-dialog/product-alternatives-dialog.component';
 
@@ -32,30 +34,10 @@ interface CartItem {
   totalPrice: number;
 }
 
-interface SaleRequest {
-  items: Array<{
-    productId: number;
-    quantity: number;
-    unitPrice: number;
-    totalPrice: number;
-  }>;
-  discountAmount: number;
-  paymentMethod: string;
-  customerPhone: string;
-  buyerNationalId?: string;
-  buyerName?: string;
-  totalAmount: number;
-  prescriptionImageUrl?: string;
-  // Offline POS: device-made id (server de-duplicates by it) and, for a
-  // queued sale, when it was actually rung up.
-  clientSaleId: string;
-  soldAt?: string;
-}
-
 @Component({
   selector: 'app-sales-form',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent, DatePipe],
+  imports: [FormsModule, ReactiveFormsModule, MaterialModule, PageHeaderComponent, OfflineQueueBannerComponent],
   templateUrl: './sales-form.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './sales-form.component.scss'
@@ -63,7 +45,7 @@ interface SaleRequest {
 export class SalesFormComponent implements OnInit, AfterViewInit {
   private readonly productService = inject(ProductService);
   private readonly salesService = inject(SalesService);
-  private readonly paymentService = inject(PaymentService);
+  private readonly posPayment = inject(PosPaymentService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly translate = inject(TranslateService);
@@ -82,9 +64,9 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
   @ViewChild('barcodeInput') barcodeInputRef?: ElementRef<HTMLInputElement>;
   readonly barcodeValue = signal('');
 
-  readonly voiceSearchSupported = signal(false);
-  readonly isListening = signal(false);
-  private speechRecognition: any = null;
+  private readonly voiceSearch = inject(VoiceSearchService);
+  readonly voiceSearchSupported = this.voiceSearch.supported;
+  readonly isListening = this.voiceSearch.listening;
 
   readonly displayedColumns = ['product', 'quantity', 'price', 'total', 'actions'];
   readonly cartItems = signal<CartItem[]>([]);
@@ -172,7 +154,6 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     this.loadProducts();
     this.filteredProductsSubject.next(this.allProducts().slice(0, 10));
     this.loadEnabledPaymentMethods();
-    this.voiceSearchSupported.set(!!this.getSpeechRecognitionCtor());
 
     this.productControl.valueChanges.pipe(startWith('')).subscribe(value => {
       const searchValue = typeof value === 'string' ? value : value?.name || '';
@@ -180,39 +161,13 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private getSpeechRecognitionCtor(): any {
-    return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
-  }
-
   startVoiceSearch(): void {
-    if (this.isListening()) return;
-
-    const SpeechRecognitionCtor = this.getSpeechRecognitionCtor();
-    if (!SpeechRecognitionCtor) return;
-
-    const recognition = new SpeechRecognitionCtor();
-    this.speechRecognition = recognition;
-    recognition.lang = this.languageService.getCurrentLanguage() === 'ar' ? 'ar-EG' : 'en-US';
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onstart = () => this.isListening.set(true);
-    recognition.onend = () => this.isListening.set(false);
-    recognition.onerror = () => this.isListening.set(false);
-
-    recognition.onresult = (event: any) => {
-      const transcript = event.results?.[0]?.[0]?.transcript;
-      if (transcript) {
-        this.productControl.setValue(transcript.trim());
-      }
-    };
-
-    recognition.start();
+    const lang = this.languageService.getCurrentLanguage() === 'ar' ? 'ar-EG' : 'en-US';
+    this.voiceSearch.start(lang, (text) => this.productControl.setValue(text));
   }
 
   stopVoiceSearch(): void {
-    this.speechRecognition?.stop();
+    this.voiceSearch.stop();
   }
 
   ngAfterViewInit(): void {
@@ -493,7 +448,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     let chargedReference: string | undefined;
     try {
       if (this.paymentMethod() !== PaymentMethod.CASH) {
-        const paymentResponse = await this.processPayment(saleRequest.totalAmount);
+        const paymentResponse = await this.posPayment.charge(this.paymentMethod(), saleRequest.totalAmount, this.customerPhone());
 
         if (paymentResponse.status === 'FAILED') {
           this.errorHandler.showError('PAYMENT.FAILED');
@@ -501,9 +456,6 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
           return;
         }
 
-        if (paymentResponse.status === 'PENDING') {
-          await this.handlePendingPayment(paymentResponse);
-        }
         chargedReference = paymentResponse.referenceNumber;
       }
 
@@ -521,7 +473,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       // Only when the server answered and refused: with no answer the sale
       // may still have been recorded (it's idempotent on clientSaleId).
       if (chargedReference && error?.status) {
-        await this.cancelCharge(chargedReference);
+        await this.posPayment.cancel(chargedReference);
       }
       if (error?.code === 'SALE_PRICE_CHANGED') {
         // The cart had an old price: refresh prices so the cashier can review.
@@ -532,15 +484,6 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       }
     } finally {
       this.loading.set(false);
-    }
-  }
-
-  private async cancelCharge(reference: string): Promise<void> {
-    try {
-      await firstValueFrom(this.paymentService.cancelPayment(reference));
-      this.errorHandler.showWarning('PAYMENT.CANCELLED_SALE_REFUSED');
-    } catch {
-      this.errorHandler.showError('PAYMENT.CANCEL_FAILED_REFUND_MANUALLY', { params: { reference } });
     }
   }
 
@@ -567,63 +510,6 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     });
     // Stay on the POS - sales history needs the server.
     this.clearCart();
-  }
-
-  failureReason(sale: QueuedSale): string {
-    if (sale.errorCode) {
-      const key = `ERRORS.${sale.errorCode}`;
-      const translated = this.translate.instant(key);
-      if (translated !== key) return translated;
-    }
-    return sale.errorMessage || this.translate.instant('SALES.CREATE_ERROR');
-  }
-
-  retryQueuedSale(clientSaleId: string): void {
-    void this.offline.retry(clientSaleId);
-  }
-
-  async discardQueuedSale(clientSaleId: string): Promise<void> {
-    const result = await Swal.fire({
-      icon: 'warning',
-      title: this.translate.instant('SALES.OFFLINE.DISCARD_TITLE'),
-      text: this.translate.instant('SALES.OFFLINE.DISCARD_TEXT'),
-      showCancelButton: true,
-      confirmButtonText: this.translate.instant('SALES.OFFLINE.DISCARD'),
-      cancelButtonText: this.translate.instant('COMMON.CANCEL'),
-      confirmButtonColor: '#dc2626'
-    });
-    if (result.isConfirmed) {
-      await this.offline.discard(clientSaleId);
-    }
-  }
-
-  private async handlePendingPayment(paymentResponse: PaymentResponse): Promise<void> {
-    await Swal.fire({
-      icon: 'info',
-      title: this.translate.instant('PAYMENTS.PENDING_TITLE'),
-      text: paymentResponse.message || this.translate.instant('PAYMENTS.PENDING_MESSAGE'),
-      confirmButtonText: this.translate.instant('COMMON.OK'),
-      confirmButtonColor: '#f59e0b'
-    });
-  }
-
-  private async processPayment(amount: number): Promise<PaymentResponse> {
-    const request: PaymentRequest = {
-      pharmacyId: this.authService.getPharmacyId() || 1,
-      amount,
-      paymentMethod: this.paymentMethod(),
-      customerName: '',
-      customerPhone: this.customerPhone(),
-      customerEmail: '',
-      description: `Sale - ${new Date().toLocaleDateString('ar-EG')}`
-    };
-
-    return new Promise((resolve, reject) => {
-      this.paymentService.processPayment(request).subscribe({
-        next: (response) => resolve(response),
-        error: (error) => reject(error)
-      });
-    });
   }
 
   private async createSale(saleRequest: SaleRequest): Promise<any> {
