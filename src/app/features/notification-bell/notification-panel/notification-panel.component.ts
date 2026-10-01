@@ -1,4 +1,4 @@
-import { Component, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, inject, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../../../shared/material.module';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -67,8 +67,17 @@ export class NotificationPanelComponent {
     this.notificationClick.emit(n);
   }
 
+  // Ticks once a minute: reading the clock inside the template itself made
+  // "9m ago" turn into "10m ago" between Angular's two dev-mode checks.
+  private readonly now = signal(new Date());
+  private readonly clock = setInterval(() => this.now.set(new Date()), 60_000);
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => clearInterval(this.clock));
+  }
+
   formatTime(date: string): string {
-    return (this.notificationService as any).formatTime(date);
+    return this.notificationService.formatTime(date, this.now());
   }
 
   viewAllNotifications() {
