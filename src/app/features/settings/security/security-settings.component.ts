@@ -6,11 +6,12 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { MaterialModule } from '../../../shared/material.module';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { SecuritySettingsService } from '../../../core/services/settings/security-settings.service';
+import { TwoFactorCardComponent } from './two-factor-card/two-factor-card.component';
 
 @Component({
   selector: 'app-security-settings',
   standalone: true,
-  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, FormsModule],
+  imports: [MaterialModule, PageHeaderComponent, ReactiveFormsModule, FormsModule, TwoFactorCardComponent],
   templateUrl: './security-settings.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './security-settings.component.scss'

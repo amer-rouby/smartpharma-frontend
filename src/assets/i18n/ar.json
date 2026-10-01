@@ -1157,7 +1157,10 @@
     "SALE_RETURN_QUANTITY_EXCEEDED": "مينفعش ترجّع من {{productName}} أكتر من {{available}}",
     "SALE_RETURN_ITEM_NOT_IN_SALE": "الصنف ده مش في الفاتورة",
     "SALE_RETURN_NOT_FOUND": "المرتجع مش موجود",
-    "SALE_STOCK_EXPIRED": "باقي مخزون {{productName}} منتهي الصلاحية - المتاح للبيع {{available}} بس"
+    "SALE_STOCK_EXPIRED": "باقي مخزون {{productName}} منتهي الصلاحية - المتاح للبيع {{available}} بس",
+    "TWO_FACTOR_INVALID_CODE": "الكود غلط أو انتهى - اكتب الكود الحالي من التطبيق",
+    "TWO_FACTOR_SETUP_REQUIRED": "ابدأ التفعيل الأول",
+    "TWO_FACTOR_NOT_ENABLED": "التحقق بخطوتين مش مفعّل أصلًا"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 صيدليتي الذكية",
@@ -1317,6 +1320,28 @@
   },
   "SECURITY": {
     "SUBTITLE": "إدارة إعدادات الأمان وحماية الحساب",
+    "TWO_FACTOR": {
+      "TITLE": "التحقق بخطوتين",
+      "ON": "مفعّل",
+      "OFF": "مش مفعّل",
+      "EXPLAIN": "مع تسجيل الدخول هيتطلب كود من 6 أرقام من تطبيق على موبايلك، فحتى لو حد عرف كلمة السر مش هيقدر يدخل",
+      "ENABLE": "تفعيل",
+      "DISABLE": "إيقاف",
+      "STEP_APP": "نزّل تطبيق Google Authenticator أو Microsoft Authenticator على موبايلك",
+      "STEP_SCAN": "من التطبيق اختار إضافة حساب وامسح الكود ده (أو اكتب المفتاح يدويًا)",
+      "STEP_CODE": "اكتب الكود اللي ظاهر في التطبيق عشان نتأكد إن كله تمام",
+      "QR_ALT": "كود QR لإضافة الحساب في تطبيق التحقق",
+      "MANUAL_KEY": "أو اكتب المفتاح ده يدويًا:",
+      "CODE": "الكود من التطبيق",
+      "CODE_HINT": "6 أرقام - بيتغير كل 30 ثانية",
+      "DISABLE_HINT": "اكتب كود من التطبيق عشان تأكد إنك صاحب الحساب",
+      "CONFIRM_ENABLE": "تأكيد وتفعيل",
+      "CONFIRM_DISABLE": "تأكيد الإيقاف",
+      "ENABLED_SUCCESS": "التحقق بخطوتين اتفعّل - من دلوقتي الدخول هيطلب كود من التطبيق",
+      "DISABLED_SUCCESS": "التحقق بخطوتين اتوقف",
+      "SETUP_ERROR": "تعذر بدء التفعيل",
+      "VERIFY_ERROR": "تعذر التحقق من الكود"
+    },
     "CHANGE_PASSWORD": "تغيير كلمة المرور",
     "CURRENT_PASSWORD": "كلمة المرور الحالية",
     "NEW_PASSWORD": "كلمة المرور الجديدة",

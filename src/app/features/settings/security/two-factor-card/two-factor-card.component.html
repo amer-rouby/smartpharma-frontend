@@ -1,0 +1,74 @@
+<mat-card class="security-card two-factor-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>verified_user</mat-icon>
+      {{'SECURITY.TWO_FACTOR.TITLE' | translate}}
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (enabled() === null) {
+    <mat-progress-spinner mode="indeterminate" diameter="28"></mat-progress-spinner>
+    } @else {
+    <div class="status-row">
+      <span class="status" [class.on]="enabled()">
+        <mat-icon>{{enabled() ? 'check_circle' : 'remove_circle_outline'}}</mat-icon>
+        {{(enabled() ? 'SECURITY.TWO_FACTOR.ON' : 'SECURITY.TWO_FACTOR.OFF') | translate}}
+      </span>
+      @if (!setup() && !disabling()) {
+      @if (enabled()) {
+      <button mat-stroked-button color="warn" (click)="startDisable()">
+        {{'SECURITY.TWO_FACTOR.DISABLE' | translate}}
+      </button>
+      } @else {
+      <button mat-raised-button color="primary" [disabled]="busy()" (click)="startSetup()">
+        {{'SECURITY.TWO_FACTOR.ENABLE' | translate}}
+      </button>
+      }
+      }
+    </div>
+    <p class="explain">{{'SECURITY.TWO_FACTOR.EXPLAIN' | translate}}</p>
+
+    @if (setup(); as s) {
+    <div class="setup">
+      <ol>
+        <li>{{'SECURITY.TWO_FACTOR.STEP_APP' | translate}}</li>
+        <li>{{'SECURITY.TWO_FACTOR.STEP_SCAN' | translate}}</li>
+        <li>{{'SECURITY.TWO_FACTOR.STEP_CODE' | translate}}</li>
+      </ol>
+      <div class="qr-block">
+        @if (qrImage()) {
+        <img [src]="qrImage()" width="200" height="200" [alt]="'SECURITY.TWO_FACTOR.QR_ALT' | translate">
+        }
+        <div class="manual">
+          <span>{{'SECURITY.TWO_FACTOR.MANUAL_KEY' | translate}}</span>
+          <code dir="ltr">{{s.secret}}</code>
+        </div>
+      </div>
+    </div>
+    }
+
+    @if (setup() || disabling()) {
+    <div class="code-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{'SECURITY.TWO_FACTOR.CODE' | translate}}</mat-label>
+        <input matInput inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr"
+          [ngModel]="code()" (ngModelChange)="setCode($event)"
+          (keydown.enter)="setup() ? confirmSetup() : confirmDisable()">
+        <mat-hint>{{(disabling() ? 'SECURITY.TWO_FACTOR.DISABLE_HINT' : 'SECURITY.TWO_FACTOR.CODE_HINT') | translate}}</mat-hint>
+      </mat-form-field>
+      <button mat-button (click)="cancel()">{{'COMMON.CANCEL' | translate}}</button>
+      @if (setup()) {
+      <button mat-raised-button color="primary" [disabled]="!validCode() || busy()" (click)="confirmSetup()">
+        {{'SECURITY.TWO_FACTOR.CONFIRM_ENABLE' | translate}}
+      </button>
+      } @else {
+      <button mat-raised-button color="warn" [disabled]="!validCode() || busy()" (click)="confirmDisable()">
+        {{'SECURITY.TWO_FACTOR.CONFIRM_DISABLE' | translate}}
+      </button>
+      }
+    </div>
+    }
+    }
+  </mat-card-content>
+</mat-card>
