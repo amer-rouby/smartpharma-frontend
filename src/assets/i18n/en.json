@@ -1155,7 +1155,10 @@
     "SALE_RETURN_QUANTITY_EXCEEDED": "Only {{available}} of {{productName}} can still be returned",
     "SALE_RETURN_ITEM_NOT_IN_SALE": "That item isn't on this invoice",
     "SALE_RETURN_NOT_FOUND": "Return not found",
-    "SALE_STOCK_EXPIRED": "The rest of the {{productName}} stock is expired - only {{available}} can be sold"
+    "SALE_STOCK_EXPIRED": "The rest of the {{productName}} stock is expired - only {{available}} can be sold",
+    "TWO_FACTOR_INVALID_CODE": "Wrong or expired code - enter the current code from the app",
+    "TWO_FACTOR_SETUP_REQUIRED": "Start turning it on first",
+    "TWO_FACTOR_NOT_ENABLED": "Two-factor sign-in isn't on"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",
@@ -1315,6 +1318,28 @@
   },
   "SECURITY": {
     "SUBTITLE": "Manage security settings and account protection",
+    "TWO_FACTOR": {
+      "TITLE": "Two-factor sign-in",
+      "ON": "On",
+      "OFF": "Off",
+      "EXPLAIN": "Signing in will also ask for a 6-digit code from an app on your phone, so a leaked password alone isn't enough",
+      "ENABLE": "Turn on",
+      "DISABLE": "Turn off",
+      "STEP_APP": "Install Google Authenticator or Microsoft Authenticator on your phone",
+      "STEP_SCAN": "In the app, add an account and scan this code (or type the key by hand)",
+      "STEP_CODE": "Enter the code the app shows to confirm everything works",
+      "QR_ALT": "QR code to add the account to an authenticator app",
+      "MANUAL_KEY": "Or type this key by hand:",
+      "CODE": "Code from the app",
+      "CODE_HINT": "6 digits - changes every 30 seconds",
+      "DISABLE_HINT": "Enter a code from the app to confirm it's you",
+      "CONFIRM_ENABLE": "Confirm and turn on",
+      "CONFIRM_DISABLE": "Confirm turning off",
+      "ENABLED_SUCCESS": "Two-factor sign-in is on - signing in will now ask for a code from the app",
+      "DISABLED_SUCCESS": "Two-factor sign-in is off",
+      "SETUP_ERROR": "Couldn't start turning it on",
+      "VERIFY_ERROR": "Couldn't check the code"
+    },
     "CHANGE_PASSWORD": "Change Password",
     "CURRENT_PASSWORD": "Current Password",
     "NEW_PASSWORD": "New Password",

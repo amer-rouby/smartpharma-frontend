@@ -1,0 +1,83 @@
+.two-factor-card {
+  margin-top: 24px;
+}
+
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #64748b);
+
+  &.on {
+    color: var(--color-success-600, #059669);
+  }
+}
+
+.explain {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.setup {
+  margin-top: 16px;
+
+  ol {
+    margin: 0 0 12px;
+    padding-inline-start: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+}
+
+.qr-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+
+  img {
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .manual {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--color-text-secondary, #64748b);
+
+    code {
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: var(--color-text-primary, #1e293b);
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
+.code-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+
+  mat-form-field {
+    flex: 1 1 220px;
+  }
+
+  button {
+    margin-top: 8px;
+  }
+}

@@ -44,4 +44,33 @@ export class SecuritySettingsService {
       map(response => response.data)
     );
   }
+
+  // 2FA for the signed-in user (the API takes the user from the token).
+  // Errors are left to the caller: codes like TWO_FACTOR_INVALID_CODE.
+
+  /** Starts setup: a new secret, not active until confirmed with a code. */
+  setupTwoFactor(): Observable<TwoFactorSetup> {
+    return this.http.post<ApiResponse<TwoFactorSetup>>(`${this.apiUrl}/2fa/setup`, {}).pipe(
+      map(response => response.data)
+    );
+  }
+
+  verifyTwoFactor(code: string): Observable<SecuritySettings> {
+    return this.http.post<ApiResponse<SecuritySettings>>(`${this.apiUrl}/2fa/verify`, { code }).pipe(
+      map(response => response.data)
+    );
+  }
+
+  disableTwoFactor(code: string): Observable<SecuritySettings> {
+    return this.http.post<ApiResponse<SecuritySettings>>(`${this.apiUrl}/2fa/disable`, { code }).pipe(
+      map(response => response.data)
+    );
+  }
+}
+
+export interface TwoFactorSetup {
+  /** Base32 secret for typing into the app by hand. */
+  secret: string;
+  /** otpauth:// URI, rendered here as a QR code. */
+  otpAuthUrl: string;
 }
