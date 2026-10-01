@@ -513,6 +513,8 @@
     "TITLE": "Inventory",
     "MANAGE": "Manage Inventory",
     "MANAGE_SUBTITLE": "Track inventory and batches",
+    "SEARCH_PLACEHOLDER": "Search by product, barcode, batch number or active ingredient",
+    "NO_SEARCH_RESULTS": "No batches match \"{{query}}\"",
     "ALERTS": "Stock Alerts",
     "HISTORY": "Movement History",
     "BATCHES": "Batches",
@@ -607,6 +609,9 @@
       "GOOD": "Good",
       "LOW": "Low",
       "EXPIRED": "Expired",
+      "ACTIVE": "Available",
+      "EMPTY": "Empty",
+      "DISCARDED": "Discarded",
       "EXPIRING_SOON": "Expiring Soon",
       "URGENT": "Urgent",
       "WARNING": "Warning"

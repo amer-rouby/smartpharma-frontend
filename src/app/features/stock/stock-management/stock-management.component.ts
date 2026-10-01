@@ -73,6 +73,11 @@ export class StockManagementComponent extends CrudPageWithDialogDirective<StockB
     }
   }
 
+  // An ACTIVE batch with nothing left reads as "empty", not as available.
+  displayStatus(batch: { status: string; quantityCurrent?: number }): string {
+    return batch.status === 'ACTIVE' && !batch.quantityCurrent ? 'EMPTY' : batch.status;
+  }
+
   getStatusLabel(status: string): string {
     const statusKey = status?.toUpperCase() || 'GOOD';
     const translated = this.translate.instant(`STOCK.STATUS.${statusKey}`);
