@@ -116,7 +116,12 @@
         @for (item of data.sale.items; track item.id; let i = $index) {
         <tr>
           <td>{{i + 1}}</td>
-          <td>{{item.productName || 'PRODUCTS.UNNAMED' | translate}}</td>
+          <td>
+            {{item.productName || 'PRODUCTS.UNNAMED' | translate}}
+            @if (item.batchNumber) {
+            <small class="batch-number no-print" dir="ltr">{{item.batchNumber}}</small>
+            }
+          </td>
           <td>{{item.quantity}}</td>
           <td>{{formatCurrency(item.unitPrice)}}</td>
           <td>{{formatCurrency(item.totalPrice)}}</td>

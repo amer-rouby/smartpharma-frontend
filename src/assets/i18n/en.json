@@ -1154,7 +1154,8 @@
     "SALE_HAS_RETURNS": "This invoice has returns, so it can't be cancelled - return the remaining items instead",
     "SALE_RETURN_QUANTITY_EXCEEDED": "Only {{available}} of {{productName}} can still be returned",
     "SALE_RETURN_ITEM_NOT_IN_SALE": "That item isn't on this invoice",
-    "SALE_RETURN_NOT_FOUND": "Return not found"
+    "SALE_RETURN_NOT_FOUND": "Return not found",
+    "SALE_STOCK_EXPIRED": "The rest of the {{productName}} stock is expired - only {{available}} can be sold"
   },
   "FOOTER": {
     "COPYRIGHT": "© 2026 My Smart Pharmacy",

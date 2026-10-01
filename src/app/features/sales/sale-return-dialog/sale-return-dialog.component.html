@@ -28,6 +28,9 @@
           <td>
             <strong>{{line.productName}}</strong>
             <small>{{formatCurrency(line.unitPrice)}}</small>
+            @if (line.batchNumber) {
+            <small dir="ltr">{{line.batchNumber}}</small>
+            }
           </td>
           <td>{{line.sold}}</td>
           <td>{{line.returned}}</td>

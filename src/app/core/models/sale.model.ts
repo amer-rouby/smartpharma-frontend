@@ -123,6 +123,8 @@ export interface SaleItemResponse {
   barcode: string;
   quantity: number;
   returnedQuantity?: number;
+  /** The batch the units came from - one sale line per batch. */
+  batchNumber?: string;
   unitPrice: number;
   totalPrice: number;
 }
