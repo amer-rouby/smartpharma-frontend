@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, startWith } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, startWith } from 'rxjs';
 import Swal from 'sweetalert2';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProductService } from '../../../core/services/product.service';
@@ -488,6 +488,9 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
     }
 
     this.loading.set(true);
+    // Set once the customer has been charged, so a sale the server then
+    // refuses doesn't leave them paying for nothing.
+    let chargedReference: string | undefined;
     try {
       if (this.paymentMethod() !== PaymentMethod.CASH) {
         const paymentResponse = await this.processPayment(saleRequest.totalAmount);
@@ -501,6 +504,7 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
         if (paymentResponse.status === 'PENDING') {
           await this.handlePendingPayment(paymentResponse);
         }
+        chargedReference = paymentResponse.referenceNumber;
       }
 
       const saleResponse = await this.createSale(saleRequest);
@@ -514,6 +518,11 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
         return;
       }
       console.error('Sale submission error:', error);
+      // Only when the server answered and refused: with no answer the sale
+      // may still have been recorded (it's idempotent on clientSaleId).
+      if (chargedReference && error?.status) {
+        await this.cancelCharge(chargedReference);
+      }
       if (error?.code === 'SALE_PRICE_CHANGED') {
         // The cart had an old price: refresh prices so the cashier can review.
         this.loadProducts();
@@ -523,6 +532,15 @@ export class SalesFormComponent implements OnInit, AfterViewInit {
       }
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private async cancelCharge(reference: string): Promise<void> {
+    try {
+      await firstValueFrom(this.paymentService.cancelPayment(reference));
+      this.errorHandler.showWarning('PAYMENT.CANCELLED_SALE_REFUSED');
+    } catch {
+      this.errorHandler.showError('PAYMENT.CANCEL_FAILED_REFUND_MANUALLY', { params: { reference } });
     }
   }
 

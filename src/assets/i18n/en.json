@@ -2118,7 +2118,9 @@
     "PROCESS": "Process Payment",
     "SUCCESS": "Payment successful",
     "FAILED": "Payment failed",
-    "ERROR": "Error occurred during payment"
+    "ERROR": "Error occurred during payment",
+    "CANCELLED_SALE_REFUSED": "The sale was refused, so the payment was cancelled - the customer was not charged",
+    "CANCEL_FAILED_REFUND_MANUALLY": "The sale was refused but cancelling the payment failed - refund the customer manually (reference {{reference}})"
   },
   "PAYMENTS": {
     "HISTORY_TITLE": "Payment History",
