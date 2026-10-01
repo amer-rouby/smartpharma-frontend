@@ -4,13 +4,14 @@ import { AuthService } from './auth.service';
 import { SalesService } from './sales.service';
 import { SmartFeatureSettingsService } from './settings/smart-feature-settings.service';
 import { Product } from '../models/product.model';
+import { SaleRequest } from '../models';
 import { CATALOG_STORE, SALES_STORE, offlineDb } from '../utils/offline-db.util';
 
 export interface QueuedSale {
   clientSaleId: string;
   pharmacyId: number;
   /** The exact request the server gets - it carries clientSaleId and soldAt. */
-  request: any;
+  request: SaleRequest;
   total: number;
   createdAt: string;
   state: 'PENDING' | 'FAILED';
@@ -82,10 +83,10 @@ export class OfflineSalesService {
 
   // --- queue ---------------------------------------------------------------
 
-  async enqueue(request: any, total: number): Promise<void> {
+  async enqueue(request: SaleRequest, total: number): Promise<void> {
     const sale: QueuedSale = {
       clientSaleId: request.clientSaleId,
-      pharmacyId: this.authService.getPharmacyId() ?? request.pharmacyId,
+      pharmacyId: this.authService.getPharmacyId() ?? 0,
       request,
       total,
       createdAt: new Date().toISOString(),

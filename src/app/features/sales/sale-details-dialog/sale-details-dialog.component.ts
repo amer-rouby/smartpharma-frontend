@@ -20,6 +20,7 @@ import { EInvoiceSubmission } from '../../../core/models/einvoice.model';
 import { SaleReturnService } from '../../../core/services/sale-return.service';
 import { SalesService } from '../../../core/services/sales.service';
 import { SaleReturn } from '../../../core/models/sale-return.model';
+import { SaleItemResponse } from '../../../core/models/sale.model';
 import { SaleReturnDialogComponent } from '../sale-return-dialog/sale-return-dialog.component';
 import { toDataURL } from 'qrcode';
 
@@ -85,7 +86,7 @@ export class SaleDetailsDialogComponent implements OnDestroy {
   }
 
   canReturn(): boolean {
-    return (this.data.sale?.items ?? []).some((item: any) => item.quantity > (item.returnedQuantity ?? 0));
+    return (this.data.sale?.items ?? []).some((item: SaleItemResponse) => item.quantity > (item.returnedQuantity ?? 0));
   }
 
   openReturn(): void {

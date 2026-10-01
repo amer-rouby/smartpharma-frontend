@@ -13,6 +13,7 @@ import { PaymentService } from '../../../core/services/payment.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Product } from '../../../core/models/product.model';
+import { SaleRequest } from '../../../core/models';
 import { PaymentMethod, PaymentRequest, PaymentResponse } from '../../../core/models/payment.model';
 import { MaterialModule } from '../../../shared/material.module';
 import { LanguageService } from '../../../core/services/language.service';
@@ -30,26 +31,6 @@ interface CartItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-}
-
-interface SaleRequest {
-  items: Array<{
-    productId: number;
-    quantity: number;
-    unitPrice: number;
-    totalPrice: number;
-  }>;
-  discountAmount: number;
-  paymentMethod: string;
-  customerPhone: string;
-  buyerNationalId?: string;
-  buyerName?: string;
-  totalAmount: number;
-  prescriptionImageUrl?: string;
-  // Offline POS: device-made id (server de-duplicates by it) and, for a
-  // queued sale, when it was actually rung up.
-  clientSaleId: string;
-  soldAt?: string;
 }
 
 @Component({

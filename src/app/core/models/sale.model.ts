@@ -88,20 +88,6 @@ export interface SalesAnalyticsParams {
   period: 'daily' | 'weekly' | 'monthly' | 'yearly';
 }
 
-export interface SaleRequest {
-  pharmacyId: number;
-  items: SaleItemRequest[];
-  customerPhone?: string;
-  paymentMethod: string;
-  discountAmount: number;
-}
-
-export interface SaleItemRequest {
-  productId: number;
-  quantity: number;
-  unitPrice: number;
-}
-
 export interface SaleResponse {
   id: number;
   invoiceNumber: string;
